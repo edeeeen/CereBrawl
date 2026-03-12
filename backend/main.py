@@ -1,7 +1,10 @@
 from fastapi import FastAPI
-import logging
 from contextlib import asynccontextmanager
 
+import logging
+from dotenv import load_dotenv
+
+load_dotenv()
 # Configure logging
 # By default, Python's logging module sends messages to stderr.
 # Azure App Services capture stdout and stderr, making them visible in the Log Stream.
