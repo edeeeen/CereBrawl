@@ -1,8 +1,11 @@
 from google import genai
 import os
+from dotenv import load_dotenv
+
+load_dotenv()
 
 # Create client using API key from environment variable
-client = genai.Client(api_key= "INSERT API KEY HERE FOR NOW!")
+client = genai.Client(api_key= os.getenv("GEMINI_KEY"))
 
 # Send prompt to Gemini
 response = client.models.generate_content(
