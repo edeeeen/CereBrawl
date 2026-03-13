@@ -17,7 +17,11 @@ jobs:
         with:
           python-version: '3.14'
 
-      - name: Zip only backend contents
+      - name: Install dependencies locally (Validation)
+        run: |
+          pip install -r backend/requirements.txt
+
+      - name: Zip backend for deployment
         run: |
           cd backend
           zip -r ../release.zip .
