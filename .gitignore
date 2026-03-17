@@ -185,3 +185,14 @@ cython_debug/
 
 .DS_Store
 .vscode/
+
+# React / Vite
+node_modules/
+dist/
+frontend/cerebrawl-frontend/node_modules/
+frontend/cerebrawl-frontend/dist/
+
+# Logs
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
