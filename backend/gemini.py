@@ -58,10 +58,35 @@ def parseQuestion(response):
 
 
 
-userInput = input("Enter a topic for the quiz question: ")
-question, options, correct_answer = parseQuestion(generateQuizQuestion(userInput))
-print("Parsed Question:", question)
-print("Parsed Options:")
-for option in options:
-    print(option)
-print("Parsed Correct Answer:", correct_answer)    
+def quizCreator(numQuestions, topic):
+    quiz = []
+    for _ in range(numQuestions):
+        response = generateQuizQuestion(topic)
+        question, options, correct_answer = parseQuestion(response)
+        quiz.append({
+            "question": question,
+            "options": options,
+            "correct_answer": correct_answer
+        })
+    return quiz
+
+
+def displayingQuiz():
+    numQuestions = int(input("Enter the number of quiz questions: "))
+    topic = input("Enter a topic for the quiz questions: ")
+    quiz = quizCreator(numQuestions, topic)
+
+    for i, q in enumerate(quiz, start=1):
+        print(f"Question {i}: {q['question']}")
+        print("Options:")
+        for option in q['options']:
+            print(option)
+        print(f"Correct Answer: {q['correct_answer']}")
+        print()
+    for option in option:
+        print(option)
+        #this doesn't work perfectly, can't test bc of the API key limit
+    print("Parsed Correct Answer:", correct_answer)   
+
+if __name__ == "__main__":
+    displayingQuiz()
