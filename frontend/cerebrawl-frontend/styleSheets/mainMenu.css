@@ -1,0 +1,9 @@
+.pageHead {
+    border: 5px;
+    border-color:cadetblue;
+    border-style: inset;
+}
+
+.normalTB {
+    margin: 5px;
+}
