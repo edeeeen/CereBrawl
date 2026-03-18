@@ -23,7 +23,11 @@ Currently uses fake gemini, but once we are ready to show off we can swap it out
 '''
 @router.get("/generateQuestion")
 async def get_battle_question(request: Request, difficulty: int, subject: str):
-    raw_text = helpers.fakeGemini.generateQuizQuestion(subject).strip()
+    raw_text = helpers.fakeGemini.generateQuizQuestion(subject)
+    if(raw_text == None):
+        print(f"DEBUG: Gemini returned nothing {raw_text}")
+        raise HTTPException(status_code=400, detail="Invalid question format")
+    raw_text = raw_text.strip()
     
     # Regex to get the question, options, and correct answer from the raw text
     pattern = (
