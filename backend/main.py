@@ -26,11 +26,11 @@ async def lifespan(app: FastAPI):
     logger.error("Application shutting down, cleaning up")
 
 descript = """
-*CereBrawl*
 """
 
 app = FastAPI(
     lifespan=lifespan,
+    title="CereBrawl API",
     description=descript
 )
 

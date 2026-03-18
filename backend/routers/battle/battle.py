@@ -1,6 +1,9 @@
 import helpers.fakeGemini
+import models.battle
+
 from fastapi import APIRouter, Depends, HTTPException
 from fastapi import Request
+from fastapi import Query
 
 import re
 
@@ -21,8 +24,14 @@ Returns:
 
 Currently uses fake gemini, but once we are ready to show off we can swap it out.  
 '''
-@router.get("/generateQuestion")
-async def get_battle_question(request: Request, difficulty: int, subject: str):
+@router.get("/generateQuestion", response_model=models.battle.get_battle_question_response)
+async def get_battle_question(request: Request, 
+    difficulty: int = Query(..., description="How difficult the question is from 1-5", ge=1, le=5),
+    subject: str = Query(..., description="The subject of the question", min_length=1)
+):
+    '''
+    Generate a question for a quiz.
+    '''
     raw_text = helpers.fakeGemini.generateQuizQuestion(subject)
     if(raw_text == None):
         print(f"DEBUG: Gemini returned nothing {raw_text}")
