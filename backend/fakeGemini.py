@@ -1,4 +1,8 @@
 import random
+from urllib import response
+
+from matplotlib import lines
+from requests import options
 
 def generateQuizQuestion(topic):
     if(topic == "biology"):
@@ -260,7 +264,43 @@ def generateQuizQuestion(topic):
         ]
         return computerScienceQuestionBank[random.randint(0, 19)]
     
+    
+def parseQuestion(response):
+    lines = response.split("\n")
+    question = lines[0]
+    options = lines[1:5]
+    correct_answer = lines[5].split(":")[1].strip()
+    return question, options, correct_answer
+
+
+
+def quizCreator(numQuestions, topic):
+    quiz = []
+    for _ in range(numQuestions):
+        response = generateQuizQuestion(topic)
+        question, options, correct_answer = parseQuestion(response)
+        quiz.append({
+            "question": question,
+            "options": options,
+            "correct_answer": correct_answer
+        })
+    return quiz
+
+
+def displayingQuiz():
+    numQuestions = int(input("Enter the number of quiz questions: "))
+    topic = input("Enter a topic for the quiz questions: ")
+    quiz = quizCreator(numQuestions, topic)
+
+    for i, q in enumerate(quiz, start=1):
+        print(f"\nQuestion {i}")
+        print(q['question'])
+        
+        for option in q['options']:
+            print(f"{option}")
+            
+        correct_answer = q['correct_answer']
+        print(f"Correct Answer: {correct_answer}")
+    
 if __name__ == "__main__":
-    topic = "biology"
-    question = generateQuizQuestion(topic)
-    print(question)
+    displayingQuiz()
