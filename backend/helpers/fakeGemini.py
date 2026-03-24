@@ -264,7 +264,7 @@ def generateQuizQuestion(topic):
         ]
         return computerScienceQuestionBank[random.randint(0, 19)]
     
-    
+
 def parseQuestion(response):
     lines = response.split("\n")
     question = lines[0]
@@ -305,3 +305,8 @@ def displayingQuiz():
 if __name__ == "__main__":
     displayingQuiz()
 
+=======
+if __name__ == "__main__":
+    topic = "biology"
+    question = generateQuizQuestion(topic)
+    print(question)
