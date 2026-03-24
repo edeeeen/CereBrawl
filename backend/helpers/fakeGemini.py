@@ -1,7 +1,7 @@
 import random
 from urllib import response
 
-from matplotlib import lines
+#from matplotlib import lines
 from requests import options
 
 def generateQuizQuestion(topic):
@@ -305,7 +305,6 @@ def displayingQuiz():
 if __name__ == "__main__":
     displayingQuiz()
 
-=======
 if __name__ == "__main__":
     topic = "biology"
     question = generateQuizQuestion(topic)
