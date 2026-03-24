@@ -55,4 +55,47 @@ async def get_battle_question(request: Request,
         print(f"DEBUG: Failed to match this text: {raw_text}")
         raise HTTPException(status_code=400, detail="Invalid question format")
         
-    return match.groupdict()
+    return {
+    "question": match.group("question").strip(),
+    "A": match.group("A").strip(),
+    "B": match.group("B").strip(),
+    "C": match.group("C").strip(),
+    "D": match.group("D").strip(),
+    "Answer": match.group("Answer").strip()[-1]
+}
+'''
+Submit an answer for battle mode and calculate HP changes.
+Parameters:
+- answer: str (the user's selected answer)
+- correctAnswer: str (the correct answer)
+- playerHP: int (the player's current HP)
+- enemyHP: int (the enemy's current HP)
+Returns:
+- result: str (either "correct" or "wrong")
+- playerHP: int (the player's updated HP)
+- enemyHP: int (the enemy's updated HP)
+'''
+@router.post("/hpAnswerChange", response_model=models.battle.submit_battle_answer_response)
+async def submit_battle_answer(request: Request):
+    data = await request.json()
+
+    selected = data.get("answer")
+    correct = data.get("correctAnswer")
+    player_hp = data.get("playerHP")
+    enemy_hp = data.get("enemyHP")
+
+    if selected is None or correct is None:
+        raise HTTPException(status_code=400, detail="Missing data")
+
+    if selected == correct:
+        enemy_hp -= 10
+        result = "correct"
+    else:
+        player_hp -= 10
+        result = "wrong"
+
+    return {
+        "result": result,
+        "playerHP": player_hp,
+        "enemyHP": enemy_hp
+    }

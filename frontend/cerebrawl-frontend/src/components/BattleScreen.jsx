@@ -10,6 +10,8 @@ function BattleScreen() {
   const [showAttackChoices, setShowAttackChoices] = useState(false);
   const [typedQuestion, setTypedQuestion] = useState("");
   const [battleEffect, setBattleEffect] = useState("");
+  const [playerHP, setPlayerHP] = useState(100);
+  const [enemyHP, setEnemyHP] = useState(100);
 
   const difficulty = 1;
   const subject = "biology";
@@ -90,12 +92,30 @@ function BattleScreen() {
     setTimeout(() => setBattleEffect(""), 450);
   };
 
-  const handleAnswerClick = (letter) => {
+  const handleAnswerClick = async (letter) => {
     if (!questionData || selectedAnswer) return;
 
     setSelectedAnswer(letter);
+    
+    const response = await fetch("https://api.cerebrawl.me/battle/hpAnswerChange", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({
+        answer: letter,
+        correctAnswer: questionData.Answer,
+        playerHP: playerHP,
+        enemyHP: enemyHP
+      })
+    });
 
-    if (letter === questionData.Answer) {
+    const result = await response.json();
+
+    setPlayerHP(result.playerHP);
+    setEnemyHP(result.enemyHP);
+
+    if(result.result === "correct") {
       setResultMessage("Correct! Nice hit.");
       triggerBattleEffect("correct-flash");
     } else {
@@ -117,7 +137,7 @@ function BattleScreen() {
             <div className="hp-row">
               <span className="hp-label">HP</span>
               <div className="hp-bar">
-                <div className="hp-fill enemy-hp"></div>
+                <div className="hp-fill enemy-hp" style={{ width: `${enemyHP}%` }}></div>
               </div>
             </div>
           </div>
@@ -155,7 +175,7 @@ function BattleScreen() {
             <div className="hp-row">
               <span className="hp-label">HP</span>
               <div className="hp-bar">
-                <div className="hp-fill player-hp"></div>
+                <div className="hp-fill player-hp" style={{ width: `${playerHP}%` }}></div>
               </div>
             </div>
 
