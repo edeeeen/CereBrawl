@@ -1,82 +1,263 @@
+import { useEffect, useMemo, useState } from "react";
 import "./BattleScreen.css";
 
-export default function BattleScreen() {
-  const player = {
-    name: "StudyMon",
-    level: 42,
-    hp: 83,
-    maxHp: 83,
-    sprite: "/player-back.png",
+function BattleScreen() {
+  const [questionData, setQuestionData] = useState(null);
+  const [loadingQuestion, setLoadingQuestion] = useState(true);
+  const [questionError, setQuestionError] = useState("");
+  const [selectedAnswer, setSelectedAnswer] = useState("");
+  const [resultMessage, setResultMessage] = useState("");
+  const [showAttackChoices, setShowAttackChoices] = useState(false);
+  const [typedQuestion, setTypedQuestion] = useState("");
+  const [battleEffect, setBattleEffect] = useState("");
+
+  const difficulty = 1;
+  const subject = "biology";
+
+  const fullQuestion = useMemo(() => {
+    return questionData?.question || "";
+  }, [questionData]);
+
+  const fetchQuestion = async () => {
+    try {
+      setLoadingQuestion(true);
+      setQuestionError("");
+      setSelectedAnswer("");
+      setResultMessage("");
+      setShowAttackChoices(false);
+      setTypedQuestion("");
+      setBattleEffect("");
+
+      const response = await fetch(
+        `https://api.cerebrawl.me/battle/generateQuestion?difficulty=${difficulty}&subject=${encodeURIComponent(subject)}`
+      );
+
+      if (!response.ok) {
+        const errorText = await response.text();
+        console.error("Backend error:", response.status, errorText);
+        throw new Error(`Failed to fetch question: ${response.status}`);
+      }
+
+      const data = await response.json();
+      setQuestionData(data);
+    } catch (error) {
+      console.error("Error fetching question:", error);
+      setQuestionError("Could not load question.");
+    } finally {
+      setLoadingQuestion(false);
+    }
   };
 
-  const enemy = {
-    name: "EnemyMon",
-    level: 17,
-    hpPercent: 78,
-    sprite: "/enemy-front.png",
+  useEffect(() => {
+    fetchQuestion();
+  }, []);
+
+  useEffect(() => {
+    if (!fullQuestion) {
+      setTypedQuestion("");
+      return;
+    }
+
+    setTypedQuestion("");
+    let index = 0;
+
+    const interval = setInterval(() => {
+      index += 1;
+      setTypedQuestion(fullQuestion.slice(0, index));
+
+      if (index >= fullQuestion.length) {
+        clearInterval(interval);
+      }
+    }, 22);
+
+    return () => clearInterval(interval);
+  }, [fullQuestion]);
+
+  const handleAttackClick = () => {
+    if (!loadingQuestion && !questionError && questionData) {
+      setShowAttackChoices(true);
+    }
+  };
+
+  const handleBackToMenu = () => {
+    setShowAttackChoices(false);
+    setSelectedAnswer("");
+    setResultMessage("");
+  };
+
+  const triggerBattleEffect = (type) => {
+    setBattleEffect(type);
+    setTimeout(() => setBattleEffect(""), 450);
+  };
+
+  const handleAnswerClick = (letter) => {
+    if (!questionData || selectedAnswer) return;
+
+    setSelectedAnswer(letter);
+
+    if (letter === questionData.Answer) {
+      setResultMessage("Correct! Nice hit.");
+      triggerBattleEffect("correct-flash");
+    } else {
+      setResultMessage(`Incorrect! The answer was ${questionData.Answer}.`);
+      triggerBattleEffect("wrong-flash");
+    }
   };
 
   return (
-    <div className="battle-screen">
-      <div className="battle-field">
-        <div className="enemy-side">
-          <div className="info-card enemy-card">
-            <div className="card-top">
-              <span className="mon-name">{enemy.name}</span>
-              <span className="mon-level">Lv.{enemy.level}</span>
+    <div className={`battle-screen ${battleEffect}`}>
+      <div className="battlefield">
+        <div className="enemy-section">
+          <div className="enemy-card">
+            <div className="battle-card-header">
+              <span className="battle-name">Professor Elm</span>
+              <span className="battle-level">Lv.67</span>
             </div>
 
             <div className="hp-row">
               <span className="hp-label">HP</span>
               <div className="hp-bar">
-                <div
-                  className="hp-fill"
-                  style={{ width: `${enemy.hpPercent}%` }}
-                ></div>
+                <div className="hp-fill enemy-hp"></div>
               </div>
             </div>
           </div>
 
+          <img
+            className="enemy-sprite"
+            src="/enemy.png"
+            alt="Enemy"
+            onError={(e) => {
+              e.target.style.display = "none";
+            }}
+          />
+
           <div className="enemy-platform"></div>
-          <img className="enemy-sprite" src={enemy.sprite} alt="Enemy" />
         </div>
 
-        <div className="player-side">
-          <div className="player-platform"></div>
-          <img className="player-sprite" src={player.sprite} alt="Player" />
+        <div className="player-section">
+          <img
+            className="player-sprite"
+            src="/player.png"
+            alt="Player"
+            onError={(e) => {
+              e.target.style.display = "none";
+            }}
+          />
 
-          <div className="info-card player-card">
-            <div className="card-top">
-              <span className="mon-name">{player.name}</span>
-              <span className="mon-level">Lv.{player.level}</span>
+          <div className="player-platform"></div>
+
+          <div className="player-card">
+            <div className="battle-card-header">
+              <span className="battle-name">Student</span>
+              <span className="battle-level">Lv.42</span>
             </div>
 
             <div className="hp-row">
               <span className="hp-label">HP</span>
               <div className="hp-bar">
-                <div className="hp-fill" style={{ width: "100%" }}></div>
+                <div className="hp-fill player-hp"></div>
               </div>
             </div>
 
-            <div className="hp-text">
-              {player.hp}/{player.maxHp}
-            </div>
+            <div className="hp-value">100/100</div>
           </div>
         </div>
       </div>
 
-      <div className="battle-ui">
-        <div className="dialogue-box">
-          <p>Question?</p>
+      <div className="bottom-panel">
+        <div className="question-panel">
+          {loadingQuestion && <p className="question-text">Loading question...</p>}
+
+          {!loadingQuestion && questionError && (
+            <p className="question-text error-text">{questionError}</p>
+          )}
+
+          {!loadingQuestion && !questionError && questionData && (
+            <div className="dialogue-box">
+              <p className="question-text">
+                {typedQuestion}
+                <span className="cursor">|</span>
+              </p>
+
+              {resultMessage && (
+                <p
+                  className={`result-text fade-in ${
+                    resultMessage.startsWith("Correct") ? "correct" : "wrong"
+                  }`}
+                >
+                  {resultMessage}
+                </p>
+              )}
+            </div>
+          )}
         </div>
 
-        <div className="action-grid">
-          <button>FIGHT</button>
-          <button>BAG</button>
-          <button>ITEM</button>
-          <button>RUN</button>
+        <div className="action-panel">
+          {!showAttackChoices ? (
+            <>
+              <div className="top-actions">
+                <button className="action-button primary" onClick={handleAttackClick}>
+                  Attack
+                </button>
+
+                <button className="action-button primary">
+                  Item
+                </button>
+              </div>
+
+              <button className="action-button next-button" onClick={fetchQuestion}>
+                Next Question
+              </button>
+            </>
+          ) : (
+            <>
+              <div className="answer-actions">
+                <button
+                  className={`action-button ${selectedAnswer === "A" ? "selected" : ""}`}
+                  onClick={() => handleAnswerClick("A")}
+                  disabled={!!selectedAnswer}
+                >
+                  A. {questionData?.A}
+                </button>
+
+                <button
+                  className={`action-button ${selectedAnswer === "B" ? "selected" : ""}`}
+                  onClick={() => handleAnswerClick("B")}
+                  disabled={!!selectedAnswer}
+                >
+                  B. {questionData?.B}
+                </button>
+
+                <button
+                  className={`action-button ${selectedAnswer === "C" ? "selected" : ""}`}
+                  onClick={() => handleAnswerClick("C")}
+                  disabled={!!selectedAnswer}
+                >
+                  C. {questionData?.C}
+                </button>
+
+                <button
+                  className={`action-button ${selectedAnswer === "D" ? "selected" : ""}`}
+                  onClick={() => handleAnswerClick("D")}
+                  disabled={!!selectedAnswer}
+                >
+                  D. {questionData?.D}
+                </button>
+              </div>
+
+              <button
+                className="action-button secondary-button back-button"
+                onClick={handleBackToMenu}
+                disabled={false}
+              >
+                Back
+              </button>
+            </>
+          )}
         </div>
       </div>
     </div>
   );
 }
+
+export default BattleScreen;
