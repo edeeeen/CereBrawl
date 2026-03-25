@@ -63,6 +63,7 @@ async def get_battle_question(request: Request,
     "D": match.group("D").strip(),
     "Answer": match.group("Answer").strip()[-1]
 }
+
 '''
 Submit an answer for battle mode and calculate HP changes.
 Parameters:
@@ -76,13 +77,12 @@ Returns:
 - enemyHP: int (the enemy's updated HP)
 '''
 @router.post("/hpAnswerChange", response_model=models.battle.submit_battle_answer_response)
-async def submit_battle_answer(request: Request):
-    data = await request.json()
+async def submit_battle_answer(data: models.battle.submit_battle_answer_request):
 
-    selected = data.get("answer")
-    correct = data.get("correctAnswer")
-    player_hp = data.get("playerHP")
-    enemy_hp = data.get("enemyHP")
+    selected = data.answer
+    correct = data.correctAnswer
+    player_hp = data.playerHP
+    enemy_hp = data.enemyHP
 
     if selected is None or correct is None:
         raise HTTPException(status_code=400, detail="Missing data")
