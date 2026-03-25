@@ -46,3 +46,13 @@
 .start-button:active {
   transform: scale(0.98);
 }
+
+.pageHead {
+    border: 5px;
+    border-color:cadetblue;
+    border-style: inset;
+}
+
+.normalTB {
+    margin: 5px;
+}
