@@ -143,6 +143,7 @@ function BattleScreen() {
                 <div className="hp-fill enemy-hp" style={{ width: `${enemyHP}%` }}></div>
               </div>
             </div>
+            <div className="hp-value">{enemyHP}/100</div>
           </div>
 
           <img
@@ -182,7 +183,7 @@ function BattleScreen() {
               </div>
             </div>
 
-            <div className="hp-value">100/100</div>
+            <div className="hp-value">{playerHP}/100</div>
           </div>
         </div>
       </div>
