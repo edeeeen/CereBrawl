@@ -53,3 +53,18 @@ def test_get_battle_question_success():
     assert data["question"] != None
     assert data["B"] != None
     assert data["Answer"] in ["A", "B", "C", "D"]
+
+#Tests for HP change based on answer correctness
+def testHPReturnCorrect():
+    response = client.get("/battle/hpAnswerChange?answer=correct")
+    assert response.status_code == 200
+    data = response.json()
+    assert data["hpChange"] == -10
+
+#Test that if the answer is wrong, no HP change occurs
+def testHPReturnWrong():
+    response = client.get("/battle/hpAnswerChange?answer=wrong")
+    assert response.status_code == 200
+    data = response.json()
+    assert data["hpChange"] == 0
+
