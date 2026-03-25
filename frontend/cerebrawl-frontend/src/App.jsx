@@ -1,7 +1,9 @@
 import { BrowserRouter, Routes, Route, useNavigate } from "react-router-dom";
-import BattleScreen from "./components/BattleScreen";
+import BattleScreen from "./battle_components/BattleScreen";
+import HomeContent from "./menu_components/homeContent";
+import AccountContent from "./menu_components/accountContent";
 
-function Home() {
+function PreBattle() {
   const navigate = useNavigate();
 
   return (
@@ -23,8 +25,10 @@ function App() {
   return (
     <BrowserRouter>
       <Routes>
-        <Route path="/" element={<Home />} />
+        <Route path="/" element={<HomeContent />} />
+        <Route path="/prebattle" element={<PreBattle />} />
         <Route path="/battlescreen" element={<BattleScreen />} />
+        <Route path="/account" element={<AccountContent />} />
       </Routes>
     </BrowserRouter>
   );
