@@ -111,11 +111,14 @@ function BattleScreen() {
     });
 
     const result = await response.json();
+    console.log("API RESPONSE:", result);
 
     setPlayerHP(result.playerHP);
     setEnemyHP(result.enemyHP);
 
-    if(result.result === "correct") {
+    console.log("Selected:", letter, "Correct:", questionData.Answer);
+
+    if(result.result == "correct") {
       setResultMessage("Correct! Nice hit.");
       triggerBattleEffect("correct-flash");
     } else {
