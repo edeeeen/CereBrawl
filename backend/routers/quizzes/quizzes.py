@@ -2,7 +2,6 @@ from db import db, dbModels
 from models.quizzes import create_quiz_request, create_quiz_response
 
 from fastapi import APIRouter
-from routers import quizzes
 
 router = APIRouter(
     prefix='/quizzes',
