@@ -34,13 +34,12 @@ if connection_string:
     engine = create_engine(
         SQLALCHEMY_DATABASE_URL,
         connect_args=connect_args,
-        echo=True # Shows SQL statements in console
+        echo=True,
+        pool_pre_ping=True,
+        pool_recycle=3600
     )
 
     logger.info("db handler instance created")
-    # Create database tables if they don't exist
-    create_db_and_tables()
-    logger.info("Created tables")
 else:
     logger.error("No valid connection string found. Cannot establish db connection")
     raise RuntimeError("No valid db connection string found")

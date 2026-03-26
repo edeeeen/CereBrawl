@@ -23,11 +23,13 @@ logger = logging.getLogger(__name__)
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    logger.error("Application starting")
+    logger.info("Application starting")
     db.create_db_and_tables()
+    logger.info("Database tables initialized")
     yield
-    logger.error("Application shutting down, cleaning up")
-    db.engine.dispose()
+    logger.info("Application shutting down, cleaning up")
+    db.engine.dispose(close=True)
+    logger.info("Database connections closed")
 
 descript = """
 """
