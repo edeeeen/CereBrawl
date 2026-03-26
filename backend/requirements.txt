@@ -30,7 +30,9 @@ logger==1.4
 markdown-it-py==4.0.0
 MarkupSafe==3.0.3
 mdurl==0.1.2
+nanoid==2.0.0
 packaging==26.0
+pwdlib==0.3.0
 pyasn1==0.6.2
 pyasn1_modules==0.4.2
 pycparser==3.0

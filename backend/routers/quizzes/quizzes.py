@@ -2,11 +2,16 @@ from db import db, dbModels
 from models.quizzes import create_quiz_request, create_quiz_response
 
 from fastapi import APIRouter
+import nanoid
 
 router = APIRouter(
     prefix='/quizzes',
     tags=['quizzes']
 )
+
+def generate_quiz_id():
+    # Generates a 10-character unique string
+    return nanoid.generate(size=10)
 
 '''
 Create an empty quiz with just a name, subject, user, and description.
@@ -16,7 +21,7 @@ Parameters:
 - user: str
 - description: str (optional)
 Returns:
-- id: int (the id of the created quiz)
+- id: str (the id of the created quiz)
 '''
 @router.post("/addEmptyQuiz", response_model=create_quiz_response)
 def create_quiz(quiz: create_quiz_request, session: db.SessionDep):
@@ -27,11 +32,13 @@ def create_quiz(quiz: create_quiz_request, session: db.SessionDep):
 
     Still subject to change, do not use yet
     '''
-    quiz_db = dbModels.DBQuizzes(**quiz.dict())
+    quiz_data = quiz.dict()
+    quiz_data['short_id'] = generate_quiz_id()
+    quiz_db = dbModels.DBQuizzes(**quiz_data)
     session.add(quiz_db)
     session.commit()
     session.refresh(quiz_db)
-    return create_quiz_response(id=quiz_db.id)
+    return create_quiz_response(id=quiz_db.short_id)
 
 '''
 Test request to get all quizzes.
