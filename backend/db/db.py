@@ -1,10 +1,8 @@
 import os
 import logging  
 from dotenv import load_dotenv
-from .dbModels import *
-from sqlalchemy import create_engine
 from fastapi import Depends
-from sqlmodel import Field, Session, SQLModel, create_engine
+from sqlmodel import Session, SQLModel, create_engine
 import urllib
 from typing import Annotated
 

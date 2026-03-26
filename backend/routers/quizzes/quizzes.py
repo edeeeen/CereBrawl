@@ -68,7 +68,7 @@ Parameters:
 def get_quiz_by_id(
     session: db.SessionDep,
     quiz_id: str =  Path(..., description="The id of the quiz")
-    ) -> QuizResponse:
+) -> QuizResponse:
     '''
     Gets a quiz by id.
     '''

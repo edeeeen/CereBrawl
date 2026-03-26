@@ -16,11 +16,10 @@ class Quizzes(SQLModel, table=True):
     views: int = Field(default=0)
     create_date: str = Field(default_factory=lambda: __import__('datetime').datetime.utcnow().isoformat())
 
-class User(SQLModel, table=True):
+class Users(SQLModel, table=True):
     id: int | None = Field(default=None, primary_key=True)
     short_id: str = Field(max_length=10, unique=True, index=True)
     username: str = Field(max_length=255, unique=True, index=True)
-    email: str = Field(max_length=255, unique=True, index=True)
     password_hash: str = Field(max_length=255)
     account_created: str = Field(default_factory=lambda: __import__('datetime').datetime.utcnow().isoformat())
     

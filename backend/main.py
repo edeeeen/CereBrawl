@@ -5,6 +5,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from contextlib import asynccontextmanager
 from routers.battle.battle import router as battle_router
 from routers.quizzes.quizzes import router as quizzes_router
+from routers.login.login import router as login_router
 
 import logging
 from dotenv import load_dotenv
@@ -58,6 +59,7 @@ app.add_middleware(
 
 app.include_router(battle_router)
 app.include_router(quizzes_router)
+app.include_router(login_router)
 
 # Test function for the API
 @app.get("/api")
