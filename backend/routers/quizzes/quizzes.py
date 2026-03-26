@@ -34,7 +34,7 @@ def create_quiz(quiz: create_quiz_request, session: db.SessionDep):
     '''
     quiz_data = quiz.dict()
     quiz_data['short_id'] = generate_quiz_id()
-    quiz_db = dbModels.DBQuizzes(**quiz_data)
+    quiz_db = dbModels.Quizzes(**quiz_data)
     session.add(quiz_db)
     session.commit()
     session.refresh(quiz_db)
@@ -50,5 +50,5 @@ def get_all_quizzes(session: db.SessionDep):
     '''
     For testing only, do not use in production. Gets all quizzes.
     '''
-    quizzes = session.query(dbModels.DBQuizzes).all()
+    quizzes = session.query(dbModels.Quizzes).all()
     return quizzes

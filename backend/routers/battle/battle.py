@@ -1,7 +1,5 @@
 import helpers.fakeGemini
 import models.battle
-from db.dbModels import DBQuizzes
-from db.db import SessionDep
 
 from fastapi import APIRouter, Depends, HTTPException
 from fastapi import Request
