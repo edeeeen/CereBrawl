@@ -135,3 +135,28 @@ async def read_users_me(
 ) -> UserResponse:
     return current_user
 
+class UserRegister(BaseModel):
+    username: str
+    password: str
+
+
+@router.post("/register/")
+async def register_user(
+    session: db.SessionDep,
+    user_data: UserRegister,
+) -> UserResponse:
+    '''
+    Register a user with a username and password.
+    '''
+    existing_user = session.exec(select(DBUser).where(DBUser.username == user_data.username)).first()
+    if existing_user:
+        raise HTTPException(status_code=400, detail="Username already registered")
+    
+    hashed_password = get_password_hash(user_data.password)
+    short_id = generate_user_id()
+    new_user = DBUser(username=user_data.username, password_hash=hashed_password, short_id=short_id)
+    session.add(new_user)
+    session.commit()
+    session.refresh(new_user)
+    
+    return UserResponse(username=new_user.username, create_date=new_user.account_created, disabled=False)
