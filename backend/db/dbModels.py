@@ -16,3 +16,16 @@ class DBQuizzes(Base):
 
     def __repr__(self):
         return f"<DBQuizzes(id='{self.id}', name='{self.name}')>"
+
+
+from typing import Annotated
+
+from fastapi import Depends, FastAPI, HTTPException, Query
+from sqlmodel import Field, Session, SQLModel, create_engine, select
+
+
+class DBQuizzes(SQLModel, table=True):
+    id: int | None = Field(default=None, primary_key=True)
+    name: str = Field(index=True)
+    age: int | None = Field(default=None, index=True)
+    secret_name: str

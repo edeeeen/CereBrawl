@@ -31,3 +31,11 @@ else:
     logger.error("No valid connection string found. Cannot establish db connection")
     raise RuntimeError("No valid db connection string found")
 # Need a case where no connection string is found
+
+
+def get_session():
+    with Session(engine) as session:
+        yield session
+
+
+SessionDep = Annotated[Session, Depends(get_session)]   
