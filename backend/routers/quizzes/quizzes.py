@@ -1,8 +1,9 @@
-from db import db, dbModels
+from db import db
+from db.dbModels import Quizzes, QuizQuestions
 from models.quizzes import create_quiz_request, create_quiz_response, QuizResponse
 from sqlalchemy import select
 
-from fastapi import APIRouter
+from fastapi import APIRouter, HTTPException, Path
 import nanoid
 
 router = APIRouter(
@@ -35,7 +36,7 @@ def create_quiz(quiz: create_quiz_request, session: db.SessionDep):
     '''
     quiz_data = quiz.model_dump()
     quiz_data['short_id'] = generate_quiz_id()
-    quiz_db = dbModels.Quizzes(**quiz_data)
+    quiz_db = Quizzes(**quiz_data)
     session.add(quiz_db)
     session.commit()
     session.refresh(quiz_db)
@@ -46,25 +47,37 @@ Test request to get all quizzes.
 Do not use in production, just for testing purposes.
 Will be removed later.
 '''
-@router.get("/getAllQuizzes", response_model=list[QuizResponse])
-def get_all_quizzes(session: db.SessionDep):
+@router.get("/getAllQuizzes")
+def get_all_quizzes(session: db.SessionDep) -> list[QuizResponse]:
     '''
     For testing only, do not use in production. Gets all quizzes.
     '''
-    quizzes = session.exec(select(dbModels.Quizzes)).scalars().all()
 
-    # Convert SQLModel objects to Pydantic models
-    return [QuizResponse(**q.model_dump()) for q in quizzes]
+    # Query all quizzes from the database
+    statement = select(Quizzes)
+    quizzes = session.exec(statement).scalars().all()
 
+    return [QuizResponse(**quiz.model_dump()) for quiz in quizzes]
 
+'''
+Get a quiz by id.
+Parameters:
+- quiz_id: str (the short_id of the quiz)
+'''
 @router.get("/getQuiz/{quiz_id}")
-def get_quiz_by_id(quiz_id: str, session: db.SessionDep):
+def get_quiz_by_id(
+    session: db.SessionDep,
+    quiz_id: str =  Path(..., description="The id of the quiz")
+    ) -> QuizResponse:
     '''
     Gets a quiz by id.
     '''
-    print(quiz_id)
-    quiz = session.exec(select(dbModels.Quizzes).where(dbModels.Quizzes.short_id == quiz_id)).scalars().first()
-    
+    # Use the short_id to query for the quiz
+    statement = select(Quizzes).where(Quizzes.short_id == quiz_id)
+    quiz = session.exec(statement).scalars().first()
+
+    # Check if no quiz is found with the given id
     if quiz is None:
-        return {"error": "Quiz not found"}
-    return QuizResponse(**quiz.model_dump())    
+        raise HTTPException(status_code=404, detail="Quiz not found")
+
+    return QuizResponse(**quiz.model_dump())

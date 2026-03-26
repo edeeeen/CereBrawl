@@ -4,7 +4,6 @@ class create_quiz_response(BaseModel):
     id: str
 
 class QuizResponse(BaseModel):
-    id: int
     short_id: str
     name: str
     subject: str
