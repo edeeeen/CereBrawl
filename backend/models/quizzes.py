@@ -7,6 +7,7 @@ class QuizResponse(BaseModel):
     short_id: str
     name: str
     subject: str
+    creator: str
     description: str | None = None
     bookmarks: int
     views: int
@@ -15,5 +16,4 @@ class QuizResponse(BaseModel):
 class create_quiz_request(BaseModel):
     name: str 
     subject: str
-    user: str
     description: str | None = None

@@ -1,6 +1,7 @@
 from pydantic import BaseModel
 
 class UserResponse(BaseModel):
+    short_id: str
     username: str
     create_date: str
     disabled: bool | None = None

@@ -10,6 +10,7 @@ class Quizzes(SQLModel, table=True):
     short_id: str = Field(max_length=10, unique=True, index=True) # use this one for sharing quizzes to prevent exposing internal ids
     name: str = Field(max_length=255)
     subject: str = Field(max_length=100, index=True)
+    creator: str = Field(max_length=10, foreign_key="users.short_id", index=True)
     #user_id: int = Field(foreign_key="user.id")
     description: str | None = Field(default=None)
     bookmarks: int = Field(default=0)

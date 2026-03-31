@@ -56,7 +56,7 @@ def get_user(session, username: str):
     user = session.exec(select(DBUser).where(DBUser.username == username)).first()
     if user:
         print("User found in database")
-        return UserInDB(username=user.username, hashed_password=user.password_hash, disabled=False, create_date=user.account_created)
+        return UserInDB(short_id=user.short_id, username=user.username, hashed_password=user.password_hash, disabled=False, create_date=user.account_created)
 
 
 
@@ -99,7 +99,7 @@ async def get_current_user(token: Annotated[str, Depends(oauth2_scheme)], sessio
     user = get_user(session, username=token_data.username)
     if user is None:
         raise credentials_exception
-    return UserResponse(username=user.username, disabled=user.disabled, create_date=user.create_date)
+    return UserResponse(short_id=user.short_id, username=user.username, disabled=user.disabled, create_date=user.create_date)
 
 
 async def get_current_active_user(
@@ -159,4 +159,4 @@ async def register_user(
     session.commit()
     session.refresh(new_user)
     
-    return UserResponse(username=new_user.username, create_date=new_user.account_created, disabled=False)
+    return UserResponse(short_id=new_user.short_id, username=new_user.username, create_date=new_user.account_created, disabled=False)
