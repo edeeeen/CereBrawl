@@ -41,7 +41,7 @@ export default function AccountContent() {
     // Function to fetch user info using the token
     const fetchUserInfo = async (token) => {
         try {
-            const response = await fetch("http://127.0.0.1:8000/login/users/me/", {
+            const response = await fetch("https://api.cerebrawl.me/login/users/me/", {
                 method: "GET",
                 headers: {
                     "Authorization": `Bearer ${token}`,
@@ -70,7 +70,7 @@ export default function AccountContent() {
         
         // Implementation for login API call
         try {
-            const response = await fetch("http://127.0.0.1:8000/login/token", {
+            const response = await fetch("https://api.cerebrawl.me/login/token", {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/x-www-form-urlencoded",
@@ -103,7 +103,7 @@ export default function AccountContent() {
         setError("");
         
         try {
-            const response = await fetch("http://127.0.0.1:8000/login/register/", {
+            const response = await fetch("https://api.cerebrawl.me/login/register/", {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
