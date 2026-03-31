@@ -85,7 +85,6 @@ class TestLoginAPI:
     
     # Test for user login being successful
     def test_login_success(self, client_with_db, session):
-        """Test successful login"""
         # Register user first
         client_with_db.post(
             "/login/register/",
@@ -101,4 +100,13 @@ class TestLoginAPI:
         data = response.json()
         assert "access_token" in data
         assert data["token_type"] == "bearer"
+    
+    # Test for login with incorrect username
+    def test_login_invalid_username(self, client_with_db):
+        response = client_with_db.post(
+            "/login/token",
+            data={"username": "nonexistent", "password": "password123"}
+        )
+        assert response.status_code == 401
+        assert "Incorrect username or password" in response.json()["detail"]
     
