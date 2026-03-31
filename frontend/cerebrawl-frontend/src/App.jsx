@@ -13,7 +13,11 @@ function PreBattle() {
 
       <button
         className="start-button"
-        onClick={() => navigate("/battlescreen")}
+        onClick={() => {
+          sessionStorage.removeItem("playerHP");
+          sessionStorage.removeItem("enemyHP");
+          navigate("/battlescreen");
+        }}
       >
         Start Battle
       </button>
