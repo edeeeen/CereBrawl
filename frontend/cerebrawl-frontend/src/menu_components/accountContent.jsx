@@ -148,7 +148,7 @@ export default function AccountContent() {
             <p className="normalTB">
                 These are some links to test SPA:
                 <a onClick={() => navigate("/")}>Home</a> |
-                <a onClick={() => navigate("/prebattle")}> Play!</a> 
+                <a onClick={() => navigate("/prebattle")}> Play!</a> |
                 <a onClick={() => navigate("/account")}> Account</a>
             </p>
             
