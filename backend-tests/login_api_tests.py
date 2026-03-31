@@ -124,4 +124,44 @@ class TestLoginAPI:
         )
         assert response.status_code == 401
         assert "Incorrect username or password" in response.json()["detail"]
+
+
+    # test for /users/me to get user info 
+    def test_get_current_user_success(self, client_with_db):
+        # Register and login
+        register_response = client_with_db.post(
+            "/login/register/",
+            json={"username": "testuser", "password": "password123"}
+        )
+        registered_user = register_response.json()
+        
+        token_response = client_with_db.post(
+            "/login/token",
+            data={"username": "testuser", "password": "password123"}
+        )
+        token = token_response.json()["access_token"]
+        
+        # Get current user
+        response = client_with_db.get(
+            "/login/users/me/",
+            headers={"Authorization": f"Bearer {token}"}
+        )
+        assert response.status_code == 200
+        data = response.json()
+        assert data["username"] == "testuser"
+        assert data["short_id"] == registered_user["short_id"]
     
+
+    # Tests for /users/me endpoint with no token
+    def test_get_current_user_no_token(self, client_with_db):
+        response = client_with_db.get("/login/users/me/")
+        assert response.status_code == 401
+    
+    # Tests for /users/me endpoint with invalid token
+    def test_get_current_user_invalid_token(self, client_with_db):
+        """Test getting current user with invalid token"""
+        response = client_with_db.get(
+            "/login/users/me/",
+            headers={"Authorization": "Bearer invalid_token"}
+        )
+        assert response.status_code == 401
