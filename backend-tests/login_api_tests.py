@@ -63,3 +63,42 @@ class TestLoginAPI:
         assert response.status_code == 400
         assert "Username already registered" in response.json()["detail"]
     
+    # Test for missing fields in registration 
+    # Is supposed to fail with 422 error
+    # Tests both missing username and missing password 
+    def test_register_missing_fields(self, client_with_db):
+
+        # Missing password
+        response = client_with_db.post(
+            "/login/register/",
+            json={"username": "testuser"}
+        )
+        assert response.status_code == 422
+        
+        # Missing username
+        response = client_with_db.post(
+            "/login/register/",
+            json={"password": "password123"}
+        )
+        assert response.status_code == 422
+
+    
+    # Test for user login being successful
+    def test_login_success(self, client_with_db, session):
+        """Test successful login"""
+        # Register user first
+        client_with_db.post(
+            "/login/register/",
+            json={"username": "testuser", "password": "password123"}
+        )
+        
+        # Login request
+        response = client_with_db.post(
+            "/login/token",
+            data={"username": "testuser", "password": "password123"}
+        )
+        assert response.status_code == 200
+        data = response.json()
+        assert "access_token" in data
+        assert data["token_type"] == "bearer"
+    
