@@ -47,4 +47,19 @@ class TestLoginAPI:
         assert data["short_id"]
         assert data["disabled"] == False
     
+    # Test two users cannot register with the same username
+    def test_register_duplicate_username(self, client_with_db, session):
+        # Register first user
+        client_with_db.post(
+            "/login/register/",
+            json={"username": "testuser", "password": "password123"}
+        )
+        
+        # Try to register with same username
+        response = client_with_db.post(
+            "/login/register/",
+            json={"username": "testuser", "password": "differentpassword"}
+        )
+        assert response.status_code == 400
+        assert "Username already registered" in response.json()["detail"]
     
