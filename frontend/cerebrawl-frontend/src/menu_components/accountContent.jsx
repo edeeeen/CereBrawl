@@ -8,28 +8,40 @@ export default function AccountContent() {
     const [user, setUser] = useState(null);
     const [error, setError] = useState("");
     const [loading, setLoading] = useState(false);
+    const [showRegister, setShowRegister] = useState(false);
 
     useEffect(() => {
         const token = localStorage.getItem("token");
         if (token) {
             fetchUserInfo(token);
         }
-        
-        //get login button and add event listener to it
-        const loginButton = document.querySelector(".login-button");
-        if (loginButton) {
-            loginButton.addEventListener("click", () => {
-                const username = document.querySelector(".login-input[type='text']").value;
-                const password = document.querySelector(".login-input[type='password']").value;
-                handleLogin(username, password);
-            });
-        }
-
     }, []);
 
+    useEffect(() => {
+        //get login/registration button and add event listener to it
+        const loginButton = document.querySelector(".login-button");
+        if (loginButton) {
+            const handleClick = () => {
+                const username = document.querySelector(".login-input[type='text']").value;
+                const password = document.querySelector(".login-input[type='password']").value;
+                if (showRegister) {
+                    handleRegister(username, password);
+                } else {
+                    handleLogin(username, password);
+                }
+            };
+            
+            // Remove old listener to prevent duplicates
+            loginButton.removeEventListener("click", handleClick);
+            loginButton.addEventListener("click", handleClick);
+        }
+    }, [showRegister]);
+
+
+    // Function to fetch user info using the token
     const fetchUserInfo = async (token) => {
         try {
-            const response = await fetch("https://api.cerebrawl.me/login/users/me/", {
+            const response = await fetch("http://127.0.0.1:8000/login/users/me/", {
                 method: "GET",
                 headers: {
                     "Authorization": `Bearer ${token}`,
@@ -58,7 +70,7 @@ export default function AccountContent() {
         
         // Implementation for login API call
         try {
-            const response = await fetch("https://api.cerebrawl.me/login/token", {
+            const response = await fetch("http://127.0.0.1:8000/login/token", {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/x-www-form-urlencoded",
@@ -80,6 +92,41 @@ export default function AccountContent() {
         } catch (error) {
             console.error("Login error:", error);
             setError("An error occurred during login. Please try again.");
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    // registration function using the api, also logs the user in after successful registration
+    const handleRegister = async (username, password) => {
+        setLoading(true);
+        setError("");
+        
+        try {
+            const response = await fetch("http://127.0.0.1:8000/login/register/", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify({
+                    username: username,
+                    password: password
+                })
+            });
+            const data = await response.json();
+            
+            if (response.ok) {
+                setError("");
+                setShowRegister(false);
+                // Auto-login after registration
+                await handleLogin(username, password);
+            } else {
+                setError(data.detail || "Registration failed. Please try again.");
+                console.error("Registration error details:", data);
+            }
+        } catch (error) {
+            console.error("Registration error:", error);
+            setError("An error occurred during registration. Please try again.");
         } finally {
             setLoading(false);
         }
@@ -122,8 +169,19 @@ export default function AccountContent() {
                         <input type="text" placeholder="Username" className="login-input" />
                         <input type="password" placeholder="Password" className="login-input" />
                         <button className="login-button" disabled={loading}>
-                            {loading ? "Logging in..." : "Login"}
+                            {loading ? (showRegister ? "Creating account..." : "Logging in...") : (showRegister ? "Register" : "Login")}
                         </button>
+                        <p style={{ marginTop: "10px" }}>
+                            {showRegister ? (
+                                <>
+                                    Already have an account? <a onClick={() => setShowRegister(false)} style={{ cursor: "pointer", color: "blue" }}>Login here</a>
+                                </>
+                            ) : (
+                                <>
+                                    Don't have an account? <a onClick={() => setShowRegister(true)} style={{ cursor: "pointer", color: "blue" }}>Register here</a>
+                                </>
+                            )}
+                        </p>
                     </div>
                 </div>
             )}
