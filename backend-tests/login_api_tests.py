@@ -36,7 +36,6 @@ def client_with_db_fixture(session):
 class TestLoginAPI:
     # Test that user registration works successfully
     def test_register_success(self, client_with_db, session):
-        """Test successful user registration"""
         response = client_with_db.post(
             "/login/register/",
             json={"username": "testuser", "password": "password123"}
@@ -106,6 +105,22 @@ class TestLoginAPI:
         response = client_with_db.post(
             "/login/token",
             data={"username": "nonexistent", "password": "password123"}
+        )
+        assert response.status_code == 401
+        assert "Incorrect username or password" in response.json()["detail"]
+
+    # Test for incorrect password
+    def test_login_wrong_password(self, client_with_db):
+        # Register user
+        client_with_db.post(
+            "/login/register/",
+            json={"username": "testuser", "password": "correctpassword"}
+        )
+        
+        # Try login with wrong password
+        response = client_with_db.post(
+            "/login/token",
+            data={"username": "testuser", "password": "wrongpassword"}
         )
         assert response.status_code == 401
         assert "Incorrect username or password" in response.json()["detail"]
