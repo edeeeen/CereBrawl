@@ -92,3 +92,52 @@ class TestQuizAPI:
         response = authenticated_client.post("/quizzes/addEmptyQuiz", json={"name": "Test Quiz"})
         assert response.status_code == 422
 
+    # Test getting quiz by ID - success case
+    def test_get_quiz_by_id_success(self, client_with_db, session):
+        # Create a test quiz
+        quiz = Quizzes(short_id="testid1234", name="Test Quiz", subject="Math", creator="creator1")
+        session.add(quiz)
+        session.commit()
+
+        response = client_with_db.get("/quizzes/getQuiz/testid1234")
+        assert response.status_code == 200
+        data = response.json()
+        assert data["short_id"] == "testid1234"
+        assert data["name"] == "Test Quiz"
+        assert data["subject"] == "Math"
+
+    # Test getting quiz by ID - not found case
+    def test_get_quiz_by_id_not_found(self, client_with_db):
+        response = client_with_db.get("/quizzes/getQuiz/nonexistent")
+        assert response.status_code == 404
+        assert "Quiz not found" in response.json()["detail"]
+
+    # Test getting user quizzes
+    def test_get_user_quizzes(self, client_with_db, session):
+        # Create test quizzes for different users
+        quiz1 = Quizzes(short_id="quiz1", name="Quiz 1", subject="Math", creator="user1")
+        quiz2 = Quizzes(short_id="quiz2", name="Quiz 2", subject="Science", creator="user1")
+        quiz3 = Quizzes(short_id="quiz3", name="Quiz 3", subject="History", creator="user2")
+        session.add(quiz1)
+        session.add(quiz2)
+        session.add(quiz3)
+        session.commit()
+
+        response = client_with_db.get("/quizzes/getUserQuizzes/user1")
+        assert response.status_code == 200
+        data = response.json()
+        assert len(data) == 2
+        assert all(quiz["creator"] == "user1" for quiz in data)
+
+        response = client_with_db.get("/quizzes/getUserQuizzes/user2")
+        assert response.status_code == 200
+        data = response.json()
+        assert len(data) == 1
+        assert data[0]["creator"] == "user2"
+
+    # Test getting user quizzes when user has no quizzes
+    def test_get_user_quizzes_empty(self, client_with_db):
+        response = client_with_db.get("/quizzes/getUserQuizzes/nouser")
+        assert response.status_code == 200
+        data = response.json()
+        assert data == []
