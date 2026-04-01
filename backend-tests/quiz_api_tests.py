@@ -72,3 +72,23 @@ class TestQuizAPI:
         assert quiz.name == "Test Quiz"
         assert quiz.subject == "Math"
         assert quiz.description == "A good description"
+
+    # Test creating quiz without authentication
+    def test_create_quiz_unauthenticated(self, client_with_db):
+        quiz_data = {
+            "name": "Test Quiz",
+            "subject": "Math"
+        }
+        response = client_with_db.post("/quizzes/addEmptyQuiz", json=quiz_data)
+        assert response.status_code == 401
+
+    # Test creating quiz with missing required fields
+    def test_create_quiz_missing_fields(self, authenticated_client):
+        # Missing name
+        response = authenticated_client.post("/quizzes/addEmptyQuiz", json={"subject": "Math"})
+        assert response.status_code == 422
+
+        # Missing subject
+        response = authenticated_client.post("/quizzes/addEmptyQuiz", json={"name": "Test Quiz"})
+        assert response.status_code == 422
+
