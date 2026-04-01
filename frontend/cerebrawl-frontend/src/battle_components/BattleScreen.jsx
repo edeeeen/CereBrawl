@@ -27,7 +27,10 @@ function BattleScreen() {
   const [gameOver, setGameOver] = useState(false);
   const [gameResult, setGameResult] = useState("");
 
-  const difficulty = 1;
+  const [difficulty, setDifficulty] = useState(1);
+  const [questionsRight, setQuestionsRight] = useState(0);
+  const [questionsWrong, setQuestionsWrong] = useState(0);
+  
   const subject = "biology";
 
   const fullQuestion = useMemo(() => {
@@ -147,7 +150,9 @@ function BattleScreen() {
           answer: letter,
           correctAnswer: questionData.Answer,
           playerHP: playerHP,
-          enemyHP: enemyHP
+          enemyHP: enemyHP,
+          difficulty: difficulty,
+          critHit: false
         })
       });
 
@@ -156,11 +161,20 @@ function BattleScreen() {
 
       setPlayerHP(Math.max(result.playerHP, 0));
       setEnemyHP(Math.max(result.enemyHP, 0));
+      setDifficulty(result.difficulty);
+      setQuestionsRight(result.questionsRight);
+      setQuestionsWrong(result.questionsWrong);
 
-      if (result.result === "correct") {
-        setResultMessage("Correct! Nice hit.");
+      if (result.result === "correct" && result.critHit) {
+        setResultMessage("Correct! It's a critical hit.");
         triggerBattleEffect("correct-flash");
-      } else {
+      } else if (result.result === "correct") {
+        setResultMessage("Correct! Nice hit!");
+        triggerBattleEffect("correct-flash");
+       } else if (result.result === "wrong" && result.critHit) {
+        setResultMessage("Wrong! Critical hit against you!");
+        triggerBattleEffect("wrong-flash");
+      } else{
         setResultMessage(`Incorrect! The answer was ${questionData.Answer}.`);
         triggerBattleEffect("wrong-flash");
       }

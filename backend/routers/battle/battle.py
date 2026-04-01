@@ -1,5 +1,6 @@
 import helpers.fakeGemini
 import models.battle
+import random
 
 from fastapi import APIRouter, Depends, HTTPException
 from fastapi import Request
@@ -32,7 +33,7 @@ async def get_battle_question(request: Request,
     '''
     Generate a question for a quiz.
     '''
-    raw_text = helpers.fakeGemini.generateQuizQuestion(subject)
+    raw_text = helpers.fakeGemini.generateQuizQuestion(subject, difficulty)
     if(raw_text == None):
         print(f"DEBUG: Gemini returned nothing {raw_text}")
         raise HTTPException(status_code=400, detail="Invalid question format")
@@ -83,19 +84,57 @@ async def submit_battle_answer(data: models.battle.submit_battle_answer_request)
     correct = data.correctAnswer
     player_hp = data.playerHP
     enemy_hp = data.enemyHP
+    questions_right = data.questionsRight
+    questions_wrong = data.questionsWrong
+    difficulty = data.difficulty
 
     if selected is None or correct is None:
         raise HTTPException(status_code=400, detail="Missing data")
 
+    crit_hit = False
     if selected == correct:
-        enemy_hp -= 10
-        result = "correct"
+        if(random.random() < 0.1):
+            enemy_hp -= 20
+            crit_hit = True
+            result = "correct"
+            questions_right += 1
+            questions_wrong = 0
+            if(questions_right == 2 and difficulty < 5):
+                difficulty += 1
+                questions_right = 0
+        else:
+            enemy_hp -= 10
+            result = "correct"
+            questions_right += 1
+            questions_wrong = 0
+            if(questions_right == 2 and difficulty < 5):
+                difficulty += 1
+                questions_right = 0
     else:
-        player_hp -= 10
-        result = "wrong"
+        if(random.random() < 0.1):
+            player_hp -= 20
+            crit_hit = True
+            result = "wrong"
+            questions_wrong += 1
+            questions_right = 0
+            if(questions_wrong == 2 and difficulty > 1):
+                difficulty -= 1
+                questions_wrong = 0
+        else:
+            player_hp -= 10
+            result = "wrong"
+            questions_wrong += 1
+            questions_right = 0
+            if(questions_wrong == 2 and difficulty > 1):
+                difficulty -= 1
+                questions_wrong = 0
 
     return {
         "result": result,
         "playerHP": player_hp,
-        "enemyHP": enemy_hp
+        "enemyHP": enemy_hp,
+        "difficulty": difficulty,
+        "critHit": crit_hit,
+        "questionsRight": questions_right,
+        "questionsWrong": questions_wrong
     }
