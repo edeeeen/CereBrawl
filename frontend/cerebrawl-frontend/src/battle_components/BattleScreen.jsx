@@ -27,6 +27,12 @@ function BattleScreen() {
   const [gameOver, setGameOver] = useState(false);
   const [gameResult, setGameResult] = useState("");
 
+  useEffect(() => {
+    console.log("=== HP UPDATE ===");
+    console.log("Player HP:", playerHP);
+    console.log("Enemy HP:", enemyHP);
+  }, [playerHP, enemyHP]);
+
   const difficulty = 1;
   const subject = "biology";
 
@@ -153,6 +159,9 @@ function BattleScreen() {
 
       const result = await response.json();
       console.log("API RESPONSE:", result);
+      console.log("Selected answer:", letter);
+      console.log("Correct answer:", questionData.Answer);
+      console.log("API result:", result);
 
       setPlayerHP(Math.max(result.playerHP, 0));
       setEnemyHP(Math.max(result.enemyHP, 0));
