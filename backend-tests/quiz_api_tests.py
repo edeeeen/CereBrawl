@@ -1,0 +1,143 @@
+import pytest
+from fastapi.testclient import TestClient
+from main import app
+from db import db
+from db.dbModels import Users as DBUser, Quizzes
+from sqlmodel import Session, create_engine, SQLModel
+from sqlmodel.pool import StaticPool
+
+client = TestClient(app)
+
+# Setup test database
+@pytest.fixture(name="session")
+def session_fixture():
+    engine = create_engine(
+        "sqlite://",
+        connect_args={"check_same_thread": False},
+        poolclass=StaticPool,
+    )
+    SQLModel.metadata.create_all(engine)
+    with Session(engine) as session:
+        yield session
+
+
+@pytest.fixture(name="client_with_db")
+def client_with_db_fixture(session):
+    def get_session_override():
+        return session
+
+    app.dependency_overrides[db.get_session] = get_session_override
+    yield client
+    app.dependency_overrides.clear()
+
+
+@pytest.fixture(name="authenticated_client")
+def authenticated_client_fixture(client_with_db, session):
+    # Register and login a test user
+    register_response = client_with_db.post(
+        "/login/register/",
+        json={"username": "testuser", "password": "password123"}
+    )
+    assert register_response.status_code == 200
+
+    token_response = client_with_db.post(
+        "/login/token",
+        data={"username": "testuser", "password": "password123"}
+    )
+    assert token_response.status_code == 200
+    token = token_response.json()["access_token"]
+
+    # Return client with authorization header
+    client_with_db.headers.update({"Authorization": f"Bearer {token}"})
+    return client_with_db
+
+
+class TestQuizAPI:
+    # Test creating an empty quiz successfully
+    def test_create_quiz_success(self, authenticated_client, session):
+        quiz_data = {
+            "name": "Test Quiz",
+            "subject": "Math",
+            "description": "A good description"
+        }
+        response = authenticated_client.post("/quizzes/addEmptyQuiz", json=quiz_data)
+        assert response.status_code == 200
+        data = response.json()
+        assert "id" in data
+        assert len(data["id"]) == 10  # nanoid size=10
+
+        # Verify quiz was created in database
+        quiz = session.get(Quizzes, 1)
+        assert quiz is not None
+        assert quiz.name == "Test Quiz"
+        assert quiz.subject == "Math"
+        assert quiz.description == "A good description"
+
+    # Test creating quiz without authentication
+    def test_create_quiz_unauthenticated(self, client_with_db):
+        quiz_data = {
+            "name": "Test Quiz",
+            "subject": "Math"
+        }
+        response = client_with_db.post("/quizzes/addEmptyQuiz", json=quiz_data)
+        assert response.status_code == 401
+
+    # Test creating quiz with missing required fields
+    def test_create_quiz_missing_fields(self, authenticated_client):
+        # Missing name
+        response = authenticated_client.post("/quizzes/addEmptyQuiz", json={"subject": "Math"})
+        assert response.status_code == 422
+
+        # Missing subject
+        response = authenticated_client.post("/quizzes/addEmptyQuiz", json={"name": "Test Quiz"})
+        assert response.status_code == 422
+
+    # Test getting quiz by ID - success case
+    def test_get_quiz_by_id_success(self, client_with_db, session):
+        # Create a test quiz
+        quiz = Quizzes(short_id="testid1234", name="Test Quiz", subject="Math", creator="creator1")
+        session.add(quiz)
+        session.commit()
+
+        response = client_with_db.get("/quizzes/getQuiz/testid1234")
+        assert response.status_code == 200
+        data = response.json()
+        assert data["short_id"] == "testid1234"
+        assert data["name"] == "Test Quiz"
+        assert data["subject"] == "Math"
+
+    # Test getting quiz by ID - not found case
+    def test_get_quiz_by_id_not_found(self, client_with_db):
+        response = client_with_db.get("/quizzes/getQuiz/nonexistent")
+        assert response.status_code == 404
+        assert "Quiz not found" in response.json()["detail"]
+
+    # Test getting user quizzes
+    def test_get_user_quizzes(self, client_with_db, session):
+        # Create test quizzes for different users
+        quiz1 = Quizzes(short_id="quiz1", name="Quiz 1", subject="Math", creator="user1")
+        quiz2 = Quizzes(short_id="quiz2", name="Quiz 2", subject="Science", creator="user1")
+        quiz3 = Quizzes(short_id="quiz3", name="Quiz 3", subject="History", creator="user2")
+        session.add(quiz1)
+        session.add(quiz2)
+        session.add(quiz3)
+        session.commit()
+
+        response = client_with_db.get("/quizzes/getUserQuizzes/user1")
+        assert response.status_code == 200
+        data = response.json()
+        assert len(data) == 2
+        assert all(quiz["creator"] == "user1" for quiz in data)
+
+        response = client_with_db.get("/quizzes/getUserQuizzes/user2")
+        assert response.status_code == 200
+        data = response.json()
+        assert len(data) == 1
+        assert data[0]["creator"] == "user2"
+
+    # Test getting user quizzes when user has no quizzes
+    def test_get_user_quizzes_empty(self, client_with_db):
+        response = client_with_db.get("/quizzes/getUserQuizzes/nouser")
+        assert response.status_code == 200
+        data = response.json()
+        assert data == []

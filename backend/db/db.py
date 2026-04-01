@@ -1,10 +1,20 @@
 import os
 import logging  
 from dotenv import load_dotenv
-from sqlalchemy import create_engine 
-from .dbModels import Base
+from fastapi import Depends
+from sqlmodel import Session, SQLModel, create_engine
 import urllib
+from typing import Annotated
 
+def create_db_and_tables():
+    SQLModel.metadata.create_all(engine)
+
+def get_session():
+    with Session(engine) as session:
+        yield session
+
+
+SessionDep = Annotated[Session, Depends(get_session)]   
 
 logger = logging.getLogger(__name__)
 
@@ -17,17 +27,21 @@ if connection_string:
     # parse string for sqlalchemy
     connection_string_encoded = urllib.parse.quote_plus(connection_string)
     SQLALCHEMY_DATABASE_URL = f"mssql+pyodbc:///?odbc_connect={connection_string_encoded}"
-    
+
+    connect_args = {"check_same_thread": False}
     engine = create_engine(
         SQLALCHEMY_DATABASE_URL,
-        echo=True # Shows SQL statements in console
+        connect_args=connect_args,
+        echo=True,
+        pool_pre_ping=True,
+        pool_recycle=3600
     )
 
     logger.info("db handler instance created")
-    # Create database tables if they don't exist
-    Base.metadata.create_all(bind=engine)
-    logger.info("Created tables")
 else:
     logger.error("No valid connection string found. Cannot establish db connection")
     raise RuntimeError("No valid db connection string found")
 # Need a case where no connection string is found
+
+
+
