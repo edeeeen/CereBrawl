@@ -68,3 +68,51 @@ def testHPReturnWrong():
     data = response.json()
     assert data["hpChange"] == 0
 
+def testDifficultyScaling():
+    # Test that difficulty 1 returns -10 HP change for correct answer
+    response = client.get("/battle/hpAnswerChange?answer=correct&difficulty=1")
+    assert response.status_code == 200
+    data = response.json()
+    assert data["hpChange"] == -10
+    
+    # Test that difficulty 2 returns -20 HP change for correct answer
+    response = client.get("/battle/hpAnswerChange?answer=correct&difficulty=2")
+    assert response.status_code == 200
+    data = response.json()
+    assert data["hpChange"] == -20
+    
+    # Test that difficulty 3 returns -30 HP change for correct answer
+    response = client.get("/battle/hpAnswerChange?answer=correct&difficulty=3")
+    assert response.status_code == 200
+    data = response.json()
+    assert data["hpChange"] == -30
+
+def testDifficultyScalingWrong():
+    # Test that difficulty 1 returns 0 HP change for wrong answer
+    response = client.get("/battle/hpAnswerChange?answer=wrong&difficulty=1")
+    assert response.status_code == 200
+    data = response.json()
+    assert data["hpChange"] == 0
+    
+    # Test that difficulty 2 returns 0 HP change for wrong answer
+    response = client.get("/battle/hpAnswerChange?answer=wrong&difficulty=2")
+    assert response.status_code == 200
+    data = response.json()
+    assert data["hpChange"] == 0
+    
+    # Test that difficulty 3 returns 0 HP change for wrong answer
+    response = client.get("/battle/hpAnswerChange?answer=wrong&difficulty=3")
+    assert response.status_code == 200
+    data = response.json()
+    assert data["hpChange"] == 0
+
+def testCriticalHit():
+    # Test that a critical hit (answer=correct&critical=true) returns -20 HP change
+    response = client.get("/battle/hpAnswerChange?answer=correct&critical=true")
+    assert response.status_code == 200
+    data = response.json()
+    assert data["hpChange"] == -20
+
+
+
+
