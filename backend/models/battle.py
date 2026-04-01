@@ -22,8 +22,15 @@ class submit_battle_answer_request(BaseModel):
     correctAnswer: str
     playerHP: int
     enemyHP: int
+    difficulty: int = 1
+    questionsRight: int = 0
+    questionsWrong: int = 0
 
 class submit_battle_answer_response(BaseModel):
     result: str
     playerHP: int
-    enemyHP: int    
+    enemyHP: int
+    difficulty: int
+    critHit: bool
+    questionsRight: int
+    questionsWrong: int    
