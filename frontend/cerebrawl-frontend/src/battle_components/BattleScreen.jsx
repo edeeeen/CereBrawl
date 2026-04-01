@@ -152,6 +152,8 @@ function BattleScreen() {
           playerHP: playerHP,
           enemyHP: enemyHP,
           difficulty: difficulty,
+          questionsRight: questionsRight,
+          questionsWrong: questionsWrong,
           critHit: false
         })
       });
