@@ -13,6 +13,7 @@ function BattleScreen() {
   const [showAttackChoices, setShowAttackChoices] = useState(false);
   const [typedQuestion, setTypedQuestion] = useState("");
   const [battleEffect, setBattleEffect] = useState("");
+  const [showItemChoices, setShowItemChoices] = useState(false);
 
   const [playerHP, setPlayerHP] = useState(() => {
     const saved = sessionStorage.getItem("playerHP");
@@ -33,7 +34,7 @@ function BattleScreen() {
     console.log("Enemy HP:", enemyHP);
   }, [playerHP, enemyHP]);
 
-  const difficulty = 1;
+  //const difficulty = 1;
 
   const [difficulty, setDifficulty] = useState(1);
   const [questionsRight, setQuestionsRight] = useState(0);
@@ -129,6 +130,14 @@ function BattleScreen() {
   const handleAttackClick = () => {
     if (!loadingQuestion && !questionError && questionData && !gameOver) {
       setShowAttackChoices(true);
+      setShowItemChoices(false);
+    }
+  };
+
+  const handleItemClick = () => {
+    if (!loadingQuestion && !questionError && questionData && !gameOver) {
+      setShowItemChoices(true);
+      setShowAttackChoices(false);
     }
   };
 
@@ -194,6 +203,45 @@ function BattleScreen() {
     } catch (error) {
       console.error("Error submitting answer:", error);
       setResultMessage("Something went wrong while submitting the answer.");
+    }
+  };
+
+  const handleUseItem = async (itemName) => {
+    try {
+      const response = await fetch("https://api.cerebrawl.me/battle/useItem", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+          itemName: itemName,
+          playerHP: playerHP,
+          enemyHP: enemyHP
+        })
+      });
+
+      const result = await response.json();
+      console.log("Use Item API RESPONSE:", result);
+
+      setPlayerHP(Math.max(result.playerHP, 0));
+      setEnemyHP(Math.max(result.enemyHP, 0));
+      setResultMessage(result.result);
+
+      if(itemName === "Mini Shield") {
+        setResultMessage("You used Mini Shield! You gain 10 HP.");
+        triggerBattleEffect("correct-flash");
+      } else if(itemName === "Big Shield") {
+        setResultMessage("You used Big Shield! You gain 20 HP.");
+        triggerBattleEffect("correct-flash");
+      } else if(itemName === "Chug Jug") {
+        setResultMessage("You used Chug Jug! You gain 50 HP.");
+        triggerBattleEffect("correct-flash");
+      }
+
+      setShowItemChoices(false);
+    } catch (error) {
+      console.error("Error using item:", error);
+      setResultMessage("Something went wrong while using the item.");
     }
   };
 
@@ -309,7 +357,7 @@ function BattleScreen() {
         </div>
 
         <div className="action-panel">
-          {!showAttackChoices ? (
+          {!showAttackChoices && !showItemChoices ? (
             <>
               <div className="top-actions">
                 <button
@@ -320,12 +368,16 @@ function BattleScreen() {
                   Attack
                 </button>
 
-                <button className="action-button primary" disabled={gameOver}>
+                <button 
+                  className="action-button primary" 
+                  onClick={handleItemClick}
+                  disabled={gameOver || loadingQuestion || !!questionError}
+                >
                   Item
                 </button>
               </div>
             </>
-          ) : (
+          ) : showAttackChoices ? (
             <>
               <div className="answer-actions">
                 <button
@@ -369,7 +421,44 @@ function BattleScreen() {
                 Next Question
               </button>
             </>
-          )}
+          ):showItemChoices ? (
+            <>
+              <div className="item-actions">
+                <button
+                  className="action-button"
+                  onClick={() => handleUseItem("Mini Shield")}
+                  disabled={gameOver}
+                >
+                  Mini Shield
+                </button>
+                <button
+                  className="action-button"
+                  onClick={() => handleUseItem("Big Shield")}
+                  disabled={gameOver}
+                >
+                  Big Shield
+                </button>
+                <button
+                  className="action-button"
+                  onClick={() => handleUseItem("Chug Jug")}
+                  disabled={gameOver}
+                >
+                  Chug Jug
+                </button>
+              </div>
+              <button
+                className="action-button secondary-button back-button"
+                onClick={() => {
+                  setShowItemChoices(false);
+                  setResultMessage("");
+                }}
+                disabled={gameOver}
+              >
+                Back
+              </button>
+            </>
+           ) : null 
+          }
         </div>
       </div>
     </div>
