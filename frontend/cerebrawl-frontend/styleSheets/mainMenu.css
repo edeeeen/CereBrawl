@@ -48,11 +48,60 @@
 }
 
 .pageHead {
-    border: 5px;
-    border-color:cadetblue;
-    border-style: inset;
+    padding: 38px;
+    border: 6px solid transparent;
+    border-image-source: url('src/Images/bocks.png');
+    border-image-width: 38px;
+    border-image-slice: 38;
+    border-image-repeat: repeat;
+    background-color: cadetblue;
+    height: 20vh;
 }
 
 .normalTB {
     margin: 5px;
+    text-shadow: -2px 2px black;
+    color: white;
 }
+
+.BodyBox{
+   display:flex;
+   flex-direction: row;
+   height: 100%;
+   /*background-color: black;*/
+   
+
+}
+
+.SidePanel {
+    margin: 0px;
+    padding: 38px;
+    width: 15%;
+    min-height:80vh;
+    border: 6px solid transparent;
+    border-image-source: url('src/Images/bocks.png');
+    border-image-width: 38px;
+    border-image-slice: 38;
+    border-image-repeat: repeat;
+    background-color: cadetblue;
+
+}
+
+.MiddlePanel {
+    margin: 0px;
+    padding: 36px;
+    width:70%;
+    min-height:80vh;
+    border: 6px solid transparent;
+    border-image-source: url('src/Images/bocks.png');
+    border-image-width: 38px;
+    border-image-slice: 38;
+    border-image-repeat: repeat;
+    background-color: cadetblue;
+    justify-content: center;
+    justify-self: center;
+}
+
+/* border: 5px;
+    border-color:cadetblue;
+    border-style: outset; */

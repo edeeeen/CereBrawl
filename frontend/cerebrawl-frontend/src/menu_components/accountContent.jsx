@@ -141,18 +141,38 @@ export default function AccountContent() {
 
     return (
         <div>
-            {/* Page Header. Should be same on most pages except for probably the battle screen. */}
-            <div className="pageHead">
-                <h1 className="normalTB">Welcome to Cerebrawl!</h1>
-            </div>
-            <p className="normalTB">
-                These are some links to test SPA:
-                <a onClick={() => navigate("/")}>Home</a> |
-                <a onClick={() => navigate("/prebattle")}> Play!</a> |
-                <a onClick={() => navigate("/account")}> Account</a>
-            </p>
-            
-            {isLoggedIn && user ? (
+                    {/* Page Header. Should be same on most pages except for probably the battle screen. */}
+                    <div className="pageHead" style={{display:"flex", justifyContent:"space-between"}}>
+                        <div style={{width:"fit_content", height:"fit_content", display:"flex", justifyContent:"center", flexDirection:"column"}}>
+                            <h1 className="normalTB" style={{margin_bottom:"0px", padding:"0px", width:"fit_content", height:"fit_content"}}>Welcome to Cerebrawl!</h1>
+                            <h4 style={{paddingLeft:"20px", paddingRight:"20px", paddingBottom:"20px", paddingTop:"0px", margin:"0px"}}>The Battle Style Study Guide</h4>
+                            
+                        </div>
+                        <img
+                            src={Image}
+                            style={{margin:"10px", border:"5px inset cadetBlue"}}
+                        />
+                    </div>
+                    <div className="BodyBox">
+                        <div className="SidePanel">
+                            <div>
+                                <p className="normalTB">Site Directory</p>
+        
+                                <div style={{display:"flex", flexDirection:"column", justifyContent:"space-evenly"}}>
+                                    <div style={{margin:"2px"}}>
+                                        - <button onClick={() => navigate("/")} style={{width:"fit-content"}}>Home</button>
+                                    </div>
+                                    <div style={{margin:"2px"}}>
+                                        - <button onClick={() => navigate("/prebattle")}  style={{width:"fit-content"}}>Play!</button>
+                                    </div>
+                                    <div style={{margin:"2px"}}>
+                                        - <button onClick={() => navigate("/account")}  style={{width:"fit-content"}}>Account</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div className="MiddlePanel" >
+                            {isLoggedIn && user ? (
                 <div className="account-info">
                     <h2>Account Information</h2>
                     <p><strong>Username:</strong> {user.username}</p>
@@ -164,7 +184,6 @@ export default function AccountContent() {
                 <div>
                     <p>Welcome to the Account Screen!</p>
                     <div className="login-screen">
-                        <h1>Welcome to Cerebrawl!</h1>
                         {error && <p style={{ color: "red" }}>{error}</p>}
                         <input type="text" placeholder="Username" className="login-input" />
                         <input type="password" placeholder="Password" className="login-input" />
@@ -185,6 +204,12 @@ export default function AccountContent() {
                     </div>
                 </div>
             )}
-        </div>
+                        </div>
+                        <div className="SidePanel">
+                            poop
+                        </div>
+                    </div>
+                </div>
     );
 }
+
