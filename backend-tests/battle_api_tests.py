@@ -54,19 +54,19 @@ def test_get_battle_question_success():
     assert data["B"] != None
     assert data["Answer"] in ["A", "B", "C", "D"]
 
-#Tests for HP change based on answer correctness
-def testHPReturnCorrect():
-    response = client.get("/battle/hpAnswerChange?answer=correct")
-    assert response.status_code == 200
-    data = response.json()
-    assert data["hpChange"] == -10
+#Tests for HP change based on answer correctness OUTDATED TEST
+#def testHPReturnCorrect():
+#    response = client.get("/battle/hpAnswerChange?answer=correct")
+#    assert response.status_code == 200
+#    data = response.json()
+#    assert data["hpChange"] == -10
 
-#Test that if the answer is wrong, no HP change occurs
-def testHPReturnWrong():
-    response = client.get("/battle/hpAnswerChange?answer=wrong")
-    assert response.status_code == 200
-    data = response.json()
-    assert data["hpChange"] == 0
+#Test that if the answer is wrong, no HP change occurs OUTDATED TEST
+#def testHPReturnWrong():
+#    response = client.get("/battle/hpAnswerChange?answer=wrong")
+#    assert response.status_code == 200
+#    data = response.json()
+#    assert data["hpChange"] == 0
 
 def testDifficultyScaling():
     # Test that difficulty 1 returns -10 HP change for correct answer
@@ -112,6 +112,64 @@ def testCriticalHit():
     assert response.status_code == 200
     data = response.json()
     assert data["hpChange"] == -20
+
+def testMiniShieldItem():
+    # Test that using the Mini Shield item increases player HP by 10 and does not change enemy HP
+    response = client.post("/useItem", json={
+        "itemName": "Mini Shield",
+        "playerHP": 50,
+        "enemyHP": 80
+    })
+
+    assert response.status_code == 200
+    data = response.json()
+
+    assert data["playerHP"] == 60
+    assert data["enemyHP"] == 80
+    assert data["result"] == "Item used successfully"
+
+def testBigShieldItem():
+    # Test that using the Big Shield item increases player HP by 20 and does not change enemy HP
+    response = client.post("/useItem", json={
+        "itemName": "Big Shield",
+        "playerHP": 50,
+        "enemyHP": 80
+    })
+
+    assert response.status_code == 200
+    data = response.json()
+
+    assert data["playerHP"] == 70
+    assert data["enemyHP"] == 80
+    assert data["result"] == "Item used successfully"
+
+def testChugJugItem():
+    # Test that using the Chug Jug item increases player HP by 50 and does not change enemy HP
+    response = client.post("/useItem", json={
+        "itemName": "Chug Jug",
+        "playerHP": 50,
+        "enemyHP": 80
+    })
+
+    assert response.status_code == 200
+    data = response.json()
+
+    assert data["playerHP"] == 100
+    assert data["enemyHP"] == 80
+    assert data["result"] == "Item used successfully"
+
+def testInvalidItem():
+    # Test that using an invalid item name returns a 400 error
+    response = client.post("/useItem", json={
+        "itemName": "Invalid Item",
+        "playerHP": 50,
+        "enemyHP": 80
+    })
+
+    assert response.status_code == 400
+    data = response.json()
+    assert data["detail"] == "Invalid item name"
+
 
 
 
