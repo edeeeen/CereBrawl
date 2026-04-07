@@ -1,7 +1,7 @@
 import { BrowserRouter, Routes, Route, useNavigate } from "react-router-dom";
-import BattleScreen from "./battle_components/BattleScreen";
-import HomeContent from "./menu_components/homeContent";
-import AccountContent from "./menu_components/accountContent";
+import BattleScreen from "./battle_components/BattleScreen.jsx";
+import HomeContent from "./menu_components/homeContent.jsx";
+import AccountContent from "./menu_components/accountContent.jsx";
 
 function PreBattle() {
   const navigate = useNavigate();
