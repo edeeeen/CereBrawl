@@ -165,6 +165,7 @@ async def use_item(data: models.battle.use_item_request):
         raise HTTPException(status_code=400, detail="Invalid item name")
 
     return {
+        "result": "Item used successfully",
         "playerHP": player_hp,
         "enemyHP": enemy_hp
     }
