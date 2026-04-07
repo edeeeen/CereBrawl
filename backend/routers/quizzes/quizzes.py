@@ -3,7 +3,7 @@ from typing import Annotated
 from db import db
 from models.login import UserResponse
 from db.dbModels import Quizzes, QuizQuestions
-from models.quizzes import create_quiz_request, create_quiz_response, QuizResponse
+from models.quizzes import create_quiz_request, create_quiz_response, QuizResponse, QuizInfo, QuestionInput
 from routers.login.login import get_current_active_user
 from sqlalchemy import select
 
@@ -29,27 +29,48 @@ Parameters:
 Returns:
 - id: str (the id of the created quiz)
 '''
-@router.post("/addEmptyQuiz", response_model=create_quiz_response)
+@router.post("/createQuiz", response_model=create_quiz_response)
 def create_quiz(
-    quiz: create_quiz_request, 
+    data: create_quiz_request, 
     session: db.SessionDep,
     current_user: Annotated[UserResponse, Depends(get_current_active_user)],
 ):
     '''
-    Create an empty quiz with just a name, subject, and description.
+    Create a quiz with name, subject, description, and a list of questions.
+    Each question should have: question (text), a, b, c, d (options), correct_answer (A/B/C/D).
     The creator is automatically set to the current authenticated user.
 
-    Returns the id of the created quiz.
-
-    Still subject to change, do not use yet
+    Returns the short_id of the created quiz.
     '''
-    quiz_data = quiz.model_dump()
+    quiz_info = data.quiz
+    questions = data.questions
+    
+    # Create the quiz
+    quiz_data = quiz_info.model_dump()
     quiz_data['short_id'] = generate_quiz_id()
     quiz_data['creator'] = current_user.short_id
     quiz_db = Quizzes(**quiz_data)
     session.add(quiz_db)
     session.commit()
     session.refresh(quiz_db)
+    
+    # Add questions
+    for i, q in enumerate(questions, start=1):
+        question_data = {
+            'quiz_id': quiz_db.id,
+            'question_number': i,
+            'question': q.question,
+            'option_a': q.a,
+            'option_b': q.b,
+            'option_c': q.c,
+            'option_d': q.d,
+            'correct_answer': q.correct_answer
+        }
+        question_db = QuizQuestions(**question_data)
+        session.add(question_db)
+    
+    session.commit()
+    
     return create_quiz_response(id=quiz_db.short_id)
 
 '''
