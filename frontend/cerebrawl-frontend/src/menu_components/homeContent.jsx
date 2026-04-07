@@ -41,7 +41,17 @@ export default function HomeContent() {
                     </div>
                 </div>
                 <div className="MiddlePanel" >
-                    poop
+                    <div className="MidInfo">
+                        <div style={{display:"flex",flexDirection:"row"}}>
+                            <h2 className="normalTB">What is</h2><h1 style={{margin:"0"}} id="rainbow">CereBrawl?</h1>
+                        </div>
+                        <p style={{marginTop:"0",marginLeft:"5"}}>
+                            CereBrawl is your brand-new fun and interactive study tool! Similar to a popular style of turn-based battle 
+                            video-games, 
+                        </p>
+                        
+
+                    </div>
                 </div>
                 <div className="SidePanel">
                     poop
