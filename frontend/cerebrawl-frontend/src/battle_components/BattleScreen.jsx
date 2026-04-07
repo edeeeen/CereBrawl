@@ -27,7 +27,7 @@ function BattleScreen() {
 
   const [gameOver, setGameOver] = useState(false);
   const [gameResult, setGameResult] = useState("");
-  
+
   useEffect(() => {
     console.log("=== HP UPDATE ===");
     console.log("Player HP:", playerHP);
@@ -156,13 +156,15 @@ function BattleScreen() {
           answer: letter,
           correctAnswer: questionData.Answer,
           playerHP: playerHP,
-          enemyHP: enemyHP,
-          difficulty: difficulty,
-          questionsRight: questionsRight,
-          questionsWrong: questionsWrong,
-          critHit: false
+          enemyHP: enemyHP
         })
       });
+
+      if (!response.ok) {
+        const errorText = await response.text();
+        console.error("Backend error:", response.status, errorText);
+        throw new Error(`Failed to submit answer: ${response.status}`);
+      }
 
       const result = await response.json();
       console.log("API RESPONSE:", result);
@@ -172,20 +174,11 @@ function BattleScreen() {
 
       setPlayerHP(Math.max(result.playerHP, 0));
       setEnemyHP(Math.max(result.enemyHP, 0));
-      setDifficulty(result.difficulty);
-      setQuestionsRight(result.questionsRight);
-      setQuestionsWrong(result.questionsWrong);
 
-      if (result.result === "correct" && result.critHit) {
-        setResultMessage("Correct! It's a critical hit.");
+      if (result.result === "correct") {
+        setResultMessage("Correct! Nice hit.");
         triggerBattleEffect("correct-flash");
-      } else if (result.result === "correct") {
-        setResultMessage("Correct! Nice hit!");
-        triggerBattleEffect("correct-flash");
-       } else if (result.result === "wrong" && result.critHit) {
-        setResultMessage("Wrong! Critical hit against you!");
-        triggerBattleEffect("wrong-flash");
-      } else{
+      } else {
         setResultMessage(`Incorrect! The answer was ${questionData.Answer}.`);
         triggerBattleEffect("wrong-flash");
       }
