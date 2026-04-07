@@ -7,7 +7,7 @@ from models.quizzes import create_quiz_request, create_quiz_response, QuizRespon
 from routers.login.login import get_current_active_user
 from sqlalchemy import select
 
-from fastapi import APIRouter, Depends, HTTPException, Path
+from fastapi import APIRouter, Depends, HTTPException, Path, Query, Query
 import nanoid
 from enum import Enum
 
@@ -15,12 +15,9 @@ class SortBy(str, Enum):
     name = "name"
     subject = "subject"
     create_date = "create_date"
-from enum import Enum
+    bookmarks = "bookmarks"
 
-class SortBy(str, Enum):
-    name = "name"
-    subject = "subject"
-    create_date = "create_date"
+
 
 router = APIRouter(
     prefix='/quizzes',
@@ -61,6 +58,7 @@ def create_quiz(
     quiz_data = quiz_info.model_dump()
     quiz_data['short_id'] = generate_quiz_id()
     quiz_data['creator'] = current_user.short_id
+    quiz_data['subject'] = quiz_data['subject'].lower()
     quiz_db = Quizzes(**quiz_data)
     session.add(quiz_db)
     session.commit()
@@ -86,26 +84,38 @@ def create_quiz(
     return create_quiz_response(id=quiz_db.short_id)
 
 '''
-Test request to get all quizzes.
-Do not use in production, just for testing purposes.
-Will be removed later.
+Gets all quizzes with optional sorting and filtering by subject.
+Can have limits on the number of quizzes returned.
 '''
 @router.get("/getQuizzes")
 def get_all_quizzes(
     session: db.SessionDep,
     sort_by: SortBy | None = Query(None, description="The field to sort by (name, subject, create_date)"),
-    filter_subject: str | None = Query(None, description="The field to filter by subject")
+    filter_subject: str | None = Query(None, description="The field to filter by subject (biology, math, etc.).  Note: can be null"),
+    limit: int | None = Query(None, description="The maximum number of quizzes to return. If no limit specificed it returns 50", ge=0, le=100)
 ) -> list[QuizResponse]:
     '''
-    For testing only, do not use in production. Gets all quizzes, sorted by the specified field.
+    Get all quizzes with optional sorting and filtering.
     '''
-    # Query all quizzes from the database, ordered by sort_by
+    if(limit == None):
+        limit = 50
+    statement = select(Quizzes).limit(limit)
+    
+    # Apply filter if provided
+    if filter_subject:
+        statement = statement.where(Quizzes.subject == filter_subject.lower())
+    
+    # Apply sorting
     if sort_by == SortBy.name:
-        statement = select(Quizzes).order_by(Quizzes.name)
+        statement = statement.order_by(Quizzes.name)
     elif sort_by == SortBy.subject:
-        statement = select(Quizzes).order_by(Quizzes.subject)
+        statement = statement.order_by(Quizzes.subject)
     elif sort_by == SortBy.create_date:
-        statement = select(Quizzes).order_by(Quizzes.create_date)
+        statement = statement.order_by(Quizzes.create_date)
+    elif sort_by == SortBy.bookmarks:
+        statement = statement.order_by(Quizzes.bookmarks.desc())
+    else:
+        statement = statement.order_by(Quizzes.create_date)  # default
     
     quizzes = session.exec(statement).scalars().all()
 
