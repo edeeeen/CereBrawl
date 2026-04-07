@@ -138,3 +138,34 @@ async def submit_battle_answer(data: models.battle.submit_battle_answer_request)
         "questionsRight": questions_right,
         "questionsWrong": questions_wrong
     }
+
+@router.post("/useItem", response_model=models.battle.use_item_response)
+async def use_item(data: models.battle.use_item_request):
+    item_name = data.itemName
+    player_hp = data.playerHP
+    enemy_hp = data.enemyHP
+
+    if item_name is None:
+        raise HTTPException(status_code=400, detail="Missing item name")
+
+    if item_name == "Mini Shield":
+        player_hp += 10
+        if player_hp > 100:
+            player_hp = 100
+    elif item_name == "Big Shield":
+        player_hp += 20
+        if player_hp > 100:
+            player_hp = 100
+    elif item_name == "Chug Jug":
+        player_hp += 50
+        if player_hp > 100:
+            player_hp = 100
+        
+    else:
+        raise HTTPException(status_code=400, detail="Invalid item name")
+
+    return {
+        "result": "Item used successfully",
+        "playerHP": player_hp,
+        "enemyHP": enemy_hp
+    }

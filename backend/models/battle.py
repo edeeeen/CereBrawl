@@ -34,3 +34,13 @@ class submit_battle_answer_response(BaseModel):
     critHit: bool
     questionsRight: int
     questionsWrong: int    
+
+class use_item_request(BaseModel):
+    itemName: str
+    playerHP: int
+    enemyHP: int
+    
+class use_item_response(BaseModel):
+    result: str
+    playerHP: int
+    enemyHP: int
