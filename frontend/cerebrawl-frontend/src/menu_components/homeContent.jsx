@@ -11,9 +11,9 @@ export default function HomeContent() {
     return (
         <div>
             {/* Page Header. Should be same on most pages except for probably the battle screen. */}
-            <div className="pageHead" style={{display:"flex", justifyContent:"space-between"}}>
+            <div className="pageHead" id="picBorder" style={{display:"flex", justifyContent:"space-between"}}>
                 <div style={{width:"fit_content", height:"fit_content", display:"flex", justifyContent:"center", flexDirection:"column"}}>
-                    <h1 className="normalTB" style={{margin_bottom:"0px", padding:"0px", width:"fit_content", height:"fit_content"}}>Welcome to Cerebrawl!</h1>
+                    <h1 className="normalTB" style={{margin_bottom:"0px", padding:"0px", width:"fit_content", height:"fit_content"}}>Welcome to CereBrawl!</h1>
                     <h4 style={{paddingLeft:"20px", paddingRight:"20px", paddingBottom:"20px", paddingTop:"0px", margin:"0px"}}>The Battle Style Study Guide</h4>
                     
                 </div>
@@ -23,7 +23,7 @@ export default function HomeContent() {
                 />
             </div>
             <div className="BodyBox">
-                <div className="SidePanel">
+                <div className="SidePanel" id="picBorder">
                     <div>
                         <p className="normalTB">Site Directory</p>
 
@@ -40,20 +40,23 @@ export default function HomeContent() {
                         </div>
                     </div>
                 </div>
-                <div className="MiddlePanel" >
+                <div className="MiddlePanel" id="picBorder" >
                     <div className="MidInfo">
                         <div style={{display:"flex",flexDirection:"row"}}>
                             <h2 className="normalTB">What is</h2><h1 style={{margin:"0"}} id="rainbow">CereBrawl?</h1>
                         </div>
-                        <p style={{marginTop:"0",marginLeft:"5"}}>
-                            CereBrawl is your brand-new fun and interactive study tool! Similar to a popular style of turn-based battle 
-                            video-games, 
+                        <p style={{marginTop:"0",marginLeft:"1rem",marginRight:"1rem"}}>
+                            CereBrawl is your brand-new fun and interactive study tool! Based on the popular  
+                            turn-based battle video-games you're used to, this tool is meant to elevate
+                            your learning experience by combining a specific amount of learning, challenge, and
+                            (most importantly) fun into a game that YOU can curate almost entirely yourself using 
+                            just some of our guidelines!
                         </p>
                         
 
                     </div>
                 </div>
-                <div className="SidePanel">
+                <div className="SidePanel" id="picBorder">
                     poop
                 </div>
             </div>

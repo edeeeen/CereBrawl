@@ -47,16 +47,7 @@
   transform: scale(0.98);
 }
 
-.pageHead {
-    padding: 38px;
-    border: 6px solid transparent;
-    border-image-source: url('src/Images/bocks.png');
-    border-image-width: 38px;
-    border-image-slice: 38;
-    border-image-repeat: repeat;
-    background-color: cadetblue;
-    height: 20vh;
-}
+
 
 .normalTB {
     margin: 5px;
@@ -64,59 +55,76 @@
     color: white;
 }
 
+
+
+/*
+  The next few classes are for the page header, the side panels,
+  and the main middle panel. It is only to style and size everything, 
+  and there are more to help with what goes inside these boxes.
+*/
+.pageHead {
+    margin:0px;
+    padding: 1rem;
+    height: 10rem;
+    min-width: 70rem;
+}
+
+/* This one specifically is just to hold all three of the main (2 sides and a middle) panels */
 .BodyBox{
    display:flex;
    flex-direction: row;
    height: 100%;
-   /*background-color: black;*/
-   
-
 }
 
 .SidePanel {
     margin: 0px;
-    padding: 38px;
-    width: 15%;
+    padding: 1rem;
+    min-width: 10rem;
     min-height:80vh;
-    border: 6px solid transparent;
-    border-image-source: url('src/Images/bocks.png');
-    border-image-width: 38px;
-    border-image-slice: 38;
-    border-image-repeat: repeat;
-    background-color: cadetblue;
-
 }
 
 .MiddlePanel {
-    margin: 0px;
-    padding: 36px;
-    width:70%;
+    margin: 0rem;
+    padding: 1rem;
+    width:100%;
+    min-width: 50rem;
     min-height:80vh;
-    border: 6px solid transparent;
-    border-image-source: url('src/Images/bocks.png');
-    border-image-width: 38px;
-    border-image-slice: 38;
-    border-image-repeat: repeat;
-    background-color: cadetblue;
     justify-content: center;
     justify-self: center;
 }
 
+/*
+  When putting things inside the middle or side panels, please
+  create a div within it that is one of these classes, they
+  create a good starting point for adding things to panels
+*/
 .MidInfo {
-  margin: 10px;
+  margin: .5rem;
   padding: 5px;
   border: 1px solid white;
 }
 
-
-
+/*
+  You can add this ID to any div box or anything that can have a 
+  border and it will use the border shown in the div boxes on the 
+  main screens
+*/
+#picBorder {
+    border: 1rem solid transparent;
+    border-image-source: url('src/Images/bocks.png');
+    border-image-width: 2rem;
+    border-image-slice: 38;
+    border-image-repeat: repeat;
+    background-color: cadetblue;
+}
+/*
+  You can add this ID to any text or anything that holds text
+  and it will create the rainbow effect shown on the homepage
+*/
 #rainbow {
   background: linear-gradient(to right, #ef5350, #f48fb1, #7e57c2, #2196f3, #26c6da, #43a047, #eeff41, #f9a825, #ff5722);
+  background-clip: text;
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   -webkit-text-stroke: .5px white;
 }
-
-/* border: 5px;
-    border-color:cadetblue;
-    border-style: outset; */
