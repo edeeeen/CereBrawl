@@ -1,9 +1,10 @@
 import { useEffect, useMemo, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import "./BattleScreen.css";
 
 function BattleScreen() {
   const navigate = useNavigate();
+  const location = useLocation();
 
   const [questionData, setQuestionData] = useState(null);
   const [loadingQuestion, setLoadingQuestion] = useState(true);
@@ -34,12 +35,8 @@ function BattleScreen() {
   }, [playerHP, enemyHP]);
 
   const difficulty = 1;
-
-  const [difficulty, setDifficulty] = useState(1);
-  const [questionsRight, setQuestionsRight] = useState(0);
-  const [questionsWrong, setQuestionsWrong] = useState(0);
-  
-  const subject = "biology";
+  const subject =
+    location.state?.topic || sessionStorage.getItem("battleTopic") || "biology";
 
   const fullQuestion = useMemo(() => {
     return questionData?.question || "";
@@ -135,6 +132,7 @@ function BattleScreen() {
   const handleBackToMenu = () => {
     sessionStorage.removeItem("playerHP");
     sessionStorage.removeItem("enemyHP");
+    sessionStorage.removeItem("battleTopic");
     navigate("/prebattle");
   };
 
