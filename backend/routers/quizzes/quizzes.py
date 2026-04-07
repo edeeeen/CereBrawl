@@ -3,7 +3,7 @@ from typing import Annotated
 from db import db
 from models.login import UserResponse
 from db.dbModels import Quizzes, QuizQuestions
-from models.quizzes import create_quiz_request, create_quiz_response, QuizResponse, QuizInfo, QuestionInput
+from models.quizzes import create_quiz_request, create_quiz_response, QuizResponse, QuizInfo, QuestionInput, QuestionResponse, QuizWithQuestionsResponse
 from routers.login.login import get_current_active_user
 from sqlalchemy import select
 
@@ -94,14 +94,16 @@ def get_all_quizzes(session: db.SessionDep) -> list[QuizResponse]:
 Get a quiz by id.
 Parameters:
 - quiz_id: str (the short_id of the quiz)
+
+Returns the quiz info along with the list of questions.
 '''
 @router.get("/getQuiz/{quiz_id}")
 def get_quiz_by_id(
     session: db.SessionDep,
     quiz_id: str =  Path(..., description="The id of the quiz")
-) -> QuizResponse:
+) -> QuizWithQuestionsResponse:
     '''
-    Gets a quiz by id.
+    Gets a quiz by id, including all questions and answers.
     '''
     # Use the short_id to query for the quiz
     statement = select(Quizzes).where(Quizzes.short_id == quiz_id)
@@ -111,7 +113,34 @@ def get_quiz_by_id(
     if quiz is None:
         raise HTTPException(status_code=404, detail="Quiz not found")
 
-    return QuizResponse(**quiz.model_dump())
+    # Query the questions for this quiz
+    questions_statement = select(QuizQuestions).where(QuizQuestions.quiz_id == quiz.id).order_by(QuizQuestions.question_number)
+    questions = session.exec(questions_statement).scalars().all()
+
+    # Convert questions to response model
+    questions_response = [
+        QuestionResponse(
+            question_number=q.question_number,
+            question=q.question,
+            option_a=q.option_a,
+            option_b=q.option_b,
+            option_c=q.option_c,
+            option_d=q.option_d,
+            correct_answer=q.correct_answer
+        ) for q in questions
+    ]
+
+    return QuizWithQuestionsResponse(
+        short_id=quiz.short_id,
+        name=quiz.name,
+        subject=quiz.subject,
+        creator=quiz.creator,
+        description=quiz.description,
+        bookmarks=quiz.bookmarks,
+        views=quiz.views,
+        create_date=quiz.create_date,
+        questions=questions_response
+    )
 
 
 @router.get("/getUserQuizzes/{user_id}") 
