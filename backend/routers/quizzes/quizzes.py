@@ -9,6 +9,18 @@ from sqlalchemy import select
 
 from fastapi import APIRouter, Depends, HTTPException, Path
 import nanoid
+from enum import Enum
+
+class SortBy(str, Enum):
+    name = "name"
+    subject = "subject"
+    create_date = "create_date"
+from enum import Enum
+
+class SortBy(str, Enum):
+    name = "name"
+    subject = "subject"
+    create_date = "create_date"
 
 router = APIRouter(
     prefix='/quizzes',
@@ -78,14 +90,23 @@ Test request to get all quizzes.
 Do not use in production, just for testing purposes.
 Will be removed later.
 '''
-@router.get("/getAllQuizzes")
-def get_all_quizzes(session: db.SessionDep) -> list[QuizResponse]:
+@router.get("/getQuizzes")
+def get_all_quizzes(
+    session: db.SessionDep,
+    sort_by: SortBy | None = Query(None, description="The field to sort by (name, subject, create_date)"),
+    filter_subject: str | None = Query(None, description="The field to filter by subject")
+) -> list[QuizResponse]:
     '''
-    For testing only, do not use in production. Gets all quizzes.
+    For testing only, do not use in production. Gets all quizzes, sorted by the specified field.
     '''
-
-    # Query all quizzes from the database
-    statement = select(Quizzes)
+    # Query all quizzes from the database, ordered by sort_by
+    if sort_by == SortBy.name:
+        statement = select(Quizzes).order_by(Quizzes.name)
+    elif sort_by == SortBy.subject:
+        statement = select(Quizzes).order_by(Quizzes.subject)
+    elif sort_by == SortBy.create_date:
+        statement = select(Quizzes).order_by(Quizzes.create_date)
+    
     quizzes = session.exec(statement).scalars().all()
 
     return [QuizResponse(**quiz.model_dump()) for quiz in quizzes]
@@ -142,7 +163,9 @@ def get_quiz_by_id(
         questions=questions_response
     )
 
-
+'''
+Get all quizzes created by a user.
+'''
 @router.get("/getUserQuizzes/{user_id}") 
 def get_user_quizzes (
     session: db.SessionDep,
@@ -155,3 +178,30 @@ def get_user_quizzes (
     quizzes = session.exec(statement).scalars().all()
 
     return [QuizResponse(**quiz.model_dump()) for quiz in quizzes]
+
+
+@router.post("/likeQuiz/{quiz_id}")
+def like_quiz(
+    session: db.SessionDep,
+    current_user: Annotated[UserResponse, Depends(get_current_active_user)],
+    quiz_id: str = Path(..., description="The id of the quiz to like"),
+): 
+    '''
+    Like a quiz. If they already liked it, unlike it.
+
+    Incomplete as of now, users can like something more than once
+    '''
+    # Use the short_id to query for the quiz
+    statement = select(Quizzes).where(Quizzes.short_id == quiz_id)
+    quiz = session.exec(statement).scalars().first()
+
+    # Check if no quiz is found with the given id
+    if quiz is None:
+        raise HTTPException(status_code=404, detail="Quiz not found")
+
+    # Increment the bookmark count
+    quiz.bookmarks += 1
+    session.add(quiz)
+    session.commit()
+
+    return {"message": "Quiz liked successfully"}

@@ -49,3 +49,4 @@ class QuestionInput(BaseModel):
 class create_quiz_request(BaseModel):
     quiz: QuizInfo
     questions: list[QuestionInput]
+
