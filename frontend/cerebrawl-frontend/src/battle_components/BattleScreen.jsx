@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import "./BattleScreen.css";
 import mini from "../Images/miniShield.png"
 import big from "../Images/bigShield.png"
@@ -7,6 +7,7 @@ import chug from "../Images/chugJug.png"
 
 function BattleScreen() {
   const navigate = useNavigate();
+  const location = useLocation();
 
   const [questionData, setQuestionData] = useState(null);
   const [loadingQuestion, setLoadingQuestion] = useState(true);
@@ -30,20 +31,29 @@ function BattleScreen() {
 
   const [gameOver, setGameOver] = useState(false);
   const [gameResult, setGameResult] = useState("");
-  
+
   useEffect(() => {
     console.log("=== HP UPDATE ===");
     console.log("Player HP:", playerHP);
     console.log("Enemy HP:", enemyHP);
   }, [playerHP, enemyHP]);
 
-  //const difficulty = 1;
+  const rawSubject =
+    location.state?.topic ||
+    sessionStorage.getItem("battleTopic") ||
+    "biology";
 
-  const [difficulty, setDifficulty] = useState(1);
-  const [questionsRight, setQuestionsRight] = useState(0);
-  const [questionsWrong, setQuestionsWrong] = useState(0);
-  
-  const subject = "biology";
+  const subject = rawSubject.trim().toLowerCase();
+
+  const rawDifficulty =
+    location.state?.difficulty ||
+    Number(sessionStorage.getItem("battleDifficulty")) ||
+    1;
+
+  const selectedDifficulty = Number(rawDifficulty);
+
+  // Only biology should actually use the selected difficulty.
+  const effectiveDifficulty = subject === "biology" ? selectedDifficulty : 1;
 
   const fullQuestion = useMemo(() => {
     return questionData?.question || "";
@@ -61,8 +71,11 @@ function BattleScreen() {
       setTypedQuestion("");
       setBattleEffect("");
 
+      console.log("FETCHING SUBJECT:", subject);
+      console.log("FETCHING DIFFICULTY:", effectiveDifficulty);
+
       const response = await fetch(
-        `https://api.cerebrawl.me/battle/generateQuestion?difficulty=${difficulty}&subject=${encodeURIComponent(subject)}`
+        `https://api.cerebrawl.me/battle/generateQuestion?difficulty=${effectiveDifficulty}&subject=${encodeURIComponent(subject)}`
       );
 
       if (!response.ok) {
@@ -147,6 +160,8 @@ function BattleScreen() {
   const handleBackToMenu = () => {
     sessionStorage.removeItem("playerHP");
     sessionStorage.removeItem("enemyHP");
+    sessionStorage.removeItem("battleTopic");
+    sessionStorage.removeItem("battleDifficulty");
     navigate("/prebattle");
   };
 
@@ -164,19 +179,21 @@ function BattleScreen() {
       const response = await fetch("https://api.cerebrawl.me/battle/hpAnswerChange", {
         method: "POST",
         headers: {
-          "Content-Type": "application/json"
+          "Content-Type": "application/json",
         },
         body: JSON.stringify({
           answer: letter,
           correctAnswer: questionData.Answer,
           playerHP: playerHP,
           enemyHP: enemyHP,
-          difficulty: difficulty,
-          questionsRight: questionsRight,
-          questionsWrong: questionsWrong,
-          critHit: false
-        })
+        }),
       });
+
+      if (!response.ok) {
+        const errorText = await response.text();
+        console.error("Backend error:", response.status, errorText);
+        throw new Error(`Failed to submit answer: ${response.status}`);
+      }
 
       const result = await response.json();
       console.log("API RESPONSE:", result);
@@ -186,20 +203,11 @@ function BattleScreen() {
 
       setPlayerHP(Math.max(result.playerHP, 0));
       setEnemyHP(Math.max(result.enemyHP, 0));
-      setDifficulty(result.difficulty);
-      setQuestionsRight(result.questionsRight);
-      setQuestionsWrong(result.questionsWrong);
 
-      if (result.result === "correct" && result.critHit) {
-        setResultMessage("Correct! It's a critical hit.");
+      if (result.result === "correct") {
+        setResultMessage("Correct! Nice hit.");
         triggerBattleEffect("correct-flash");
-      } else if (result.result === "correct") {
-        setResultMessage("Correct! Nice hit!");
-        triggerBattleEffect("correct-flash");
-       } else if (result.result === "wrong" && result.critHit) {
-        setResultMessage("Wrong! Critical hit against you!");
-        triggerBattleEffect("wrong-flash");
-      } else{
+      } else {
         setResultMessage(`Incorrect! The answer was ${questionData.Answer}.`);
         triggerBattleEffect("wrong-flash");
       }
