@@ -34,9 +34,7 @@ class QuizQuestions(SQLModel, table=True):
     question_number: int = Field(default=1)
     question: str
     option_a: str
-    option_b: str | None = Field(default=None)
-    option_c: str | None = Field(default=None)
-    option_d: str | None = Field(default=None)
-    option_e: str | None = Field(default=None)
-    option_f: str | None = Field(default=None)
+    option_b: str
+    option_c: str
+    option_d: str
     correct_answer: str
