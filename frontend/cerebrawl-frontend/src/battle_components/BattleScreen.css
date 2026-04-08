@@ -320,6 +320,13 @@
   width: 100%;
 }
 
+.item-actions {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+  width: 100%;
+}
+
 .action-button {
   width: 100%;
   border: 3px solid #2e2e2e;
@@ -483,4 +490,22 @@
 
 .game-over-button:active {
   transform: translateY(2px);
+}
+
+#picBorder {
+    border: 1rem solid transparent;
+    border-image-source: url('src/Images/bocks.png');
+    border-image-width: 2rem;
+    border-image-slice: 38;
+    border-image-repeat: repeat;
+    background-color: cadetblue;
+}
+
+#monBorder {
+    border: 1rem solid transparent;
+    border-image-source: url('src/Images/bocks.png');
+    border-image-width: 1.3rem;
+    border-image-slice: 38;
+    border-image-repeat: repeat;
+    background-color: white;
 }
