@@ -1,6 +1,9 @@
 import { useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import "./BattleScreen.css";
+import mini from "../Images/miniShield.png"
+import big from "../Images/bigShield.png"
+import chug from "../Images/chugJug.png"
 
 function BattleScreen() {
   const navigate = useNavigate();
@@ -249,7 +252,7 @@ function BattleScreen() {
     <div className={`battle-screen ${battleEffect}`}>
       <div className="battlefield">
         <div className="enemy-section">
-          <div className="enemy-card">
+          <div className="enemy-card" id="monBorder">
             <div className="battle-card-header">
               <span className="battle-name">Professor Elm</span>
               <span className="battle-level">Lv.67</span>
@@ -291,7 +294,7 @@ function BattleScreen() {
 
           <div className="player-platform"></div>
 
-          <div className="player-card">
+          <div className="player-card" id="monBorder">
             <div className="battle-card-header">
               <span className="battle-name">Student</span>
               <span className="battle-level">Lv.42</span>
@@ -329,7 +332,7 @@ function BattleScreen() {
       </div>
 
       <div className="bottom-panel">
-        <div className="question-panel">
+        <div className="question-panel" id="picBorder">
           {loadingQuestion && <p className="question-text">Loading question...</p>}
 
           {!loadingQuestion && questionError && (
@@ -356,10 +359,10 @@ function BattleScreen() {
           )}
         </div>
 
-        <div className="action-panel">
+        <div className="action-panel" id="picBorder">
           {!showAttackChoices && !showItemChoices ? (
             <>
-              <div className="top-actions">
+              <div className="top-actions" >
                 <button
                   className="action-button primary"
                   onClick={handleAttackClick}
@@ -424,11 +427,16 @@ function BattleScreen() {
           ):showItemChoices ? (
             <>
               <div className="item-actions">
+                
                 <button
                   className="action-button"
                   onClick={() => handleUseItem("Mini Shield")}
                   disabled={gameOver}
                 >
+                <img
+                  src={mini}
+                  style={{width:"30px", height:"30px", marginRight:"8px"}}
+                />
                   Mini Shield
                 </button>
                 <button
@@ -436,6 +444,10 @@ function BattleScreen() {
                   onClick={() => handleUseItem("Big Shield")}
                   disabled={gameOver}
                 >
+                  <img
+                  src={big}
+                  style={{width:"30px", height:"30px", marginRight:"8px"}}
+                />
                   Big Shield
                 </button>
                 <button
@@ -443,6 +455,10 @@ function BattleScreen() {
                   onClick={() => handleUseItem("Chug Jug")}
                   disabled={gameOver}
                 >
+                  <img
+                  src={chug}
+                  style={{width:"30px", height:"30px", marginRight:"8px"}}
+                />
                   Chug Jug
                 </button>
               </div>
