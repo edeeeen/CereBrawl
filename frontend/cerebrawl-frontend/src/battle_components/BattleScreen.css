@@ -494,7 +494,7 @@
 
 #picBorder {
     border: 1rem solid transparent;
-    border-image-source: url('src/Images/bocks.png');
+    border-image-source: url('../Images/bocks.png');
     border-image-width: 2rem;
     border-image-slice: 38;
     border-image-repeat: repeat;
@@ -503,7 +503,7 @@
 
 #monBorder {
     border: 1rem solid transparent;
-    border-image-source: url('src/Images/bocks.png');
+    border-image-source: url('../Images/bocks.png');
     border-image-width: 1.3rem;
     border-image-slice: 38;
     border-image-repeat: repeat;
