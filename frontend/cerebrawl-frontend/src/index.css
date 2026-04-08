@@ -32,14 +32,15 @@ body,
   color: white;
 }
 
+/* Start Battle Button */
 .start-button {
   background: #22c55e;
   color: white;
   border: none;
   border-radius: 12px;
-  padding: 18px 48px;   /* bigger height + width */
-  min-width: 240px;     /* wider button */
-  font-size: 20px;      /* bigger text */
+  padding: 18px 48px;
+  min-width: 240px;
+  font-size: 20px;
   font-weight: 700;
   cursor: pointer;
   transition: transform 0.15s ease, box-shadow 0.15s ease, opacity 0.15s ease;
@@ -56,7 +57,7 @@ body,
   cursor: not-allowed;
 }
 
-/* Dropdown underneath */
+/* Topic Input Section */
 .dropdown-group {
   margin-top: 28px;
   display: flex;
@@ -74,9 +75,12 @@ body,
   font-size: 18px;
   font-weight: 500;
   outline: none;
-  cursor: pointer;
   backdrop-filter: blur(4px);
   transition: border 0.15s ease, box-shadow 0.15s ease, background 0.15s ease;
+}
+
+.topic-dropdown::placeholder {
+  color: rgba(255, 255, 255, 0.65);
 }
 
 .topic-dropdown:hover {
@@ -88,7 +92,41 @@ body,
   box-shadow: 0 0 0 3px rgba(34, 197, 94, 0.22);
 }
 
-.topic-dropdown option {
+/* Error text under input */
+.topic-error-text {
+  margin-top: 12px;
+  color: #ef4444;
+  font-size: 16px;
+  font-weight: 600;
+  text-align: center;
+}
+
+.difficulty-dropdown {
+  width: 320px;
+  margin-top: 16px;
+  padding: 14px 18px;
+  border-radius: 12px;
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  background: rgba(255, 255, 255, 0.1);
+  color: white;
+  font-size: 18px;
+  font-weight: 500;
+  outline: none;
+  cursor: pointer;
+  backdrop-filter: blur(4px);
+  transition: border 0.15s ease, box-shadow 0.15s ease, background 0.15s ease;
+}
+
+.difficulty-dropdown:hover {
+  background: rgba(255, 255, 255, 0.14);
+}
+
+.difficulty-dropdown:focus {
+  border: 1px solid #22c55e;
+  box-shadow: 0 0 0 3px rgba(34, 197, 94, 0.22);
+}
+
+.difficulty-dropdown option {
   color: black;
   background: white;
 }

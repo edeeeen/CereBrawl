@@ -34,9 +34,22 @@ function BattleScreen() {
     console.log("Enemy HP:", enemyHP);
   }, [playerHP, enemyHP]);
 
-  const difficulty = 1;
-  const subject =
-    location.state?.topic || sessionStorage.getItem("battleTopic") || "biology";
+  const rawSubject =
+    location.state?.topic ||
+    sessionStorage.getItem("battleTopic") ||
+    "biology";
+
+  const subject = rawSubject.trim().toLowerCase();
+
+  const rawDifficulty =
+    location.state?.difficulty ||
+    Number(sessionStorage.getItem("battleDifficulty")) ||
+    1;
+
+  const selectedDifficulty = Number(rawDifficulty);
+
+  // Only biology should actually use the selected difficulty.
+  const effectiveDifficulty = subject === "biology" ? selectedDifficulty : 1;
 
   const fullQuestion = useMemo(() => {
     return questionData?.question || "";
@@ -54,8 +67,11 @@ function BattleScreen() {
       setTypedQuestion("");
       setBattleEffect("");
 
+      console.log("FETCHING SUBJECT:", subject);
+      console.log("FETCHING DIFFICULTY:", effectiveDifficulty);
+
       const response = await fetch(
-        `https://api.cerebrawl.me/battle/generateQuestion?difficulty=${difficulty}&subject=${encodeURIComponent(subject)}`
+        `https://api.cerebrawl.me/battle/generateQuestion?difficulty=${effectiveDifficulty}&subject=${encodeURIComponent(subject)}`
       );
 
       if (!response.ok) {
@@ -133,6 +149,7 @@ function BattleScreen() {
     sessionStorage.removeItem("playerHP");
     sessionStorage.removeItem("enemyHP");
     sessionStorage.removeItem("battleTopic");
+    sessionStorage.removeItem("battleDifficulty");
     navigate("/prebattle");
   };
 
@@ -150,14 +167,14 @@ function BattleScreen() {
       const response = await fetch("https://api.cerebrawl.me/battle/hpAnswerChange", {
         method: "POST",
         headers: {
-          "Content-Type": "application/json"
+          "Content-Type": "application/json",
         },
         body: JSON.stringify({
           answer: letter,
           correctAnswer: questionData.Answer,
           playerHP: playerHP,
-          enemyHP: enemyHP
-        })
+          enemyHP: enemyHP,
+        }),
       });
 
       if (!response.ok) {
