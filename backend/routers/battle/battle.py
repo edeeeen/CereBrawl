@@ -169,6 +169,9 @@ async def use_item(data: models.battle.use_item_request):
         damage_multiplier = 3.0
     elif item_name == "Damage Ultra Boost":
         damage_multiplier = 4.0
+    elif item_name == "Small Hint" or item_name == "Big Hint":
+        # Hints are handled on the frontend, so we don't need to do anything here
+        pass
         
     else:
         raise HTTPException(status_code=400, detail="Invalid item name")

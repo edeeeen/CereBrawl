@@ -20,6 +20,10 @@ function BattleScreen() {
   const [showItemChoices1, setShowItemChoices1] = useState(false);
   const [showItemChoices2, setShowItemChoices2] = useState(false);
   const [damageMultiplier, setDamageMultiplier] = useState(1.0);
+  const [aIsAvailable, setAIsAvailable] = useState(true);
+  const [bIsAvailable, setBIsAvailable] = useState(true);
+  const [cIsAvailable, setCIsAvailable] = useState(true);
+  const [dIsAvailable, setDIsAvailable] = useState(true);
 
   const [playerHP, setPlayerHP] = useState(() => {
     const saved = sessionStorage.getItem("playerHP");
@@ -72,6 +76,11 @@ function BattleScreen() {
       setShowAttackChoices(false);
       setTypedQuestion("");
       setBattleEffect("");
+      setAIsAvailable(true);
+      setBIsAvailable(true);
+      setCIsAvailable(true);
+      setDIsAvailable(true);
+
 
       console.log("FETCHING SUBJECT:", subject);
       console.log("FETCHING DIFFICULTY:", effectiveDifficulty);
@@ -266,6 +275,68 @@ function BattleScreen() {
       } else if(itemName === "Damage Ultra Boost") {
         setResultMessage("You used Damage Ultra Boost! Your next attack will be the strongest.");
         triggerBattleEffect("correct-flash");
+      } else if(itemName === "Small Hint") {
+        if(questionData?.Answer === "A"){
+          const randomNumber = Math.floor(Math.random() * 3) + 1;
+          if(randomNumber === 1) {
+            setBIsAvailable(false);
+            setResultMessage(`You used Small Hint! B is incorrect.`);
+        triggerBattleEffect("correct-flash");
+          }else if(randomNumber === 2) {
+            setCIsAvailable(false);
+            setResultMessage(`You used Small Hint! C is incorrect.`);
+            triggerBattleEffect("correct-flash");
+          }else {
+            setDIsAvailable(false);
+            setResultMessage(`You used Small Hint! D is incorrect.`);
+            triggerBattleEffect("correct-flash");
+          }
+        }else if(questionData?.Answer === "B"){
+          const randomNumber = Math.floor(Math.random() * 3) + 1;
+          if(randomNumber === 1) {
+            setAIsAvailable(false);
+            setResultMessage(`You used Small Hint! A is incorrect.`);
+            triggerBattleEffect("correct-flash");
+          }else if(randomNumber === 2) {
+            setCIsAvailable(false);
+            setResultMessage(`You used Small Hint! C is incorrect.`);
+            triggerBattleEffect("correct-flash");
+          }else {
+            setDIsAvailable(false);
+            setResultMessage(`You used Small Hint! D is incorrect.`);
+            triggerBattleEffect("correct-flash");
+          }
+        }else if(questionData?.Answer === "C"){
+          const randomNumber = Math.floor(Math.random() * 3) + 1;
+          if(randomNumber === 1) {
+            setAIsAvailable(false);
+            setResultMessage(`You used Small Hint! A is incorrect.`);
+            triggerBattleEffect("correct-flash");
+          }else if(randomNumber === 2) {
+            setBIsAvailable(false);
+            setResultMessage(`You used Small Hint! B is incorrect.`);
+            triggerBattleEffect("correct-flash");
+          }else {
+            setDIsAvailable(false);
+            setResultMessage(`You used Small Hint! D is incorrect.`);
+            triggerBattleEffect("correct-flash");
+          }
+        }else if(questionData?.Answer === "D"){
+          const randomNumber = Math.floor(Math.random() * 3) + 1;
+          if(randomNumber === 1) {
+            setAIsAvailable(false);
+          }else if(randomNumber === 2) {
+            setBIsAvailable(false);
+          }else {
+            setCIsAvailable(false);
+          }
+        }
+        //setResultMessage(`You used Small Hint!`);
+        //triggerBattleEffect("correct-flash");
+        
+      } else if(itemName === "Big Hint") {
+        setResultMessage(`You used Big Hint!`);
+        triggerBattleEffect("correct-flash");
       }
 
 
@@ -280,7 +351,12 @@ function BattleScreen() {
   console.log({
     showAttackChoices,
     showItemChoices1,
-    showItemChoices2
+    showItemChoices2,
+    damageMultiplier,
+    aIsAvailable,
+    bIsAvailable,
+    cIsAvailable,
+    dIsAvailable
   });
 
   return (
@@ -421,7 +497,7 @@ function BattleScreen() {
                 <button
                   className={`action-button ${selectedAnswer === "A" ? "selected" : ""}`}
                   onClick={() => handleAnswerClick("A")}
-                  disabled={!!selectedAnswer || gameOver}
+                  disabled={!!selectedAnswer || gameOver || !aIsAvailable}
                 >
                   A. {questionData?.A}
                 </button>
@@ -429,7 +505,7 @@ function BattleScreen() {
                 <button
                   className={`action-button ${selectedAnswer === "B" ? "selected" : ""}`}
                   onClick={() => handleAnswerClick("B")}
-                  disabled={!!selectedAnswer || gameOver}
+                  disabled={!!selectedAnswer || gameOver || !bIsAvailable}
                 >
                   B. {questionData?.B}
                 </button>
@@ -437,7 +513,7 @@ function BattleScreen() {
                 <button
                   className={`action-button ${selectedAnswer === "C" ? "selected" : ""}`}
                   onClick={() => handleAnswerClick("C")}
-                  disabled={!!selectedAnswer || gameOver}
+                  disabled={!!selectedAnswer || gameOver || !cIsAvailable}
                 >
                   C. {questionData?.C}
                 </button>
@@ -445,7 +521,7 @@ function BattleScreen() {
                 <button
                   className={`action-button ${selectedAnswer === "D" ? "selected" : ""}`}
                   onClick={() => handleAnswerClick("D")}
-                  disabled={!!selectedAnswer || gameOver}
+                  disabled={!!selectedAnswer || gameOver || !dIsAvailable}
                 >
                   D. {questionData?.D}
                 </button>
@@ -559,25 +635,25 @@ function BattleScreen() {
                 </button>
                 <button
                   className="action-button"
-                  onClick={() => handleUseItem("Chug Jug")}
+                  onClick={() => handleUseItem("Small Hint")}
                   disabled={gameOver}
                 >
                   <img
                   src={chug}
                   style={{width:"30px", height:"30px", marginRight:"8px"}}
                 />
-                  Chug Jug 2
+                  Small Hint
                 </button>
                 <button
                   className="action-button"
-                  onClick={() => handleUseItem("Chug Jug")}
+                  onClick={() => handleUseItem("Big Hint")}
                   disabled={gameOver}
                 >
                   <img
                   src={chug}
                   style={{width:"30px", height:"30px", marginRight:"8px"}}
                 />
-                  Chug Jug 2
+                  Big Hint
                 </button>
                 <button
                   className="action-button"
