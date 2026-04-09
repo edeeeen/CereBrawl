@@ -19,6 +19,7 @@ function BattleScreen() {
   const [battleEffect, setBattleEffect] = useState("");
   const [showItemChoices1, setShowItemChoices1] = useState(false);
   const [showItemChoices2, setShowItemChoices2] = useState(false);
+  const [damageMultiplier, setDamageMultiplier] = useState(1.0);
 
   const [playerHP, setPlayerHP] = useState(() => {
     const saved = sessionStorage.getItem("playerHP");
@@ -189,6 +190,7 @@ function BattleScreen() {
           correctAnswer: questionData.Answer,
           playerHP: playerHP,
           enemyHP: enemyHP,
+          damageMultiplier: damageMultiplier
         }),
       });
 
@@ -206,13 +208,16 @@ function BattleScreen() {
 
       setPlayerHP(Math.max(result.playerHP, 0));
       setEnemyHP(Math.max(result.enemyHP, 0));
+      setDamageMultiplier(result.damageMultiplier);
 
       if (result.result === "correct") {
         setResultMessage("Correct! Nice hit.");
         triggerBattleEffect("correct-flash");
+        damageMultiplier = 1.0; 
       } else {
         setResultMessage(`Incorrect! The answer was ${questionData.Answer}.`);
         triggerBattleEffect("wrong-flash");
+        damageMultiplier = 1.0;
       }
     } catch (error) {
       console.error("Error submitting answer:", error);
@@ -230,7 +235,8 @@ function BattleScreen() {
         body: JSON.stringify({
           itemName: itemName,
           playerHP: playerHP,
-          enemyHP: enemyHP
+          enemyHP: enemyHP,
+          damageMultiplier: damageMultiplier
         })
       });
 
@@ -240,6 +246,7 @@ function BattleScreen() {
       setPlayerHP(Math.max(result.playerHP, 0));
       setEnemyHP(Math.max(result.enemyHP, 0));
       setResultMessage(result.result);
+      setDamageMultiplier(result.damageMultiplier);
 
       if(itemName === "Mini Shield") {
         setResultMessage("You used Mini Shield! You gain 10 HP.");
@@ -250,7 +257,17 @@ function BattleScreen() {
       } else if(itemName === "Chug Jug") {
         setResultMessage("You used Chug Jug! You gain 50 HP.");
         triggerBattleEffect("correct-flash");
+      } else if(itemName === "Damage Boost") {
+        setResultMessage("You used Damage Boost! Your next attack will be stronger.");
+        triggerBattleEffect("correct-flash");
+      } else if(itemName === "Damage Mega Boost") {
+        setResultMessage("You used Damage Mega Boost! Your next attack will be even stronger.");
+        triggerBattleEffect("correct-flash");
+      } else if(itemName === "Damage Ultra Boost") {
+        setResultMessage("You used Damage Ultra Boost! Your next attack will be the strongest.");
+        triggerBattleEffect("correct-flash");
       }
+
 
       setShowItemChoices1(false);
       setShowItemChoices2(false);
@@ -488,7 +505,7 @@ function BattleScreen() {
                   src={chug}
                   style={{width:"30px", height:"30px", marginRight:"8px"}}
                 />
-                  Chug Jug
+                  Damage Boost
                 </button>
                 <button
                   className="action-button"
@@ -527,7 +544,7 @@ function BattleScreen() {
                   src={mini}
                   style={{width:"30px", height:"30px", marginRight:"8px"}}
                 />
-                  Mini Shield 2
+                  Damage Mega Boost
                 </button>
                 <button
                   className="action-button"
@@ -538,7 +555,7 @@ function BattleScreen() {
                   src={big}
                   style={{width:"30px", height:"30px", marginRight:"8px"}}
                 />
-                  Big Shield 2
+                  Damage Ultra Boost
                 </button>
                 <button
                   className="action-button"

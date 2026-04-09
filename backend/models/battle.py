@@ -25,6 +25,7 @@ class submit_battle_answer_request(BaseModel):
     difficulty: int = 1
     questionsRight: int = 0
     questionsWrong: int = 0
+    damageMultiplier: float = 1.0
 
 class submit_battle_answer_response(BaseModel):
     result: str
@@ -34,13 +35,16 @@ class submit_battle_answer_response(BaseModel):
     critHit: bool
     questionsRight: int
     questionsWrong: int    
+    damageMultiplier: float
 
 class use_item_request(BaseModel):
     itemName: str
     playerHP: int
     enemyHP: int
+    damageMultiplier: float = 1.0
     
 class use_item_response(BaseModel):
     result: str
     playerHP: int
     enemyHP: int
+    damageMultiplier: float
