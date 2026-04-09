@@ -113,7 +113,7 @@ async def submit_battle_answer(data: models.battle.submit_battle_answer_request)
                 questions_right = 0
     else:
         if(random.random() < 0.1):
-            player_hp -= 20 * damage_multiplier
+            player_hp -= 20
             crit_hit = True
             result = "wrong"
             questions_wrong += 1
@@ -122,7 +122,7 @@ async def submit_battle_answer(data: models.battle.submit_battle_answer_request)
                 difficulty -= 1
                 questions_wrong = 0
         else:
-            player_hp -= 10 * damage_multiplier
+            player_hp -= 10 
             result = "wrong"
             questions_wrong += 1
             questions_right = 0

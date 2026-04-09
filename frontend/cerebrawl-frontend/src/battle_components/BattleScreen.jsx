@@ -325,18 +325,95 @@ function BattleScreen() {
           const randomNumber = Math.floor(Math.random() * 3) + 1;
           if(randomNumber === 1) {
             setAIsAvailable(false);
+            setResultMessage(`You used Small Hint! A is incorrect.`);
+            triggerBattleEffect("correct-flash");
           }else if(randomNumber === 2) {
             setBIsAvailable(false);
+            setResultMessage(`You used Small Hint! B is incorrect.`);
+            triggerBattleEffect("correct-flash");
           }else {
             setCIsAvailable(false);
+            setResultMessage(`You used Small Hint! C is incorrect.`);
+            triggerBattleEffect("correct-flash");
           }
         }
         //setResultMessage(`You used Small Hint!`);
         //triggerBattleEffect("correct-flash");
         
       } else if(itemName === "Big Hint") {
-        setResultMessage(`You used Big Hint!`);
+        if(questionData?.Answer === "A"){
+          const randomNumber = Math.floor(Math.random() * 3) + 1;
+          if(randomNumber === 1) {
+            setBIsAvailable(false);
+            setCIsAvailable(false);
+            setResultMessage(`You used Small Hint! B and C are incorrect.`);
         triggerBattleEffect("correct-flash");
+          }else if(randomNumber === 2) {
+            setCIsAvailable(false);
+            setDIsAvailable(false);
+            setResultMessage(`You used Small Hint! C and D are incorrect.`);
+            triggerBattleEffect("correct-flash");
+          }else {
+            setDIsAvailable(false);
+            setBIsAvailable(false);
+            setResultMessage(`You used Small Hint! B and D are incorrect.`);
+            triggerBattleEffect("correct-flash");
+          }
+        }else if(questionData?.Answer === "B"){
+          const randomNumber = Math.floor(Math.random() * 3) + 1;
+          if(randomNumber === 1) {
+            setAIsAvailable(false);
+            setCIsAvailable(false);
+            setResultMessage(`You used Small Hint! A and C are incorrect.`);
+            triggerBattleEffect("correct-flash");
+          }else if(randomNumber === 2) {
+            setCIsAvailable(false);
+            setDIsAvailable(false);
+            setResultMessage(`You used Small Hint! C and D are incorrect.`);
+            triggerBattleEffect("correct-flash");
+          }else {
+            setDIsAvailable(false);
+            setAIsAvailable(false)
+            setResultMessage(`You used Small Hint! A and D are incorrect.`);
+            triggerBattleEffect("correct-flash");
+          }
+        }else if(questionData?.Answer === "C"){
+          const randomNumber = Math.floor(Math.random() * 3) + 1;
+          if(randomNumber === 1) {
+            setAIsAvailable(false);
+            setBIsAvailable(false);
+            setResultMessage(`You used Small Hint! A and B are incorrect.`);
+            triggerBattleEffect("correct-flash");
+          }else if(randomNumber === 2) {
+            setBIsAvailable(false);
+            setDIsAvailable(false);
+            setResultMessage(`You used Small Hint! B and D are incorrect.`);
+            triggerBattleEffect("correct-flash");
+          }else {
+            setDIsAvailable(false);
+            setAIsAvailable(false);
+            setResultMessage(`You used Small Hint! A and D are incorrect.`);
+            triggerBattleEffect("correct-flash");
+          }
+        }else if(questionData?.Answer === "D"){
+          const randomNumber = Math.floor(Math.random() * 3) + 1;
+          if(randomNumber === 1) {
+            setAIsAvailable(false);
+            setBIsAvailable(false);
+            setResultMessage(`You used Small Hint! A and B are incorrect.`);
+            triggerBattleEffect("correct-flash");
+          }else if(randomNumber === 2) {
+            setBIsAvailable(false);
+            setCIsAvailable(false)
+            setResultMessage(`You used Small Hint! B and C are incorrect.`);
+            triggerBattleEffect("correct-flash");
+          }else {
+            setCIsAvailable(false);
+            setAIsAvailable(false);
+            setResultMessage(`You used Small Hint! A and C are incorrect.`);
+            triggerBattleEffect("correct-flash");
+          }
+        }
       }
 
 
