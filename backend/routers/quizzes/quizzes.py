@@ -2,8 +2,8 @@ from typing import Annotated
 
 from db import db
 from models.login import UserResponse
-from db.dbModels import Quizzes, QuizQuestions
-from models.quizzes import create_quiz_request, create_quiz_response, QuizResponse, QuizInfo, QuestionInput, QuestionResponse, QuizWithQuestionsResponse
+from db.dbModels import Quizzes, QuizQuestions, LikedQuizzes, Users
+from models.quizzes import create_quiz_request, create_quiz_response, QuizResponse, QuestionResponse, QuizWithQuestionsResponse
 from routers.login.login import get_current_active_user
 from sqlalchemy import select
 
@@ -198,20 +198,41 @@ def like_quiz(
 ): 
     '''
     Like a quiz. If they already liked it, unlike it.
-
-    Incomplete as of now, users can like something more than once
     '''
-    # Use the short_id to query for the quiz
-    statement = select(Quizzes).where(Quizzes.short_id == quiz_id)
-    quiz = session.exec(statement).scalars().first()
+    statement = select(LikedQuizzes).where(
+        (LikedQuizzes.quiz_id == select(Quizzes.id).where(Quizzes.short_id == quiz_id).scalar_subquery()) &
+        (LikedQuizzes.user_id == select(Users.id).where(Users.short_id == current_user.short_id).scalar_subquery())
+    )
+
+    statement_quiz = select(Quizzes).where(Quizzes.short_id == quiz_id)
+    quiz = session.exec(statement_quiz).scalars().first()
 
     # Check if no quiz is found with the given id
     if quiz is None:
         raise HTTPException(status_code=404, detail="Quiz not found")
-
-    # Increment the bookmark count
-    quiz.bookmarks += 1
+        
+    # Check if the user has already liked the quiz
+    if(session.exec(statement).scalars().first()):
+        # User has already liked the quiz
+        liked = False
+        delete_statement = select(LikedQuizzes).where(
+            (LikedQuizzes.quiz_id == select(Quizzes.id).where(Quizzes.short_id == quiz_id).scalar_subquery()) &
+            (LikedQuizzes.user_id == select(Users.id).where(Users.short_id == current_user.short_id).scalar_subquery())
+        )
+        liked_quiz = session.exec(delete_statement).scalars().first()
+        quiz.bookmarks -= 1
+        session.delete(liked_quiz)
+    else:
+        # User has not liked the quiz yet
+        liked = True
+        new_like = LikedQuizzes(
+            quiz_id=session.exec(select(Quizzes.id).where(Quizzes.short_id == quiz_id)).scalar(),
+            user_id=session.exec(select(Users.id).where(Users.short_id == current_user.short_id)).scalar()
+        )
+        quiz.bookmarks += 1
+        session.add(new_like)
+    
     session.add(quiz)
     session.commit()
 
-    return {"message": "Quiz liked successfully"}
+    return {"liked": liked}
