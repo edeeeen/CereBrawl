@@ -17,7 +17,9 @@ function BattleScreen() {
   const [showAttackChoices, setShowAttackChoices] = useState(false);
   const [typedQuestion, setTypedQuestion] = useState("");
   const [battleEffect, setBattleEffect] = useState("");
-  const [showItemChoices, setShowItemChoices] = useState(false);
+  const [showItemChoices1, setShowItemChoices1] = useState(false);
+  const [showItemChoices2, setShowItemChoices2] = useState(false);
+  const [damageMultiplier, setDamageMultiplier] = useState(1.0);
 
   const [playerHP, setPlayerHP] = useState(() => {
     const saved = sessionStorage.getItem("playerHP");
@@ -146,13 +148,15 @@ function BattleScreen() {
   const handleAttackClick = () => {
     if (!loadingQuestion && !questionError && questionData && !gameOver) {
       setShowAttackChoices(true);
-      setShowItemChoices(false);
+      setShowItemChoices1(false);
+      setShowItemChoices2(false);
     }
   };
 
   const handleItemClick = () => {
     if (!loadingQuestion && !questionError && questionData && !gameOver) {
-      setShowItemChoices(true);
+      setShowItemChoices1(true);
+      setShowItemChoices2(false);
       setShowAttackChoices(false);
     }
   };
@@ -186,6 +190,7 @@ function BattleScreen() {
           correctAnswer: questionData.Answer,
           playerHP: playerHP,
           enemyHP: enemyHP,
+          damageMultiplier: damageMultiplier
         }),
       });
 
@@ -203,13 +208,16 @@ function BattleScreen() {
 
       setPlayerHP(Math.max(result.playerHP, 0));
       setEnemyHP(Math.max(result.enemyHP, 0));
+      setDamageMultiplier(result.damageMultiplier);
 
       if (result.result === "correct") {
         setResultMessage("Correct! Nice hit.");
         triggerBattleEffect("correct-flash");
+        setDamageMultiplier(1.0); 
       } else {
         setResultMessage(`Incorrect! The answer was ${questionData.Answer}.`);
         triggerBattleEffect("wrong-flash");
+        setDamageMultiplier(1.0);
       }
     } catch (error) {
       console.error("Error submitting answer:", error);
@@ -227,7 +235,8 @@ function BattleScreen() {
         body: JSON.stringify({
           itemName: itemName,
           playerHP: playerHP,
-          enemyHP: enemyHP
+          enemyHP: enemyHP,
+          damageMultiplier: damageMultiplier
         })
       });
 
@@ -237,6 +246,7 @@ function BattleScreen() {
       setPlayerHP(Math.max(result.playerHP, 0));
       setEnemyHP(Math.max(result.enemyHP, 0));
       setResultMessage(result.result);
+      setDamageMultiplier(result.damageMultiplier);
 
       if(itemName === "Mini Shield") {
         setResultMessage("You used Mini Shield! You gain 10 HP.");
@@ -247,14 +257,31 @@ function BattleScreen() {
       } else if(itemName === "Chug Jug") {
         setResultMessage("You used Chug Jug! You gain 50 HP.");
         triggerBattleEffect("correct-flash");
+      } else if(itemName === "Damage Boost") {
+        setResultMessage("You used Damage Boost! Your next attack will be stronger.");
+        triggerBattleEffect("correct-flash");
+      } else if(itemName === "Damage Mega Boost") {
+        setResultMessage("You used Damage Mega Boost! Your next attack will be even stronger.");
+        triggerBattleEffect("correct-flash");
+      } else if(itemName === "Damage Ultra Boost") {
+        setResultMessage("You used Damage Ultra Boost! Your next attack will be the strongest.");
+        triggerBattleEffect("correct-flash");
       }
 
-      setShowItemChoices(false);
+
+      setShowItemChoices1(false);
+      setShowItemChoices2(false);
     } catch (error) {
       console.error("Error using item:", error);
       setResultMessage("Something went wrong while using the item.");
     }
   };
+
+  console.log({
+    showAttackChoices,
+    showItemChoices1,
+    showItemChoices2
+  });
 
   return (
     <div className={`battle-screen ${battleEffect}`}>
@@ -368,7 +395,7 @@ function BattleScreen() {
         </div>
 
         <div className="action-panel" id="picBorder">
-          {!showAttackChoices && !showItemChoices ? (
+          {!showAttackChoices && !showItemChoices1 && !showItemChoices2 ? (
             <>
               <div className="top-actions" >
                 <button
@@ -432,7 +459,7 @@ function BattleScreen() {
                 Next Question
               </button>
             </>
-          ):showItemChoices ? (
+          ):showItemChoices1 ? (
             <>
               <div className="item-actions">
                 
@@ -469,20 +496,106 @@ function BattleScreen() {
                 />
                   Chug Jug
                 </button>
+                <button
+                  className="action-button"
+                  onClick={() => handleUseItem("Damage Boost")}
+                  disabled={gameOver}
+                >
+                  <img
+                  src={chug}
+                  style={{width:"30px", height:"30px", marginRight:"8px"}}
+                />
+                  Damage Boost
+                </button>
+                <button
+                  className="action-button"
+                  onClick={() => {
+                    setShowItemChoices1(false);
+                    setResultMessage("");
+                  }}
+                  disabled={gameOver}
+                >
+                  Back
+                </button>
+                <button
+                  className="action-button"
+                  onClick={() => {
+                    setShowItemChoices1(false);
+                    setShowItemChoices2(true);
+                    setResultMessage("");
+                  }}
+                  disabled={gameOver}
+                >
+                  Next
+                </button>
+
               </div>
-              <button
-                className="action-button secondary-button back-button"
-                onClick={() => {
-                  setShowItemChoices(false);
-                  setResultMessage("");
-                }}
-                disabled={gameOver}
-              >
-                Back
-              </button>
             </>
-           ) : null 
-          }
+           ) : showItemChoices2 ? (
+            <>
+              <div className="item-actions">
+                
+                <button
+                  className="action-button"
+                  onClick={() => handleUseItem("Damage Mega Boost")}
+                  disabled={gameOver}
+                >
+                <img
+                  src={mini}
+                  style={{width:"30px", height:"30px", marginRight:"8px"}}
+                />
+                  Damage Mega Boost
+                </button>
+                <button
+                  className="action-button"
+                  onClick={() => handleUseItem("Damage Ultra Boost")}
+                  disabled={gameOver}
+                >
+                  <img
+                  src={big}
+                  style={{width:"30px", height:"30px", marginRight:"8px"}}
+                />
+                  Damage Ultra Boost
+                </button>
+                <button
+                  className="action-button"
+                  onClick={() => handleUseItem("Chug Jug")}
+                  disabled={gameOver}
+                >
+                  <img
+                  src={chug}
+                  style={{width:"30px", height:"30px", marginRight:"8px"}}
+                />
+                  Chug Jug 2
+                </button>
+                <button
+                  className="action-button"
+                  onClick={() => handleUseItem("Chug Jug")}
+                  disabled={gameOver}
+                >
+                  <img
+                  src={chug}
+                  style={{width:"30px", height:"30px", marginRight:"8px"}}
+                />
+                  Chug Jug 2
+                </button>
+                <button
+                  className="action-button"
+                  onClick={() => {
+                    setShowItemChoices2(false);
+                    setShowItemChoices1(true)
+                    setResultMessage("");
+                  }}
+                  disabled={gameOver}
+                >
+                  Back
+                </button>
+
+              </div>
+            </>
+           ) : null
+            } 
+          
         </div>
       </div>
     </div>

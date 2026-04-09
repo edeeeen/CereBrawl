@@ -87,6 +87,7 @@ async def submit_battle_answer(data: models.battle.submit_battle_answer_request)
     questions_right = data.questionsRight
     questions_wrong = data.questionsWrong
     difficulty = data.difficulty
+    damage_multiplier = data.damageMultiplier
 
     if selected is None or correct is None:
         raise HTTPException(status_code=400, detail="Missing data")
@@ -94,7 +95,7 @@ async def submit_battle_answer(data: models.battle.submit_battle_answer_request)
     crit_hit = False
     if selected == correct:
         if(random.random() < 0.1):
-            enemy_hp -= 20
+            enemy_hp -= 20 * damage_multiplier
             crit_hit = True
             result = "correct"
             questions_right += 1
@@ -103,7 +104,7 @@ async def submit_battle_answer(data: models.battle.submit_battle_answer_request)
                 difficulty += 1
                 questions_right = 0
         else:
-            enemy_hp -= 10
+            enemy_hp -= 10 * damage_multiplier
             result = "correct"
             questions_right += 1
             questions_wrong = 0
@@ -112,7 +113,7 @@ async def submit_battle_answer(data: models.battle.submit_battle_answer_request)
                 questions_right = 0
     else:
         if(random.random() < 0.1):
-            player_hp -= 20
+            player_hp -= 20 * damage_multiplier
             crit_hit = True
             result = "wrong"
             questions_wrong += 1
@@ -121,7 +122,7 @@ async def submit_battle_answer(data: models.battle.submit_battle_answer_request)
                 difficulty -= 1
                 questions_wrong = 0
         else:
-            player_hp -= 10
+            player_hp -= 10 * damage_multiplier
             result = "wrong"
             questions_wrong += 1
             questions_right = 0
@@ -136,7 +137,8 @@ async def submit_battle_answer(data: models.battle.submit_battle_answer_request)
         "difficulty": difficulty,
         "critHit": crit_hit,
         "questionsRight": questions_right,
-        "questionsWrong": questions_wrong
+        "questionsWrong": questions_wrong,
+        "damageMultiplier": damage_multiplier
     }
 
 @router.post("/useItem", response_model=models.battle.use_item_response)
@@ -144,6 +146,7 @@ async def use_item(data: models.battle.use_item_request):
     item_name = data.itemName
     player_hp = data.playerHP
     enemy_hp = data.enemyHP
+    damage_multiplier = data.damageMultiplier
 
     if item_name is None:
         raise HTTPException(status_code=400, detail="Missing item name")
@@ -160,6 +163,12 @@ async def use_item(data: models.battle.use_item_request):
         player_hp += 50
         if player_hp > 100:
             player_hp = 100
+    elif item_name == "Damage Boost":
+        damage_multiplier = 2.0
+    elif item_name == "Damage Mega Boost":
+        damage_multiplier = 3.0
+    elif item_name == "Damage Ultra Boost":
+        damage_multiplier = 4.0
         
     else:
         raise HTTPException(status_code=400, detail="Invalid item name")
@@ -167,5 +176,6 @@ async def use_item(data: models.battle.use_item_request):
     return {
         "result": "Item used successfully",
         "playerHP": player_hp,
-        "enemyHP": enemy_hp
+        "enemyHP": enemy_hp,
+        "damageMultiplier": damage_multiplier
     }
