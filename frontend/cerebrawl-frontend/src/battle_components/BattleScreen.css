@@ -356,6 +356,14 @@
   opacity: 0.95;
 }
 
+.action-button.itemHintDisabled {
+  background: #f6d7da;
+  border-color: #b42318;
+  color: #9f1d16;
+  cursor: default;
+  opacity: 0.95;
+}
+
 .action-button.selected {
   background: #cdeccf;
 }

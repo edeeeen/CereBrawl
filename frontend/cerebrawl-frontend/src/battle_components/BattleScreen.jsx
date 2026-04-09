@@ -495,7 +495,7 @@ function BattleScreen() {
             <>
               <div className="answer-actions">
                 <button
-                  className={`action-button ${selectedAnswer === "A" ? "selected" : ""}`}
+                  className={`action-button ${selectedAnswer === "A" ? "selected" : ""} ${!aIsAvailable ? "itemHintDisabled" : ""}`}
                   onClick={() => handleAnswerClick("A")}
                   disabled={!!selectedAnswer || gameOver || !aIsAvailable}
                 >
@@ -503,7 +503,7 @@ function BattleScreen() {
                 </button>
 
                 <button
-                  className={`action-button ${selectedAnswer === "B" ? "selected" : ""}`}
+                  className={`action-button ${selectedAnswer === "B" ? "selected" : ""} ${!bIsAvailable ? "itemHintDisabled" : ""}`}
                   onClick={() => handleAnswerClick("B")}
                   disabled={!!selectedAnswer || gameOver || !bIsAvailable}
                 >
@@ -511,7 +511,7 @@ function BattleScreen() {
                 </button>
 
                 <button
-                  className={`action-button ${selectedAnswer === "C" ? "selected" : ""}`}
+                  className={`action-button ${selectedAnswer === "C" ? "selected" : ""} ${!cIsAvailable ? "itemHintDisabled" : ""}`}
                   onClick={() => handleAnswerClick("C")}
                   disabled={!!selectedAnswer || gameOver || !cIsAvailable}
                 >
@@ -519,7 +519,7 @@ function BattleScreen() {
                 </button>
 
                 <button
-                  className={`action-button ${selectedAnswer === "D" ? "selected" : ""}`}
+                  className={`action-button ${selectedAnswer === "D" ? "selected" : ""} ${!dIsAvailable ? "itemHintDisabled" : ""}`}
                   onClick={() => handleAnswerClick("D")}
                   disabled={!!selectedAnswer || gameOver || !dIsAvailable}
                 >
