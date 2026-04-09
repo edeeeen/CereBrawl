@@ -213,11 +213,11 @@ function BattleScreen() {
       if (result.result === "correct") {
         setResultMessage("Correct! Nice hit.");
         triggerBattleEffect("correct-flash");
-        damageMultiplier = 1.0; 
+        setDamageMultiplier(1.0); 
       } else {
         setResultMessage(`Incorrect! The answer was ${questionData.Answer}.`);
         triggerBattleEffect("wrong-flash");
-        damageMultiplier = 1.0;
+        setDamageMultiplier(1.0);
       }
     } catch (error) {
       console.error("Error submitting answer:", error);
