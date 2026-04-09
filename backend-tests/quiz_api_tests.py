@@ -244,3 +244,19 @@ class TestQuizAPI:
         assert response.status_code == 200
         data = response.json()
         assert data == []
+
+    def test_get_liked_quizzes(self, authenticated_client, session):
+        quiz = Quizzes(short_id="likedquiz1", name="Liked Quiz", subject="Test", creator="testuser")
+        session.add(quiz)
+        session.commit()
+
+        # Like the quiz
+        response = authenticated_client.post("/quizzes/likeQuiz/likedquiz1")
+        assert response.status_code == 200
+
+        # Get liked quizzes
+        response = authenticated_client.get("/quizzes/getUserLikedQuizzes")
+        assert response.status_code == 200
+        data = response.json()
+        assert len(data) == 1
+        assert data[0]["short_id"] == "likedquiz1"

@@ -237,7 +237,7 @@ def like_quiz(
 
     return {"liked": liked}
 
-@router.get("getUserLikedQuizzes")
+@router.get("/getUserLikedQuizzes")
 def get_user_liked_quizzes(
     session: db.SessionDep,
     current_user: Annotated[UserResponse, Depends(get_current_active_user)],
