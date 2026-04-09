@@ -498,7 +498,7 @@ function BattleScreen() {
                 </button>
                 <button
                   className="action-button"
-                  onClick={() => handleUseItem("Chug Jug")}
+                  onClick={() => handleUseItem("Damage Boost")}
                   disabled={gameOver}
                 >
                   <img
@@ -537,7 +537,7 @@ function BattleScreen() {
                 
                 <button
                   className="action-button"
-                  onClick={() => handleUseItem("Mini Shield")}
+                  onClick={() => handleUseItem("Damage Mega Boost")}
                   disabled={gameOver}
                 >
                 <img
@@ -548,7 +548,7 @@ function BattleScreen() {
                 </button>
                 <button
                   className="action-button"
-                  onClick={() => handleUseItem("Big Shield")}
+                  onClick={() => handleUseItem("Damage Ultra Boost")}
                   disabled={gameOver}
                 >
                   <img
