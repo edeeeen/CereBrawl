@@ -236,3 +236,23 @@ def like_quiz(
     session.commit()
 
     return {"liked": liked}
+
+@router.get("getUserLikedQuizzes")
+def get_user_liked_quizzes(
+    session: db.SessionDep,
+    current_user: Annotated[UserResponse, Depends(get_current_active_user)],
+) -> list[QuizResponse]:
+    '''
+    Get all quizzes liked by the current user.
+    '''
+    statement = select(Quizzes).where(
+        Quizzes.id.in_(
+            select(LikedQuizzes.quiz_id).where(
+                LikedQuizzes.user_id == session.exec(select(Users.id).where(Users.short_id == current_user.short_id)).scalar()
+            )
+        )
+    )
+
+    quizzes = session.exec(statement).scalars().all()
+
+    return [QuizResponse(**quiz.model_dump()) for quiz in quizzes]
