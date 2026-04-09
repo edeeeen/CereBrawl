@@ -38,3 +38,12 @@ class QuizQuestions(SQLModel, table=True):
     option_c: str
     option_d: str
     correct_answer: str
+
+'''
+Model for liked quiz questions.
+Contains quiz_id and user_id to track which user liked which quiz.
+'''
+class LikedQuizzes(SQLModel, table=True):
+    id: int | None = Field(default=None, primary_key=True)
+    quiz_id: int = Field(foreign_key="quizzes.id")
+    user_id: int = Field(foreign_key="users.id")

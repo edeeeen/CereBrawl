@@ -2,7 +2,7 @@ import pytest
 from fastapi.testclient import TestClient
 from main import app
 from db import db
-from db.dbModels import Users as DBUser, Quizzes
+from db.dbModels import Users as DBUser, Quizzes, LikedQuizzes
 from sqlmodel import Session, create_engine, SQLModel, select
 from sqlmodel.pool import StaticPool
 
@@ -117,16 +117,51 @@ class TestQuizAPI:
 
     #test liking a quiz successfully
     def test_like_quiz_success(self, authenticated_client, session):
-        quiz = Quizzes(short_id="like1234567", name="Like Quiz", subject="test", creator="creator1", bookmarks=0)
+        quiz = Quizzes(short_id="likequiz1", name="Like Quiz", subject="Test", creator="testuser")
         session.add(quiz)
         session.commit()
 
-        response = authenticated_client.post("/quizzes/likeQuiz/like1234567")
-        assert response.status_code == 200
-        assert response.json()["message"] == "Quiz liked successfully"
+        # Get the test user
+        user = session.exec(select(DBUser).where(DBUser.username == "testuser")).first()
 
-        updated_quiz = session.exec(select(Quizzes).where(Quizzes.short_id == "like1234567")).first()
-        assert updated_quiz.bookmarks == 1
+        response = authenticated_client.post("/quizzes/likeQuiz/likequiz1")
+        assert response.status_code == 200
+        data = response.json()
+        assert data["liked"] == True
+
+        # Check that bookmark count increased
+        session.refresh(quiz)
+        assert quiz.bookmarks == 1
+
+        # Check that LikedQuizzes entry was created
+        liked_entry = session.exec(select(LikedQuizzes).where(LikedQuizzes.quiz_id == quiz.id)).first()
+        assert liked_entry is not None
+        assert liked_entry.user_id == user.id
+
+    def test_unlike_quiz(self, authenticated_client, session):
+        quiz = Quizzes(short_id="unlikequiz1", name="Unlike Quiz", subject="Test", creator="testuser")
+        session.add(quiz)
+        session.commit()
+
+        # First like the quiz
+        response = authenticated_client.post("/quizzes/likeQuiz/unlikequiz1")
+        assert response.status_code == 200
+        data = response.json()
+        assert data["liked"] == True
+
+        # Then unlike it
+        response = authenticated_client.post("/quizzes/likeQuiz/unlikequiz1")
+        assert response.status_code == 200
+        data = response.json()
+        assert data["liked"] == False
+
+        # Check that bookmark count decreased
+        session.refresh(quiz)
+        assert quiz.bookmarks == 0
+
+        # Check that LikedQuizzes entry was removed
+        liked_entry = session.exec(select(LikedQuizzes).where(LikedQuizzes.quiz_id == quiz.id)).first()
+        assert liked_entry is None
 
     def test_like_quiz_not_found(self, authenticated_client):
         response = authenticated_client.post("/quizzes/likeQuiz/notfound123")
@@ -209,3 +244,19 @@ class TestQuizAPI:
         assert response.status_code == 200
         data = response.json()
         assert data == []
+
+    def test_get_liked_quizzes(self, authenticated_client, session):
+        quiz = Quizzes(short_id="likedquiz1", name="Liked Quiz", subject="Test", creator="testuser")
+        session.add(quiz)
+        session.commit()
+
+        # Like the quiz
+        response = authenticated_client.post("/quizzes/likeQuiz/likedquiz1")
+        assert response.status_code == 200
+
+        # Get liked quizzes
+        response = authenticated_client.get("/quizzes/getUserLikedQuizzes")
+        assert response.status_code == 200
+        data = response.json()
+        assert len(data) == 1
+        assert data[0]["short_id"] == "likedquiz1"
