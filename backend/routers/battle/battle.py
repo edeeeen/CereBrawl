@@ -113,7 +113,7 @@ async def submit_battle_answer(data: models.battle.submit_battle_answer_request)
                 questions_right = 0
     else:
         if(random.random() < 0.1):
-            player_hp -= 20 * damage_multiplier
+            player_hp -= 20
             crit_hit = True
             result = "wrong"
             questions_wrong += 1
@@ -122,7 +122,7 @@ async def submit_battle_answer(data: models.battle.submit_battle_answer_request)
                 difficulty -= 1
                 questions_wrong = 0
         else:
-            player_hp -= 10 * damage_multiplier
+            player_hp -= 10 
             result = "wrong"
             questions_wrong += 1
             questions_right = 0
@@ -169,6 +169,9 @@ async def use_item(data: models.battle.use_item_request):
         damage_multiplier = 3.0
     elif item_name == "Damage Ultra Boost":
         damage_multiplier = 4.0
+    elif item_name == "Small Hint" or item_name == "Big Hint":
+        # Hints are handled on the frontend, so we don't need to do anything here
+        pass
         
     else:
         raise HTTPException(status_code=400, detail="Invalid item name")
