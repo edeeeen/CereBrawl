@@ -27,6 +27,10 @@ router = APIRouter(
 load_dotenv()
 
 SECRET_KEY = os.getenv("HASH_SECRET_KEY")
+# Check it exists at startup
+if not SECRET_KEY:
+    raise RuntimeError("Environment variable HASH_SECRET_KEY is not set.")
+
 ALGORITHM = "HS256"
 ACCESS_TOKEN_EXPIRE_MINUTES = 30
 

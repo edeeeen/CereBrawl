@@ -148,6 +148,11 @@ def get_quiz_by_id(
     questions_statement = select(QuizQuestions).where(QuizQuestions.quiz_id == quiz.id).order_by(QuizQuestions.question_number)
     questions = session.exec(questions_statement).scalars().all()
 
+    # Increment the view count
+    quiz.views += 1
+    session.add(quiz)
+    session.commit()
+
     # Convert questions to response model
     questions_response = [
         QuestionResponse(
