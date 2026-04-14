@@ -24,6 +24,16 @@ function BattleScreen() {
   const [bIsAvailable, setBIsAvailable] = useState(true);
   const [cIsAvailable, setCIsAvailable] = useState(true);
   const [dIsAvailable, setDIsAvailable] = useState(true);
+  const [numOfItems, setNumOfItems] = useState({
+    "Mini Shield": 2,
+    "Big Shield": 1,
+    "Chug Jug": 2,
+    "Damage Boost": 1,
+    "Damage Mega Boost": 1,
+    "Damage Ultra Boost": 1,
+    "Small Hint": 1,
+    "Big Hint": 1
+  });
 
   const [playerHP, setPlayerHP] = useState(() => {
     const saved = sessionStorage.getItem("playerHP");
@@ -260,21 +270,45 @@ function BattleScreen() {
       if(itemName === "Mini Shield") {
         setResultMessage("You used Mini Shield! You gain 10 HP.");
         triggerBattleEffect("correct-flash");
+        setNumOfItems(prev => ({
+          ...prev,
+          "Mini Shield": prev["Mini Shield"] - 1
+        }));
       } else if(itemName === "Big Shield") {
         setResultMessage("You used Big Shield! You gain 20 HP.");
         triggerBattleEffect("correct-flash");
+        setNumOfItems(prev => ({
+          ...prev,
+          "Big Shield": prev["Big Shield"] - 1
+        }));
       } else if(itemName === "Chug Jug") {
         setResultMessage("You used Chug Jug! You gain 50 HP.");
         triggerBattleEffect("correct-flash");
+        setNumOfItems(prev => ({
+          ...prev,
+          "Chug Jug": prev["Chug Jug"] - 1
+        }));
       } else if(itemName === "Damage Boost") {
         setResultMessage("You used Damage Boost! Your next attack will be stronger.");
         triggerBattleEffect("correct-flash");
+        setNumOfItems(prev => ({
+          ...prev,
+          "Damage Boost": prev["Damage Boost"] - 1
+        }));
       } else if(itemName === "Damage Mega Boost") {
         setResultMessage("You used Damage Mega Boost! Your next attack will be even stronger.");
         triggerBattleEffect("correct-flash");
+        setNumOfItems(prev => ({
+          ...prev,
+          "Damage Mega Boost": prev["Damage Mega Boost"] - 1
+        }));
       } else if(itemName === "Damage Ultra Boost") {
         setResultMessage("You used Damage Ultra Boost! Your next attack will be the strongest.");
         triggerBattleEffect("correct-flash");
+        setNumOfItems(prev => ({
+          ...prev,
+          "Damage Ultra Boost": prev["Damage Ultra Boost"] - 1
+        }));
       } else if(itemName === "Small Hint") {
         if(questionData?.Answer === "A"){
           const randomNumber = Math.floor(Math.random() * 3) + 1;
@@ -337,6 +371,10 @@ function BattleScreen() {
             triggerBattleEffect("correct-flash");
           }
         }
+        setNumOfItems(prev => ({
+          ...prev,
+          "Small Hint": prev["Small Hint"] - 1
+        }));
         //setResultMessage(`You used Small Hint!`);
         //triggerBattleEffect("correct-flash");
         
@@ -414,6 +452,10 @@ function BattleScreen() {
             triggerBattleEffect("correct-flash");
           }
         }
+        setNumOfItems(prev => ({
+            ...prev,
+            "Big Hint": prev["Big Hint"] - 1
+          }));
       }
 
 
@@ -617,48 +659,48 @@ function BattleScreen() {
               <div className="item-actions">
                 
                 <button
-                  className="action-button"
+                  className={`action-button ${numOfItems['Mini Shield'] <= 0 ? 'itemHintDisabled' : ''}`}
                   onClick={() => handleUseItem("Mini Shield")}
-                  disabled={gameOver}
+                  disabled={gameOver || numOfItems["Mini Shield"] <= 0}
                 >
                 <img
                   src={mini}
                   style={{width:"30px", height:"30px", marginRight:"8px"}}
                 />
-                  Mini Shield
+                  Mini Shield ({numOfItems["Mini Shield"]})
                 </button>
                 <button
-                  className="action-button"
+                  className={`action-button ${numOfItems['Big Shield'] <= 0 ? 'itemHintDisabled' : ''}`}
                   onClick={() => handleUseItem("Big Shield")}
-                  disabled={gameOver}
+                  disabled={gameOver || numOfItems["Big Shield"] <= 0}
                 >
                   <img
                   src={big}
                   style={{width:"30px", height:"30px", marginRight:"8px"}}
                 />
-                  Big Shield
+                  Big Shield ({numOfItems["Big Shield"]})
                 </button>
                 <button
-                  className="action-button"
+                  className={`action-button ${numOfItems['Chug Jug'] <= 0 ? 'itemHintDisabled' : ''}`}
                   onClick={() => handleUseItem("Chug Jug")}
-                  disabled={gameOver}
+                  disabled={gameOver || numOfItems["Chug Jug"] <= 0}
                 >
                   <img
                   src={chug}
                   style={{width:"30px", height:"30px", marginRight:"8px"}}
                 />
-                  Chug Jug
+                  Chug Jug ({numOfItems["Chug Jug"]})
                 </button>
                 <button
-                  className="action-button"
+                  className={`action-button ${numOfItems['Damage Boost'] <= 0 ? 'itemHintDisabled' : ''}`}
                   onClick={() => handleUseItem("Damage Boost")}
-                  disabled={gameOver}
+                  disabled={gameOver || numOfItems["Damage Boost"] <= 0}
                 >
                   <img
                   src={chug}
                   style={{width:"30px", height:"30px", marginRight:"8px"}}
                 />
-                  Damage Boost
+                  Damage Boost ({numOfItems["Damage Boost"]})
                 </button>
                 <button
                   className="action-button"
@@ -689,48 +731,48 @@ function BattleScreen() {
               <div className="item-actions">
                 
                 <button
-                  className="action-button"
+                  className={`action-button ${numOfItems['Damage Mega Boost'] <= 0 ? 'itemHintDisabled' : ''}`}
                   onClick={() => handleUseItem("Damage Mega Boost")}
-                  disabled={gameOver}
+                  disabled={gameOver || numOfItems["Damage Mega Boost"] <= 0}
                 >
                 <img
                   src={mini}
                   style={{width:"30px", height:"30px", marginRight:"8px"}}
                 />
-                  Damage Mega Boost
+                  Damage Mega Boost ({numOfItems["Damage Mega Boost"]})
                 </button>
                 <button
-                  className="action-button"
+                  className={`action-button ${numOfItems['Damage Ultra Boost'] <= 0 ? 'itemHintDisabled' : ''}`}
                   onClick={() => handleUseItem("Damage Ultra Boost")}
-                  disabled={gameOver}
+                  disabled={gameOver || numOfItems["Damage Ultra Boost"] <= 0}
                 >
                   <img
                   src={big}
                   style={{width:"30px", height:"30px", marginRight:"8px"}}
                 />
-                  Damage Ultra Boost
+                  Damage Ultra Boost ({numOfItems["Damage Ultra Boost"]})
                 </button>
                 <button
-                  className="action-button"
+                  className={`action-button ${numOfItems['Small Hint'] <= 0 ? 'itemHintDisabled' : ''}`}
                   onClick={() => handleUseItem("Small Hint")}
-                  disabled={gameOver}
+                  disabled={gameOver || numOfItems["Small Hint"] <= 0}
                 >
                   <img
                   src={chug}
                   style={{width:"30px", height:"30px", marginRight:"8px"}}
                 />
-                  Small Hint
+                  Small Hint ({numOfItems["Small Hint"]})
                 </button>
                 <button
-                  className="action-button"
+                  className={`action-button ${numOfItems['Big Hint'] <= 0 ? 'itemHintDisabled' : ''}`}
                   onClick={() => handleUseItem("Big Hint")}
-                  disabled={gameOver}
+                  disabled={gameOver || numOfItems["Big Hint"] <= 0}
                 >
                   <img
                   src={chug}
                   style={{width:"30px", height:"30px", marginRight:"8px"}}
                 />
-                  Big Hint
+                  Big Hint ({numOfItems["Big Hint"]})
                 </button>
                 <button
                   className="action-button"
