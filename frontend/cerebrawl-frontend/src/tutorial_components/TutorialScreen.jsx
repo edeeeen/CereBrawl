@@ -7,7 +7,9 @@ import chug from "../Images/chugJug.png"
 
 import elgato1 from "../Images/elgato_full_1.png"
 import elgato2 from "../Images/elgato_full_2.png"
-
+import elgato3 from "../Images/elgato_full_3.png"
+import elgato4 from "../Images/elgato_full_4.png"
+import molecool from "../Images/molecool.png"
 
 
 function TutorialScreen() {
@@ -231,11 +233,13 @@ function TutorialScreen() {
         setResultMessage("Correct! Nice hit.");
         triggerBattleEffect("correct-flash");
         setDamageMultiplier(1.0); 
+        setImg(elgato4)
         setTutorialState(5)
       } else {
         setResultMessage(`Incorrect! The answer was ${questionData.Answer}.`);
         triggerBattleEffect("wrong-flash");
         setDamageMultiplier(1.0);
+        setImg(elgato3)
         setTutorialState(-5)
       }
     } catch (error) {
@@ -343,7 +347,8 @@ function TutorialScreen() {
         setTutText("Let's try clicking 'Item,' this time, you should see more boxes appear with " +
           "some very yummy looking blue items to use. Some of these will heal you or do extra " +
           "damage to your enemy. After you use an Item, you will still be able to make your attack.");
-          break;
+        setImg(elgato1)
+        break;
       case 7:
         setTutText("Try clicking an item, any item!")
         break;
@@ -396,11 +401,11 @@ function TutorialScreen() {
         
       </div>
       <div className="battlefield">
-        <div className="enemy-section">
+        <div className="enemy-section" style={{display:"flex", flexDirection:"row"}}>
           <div className="enemy-card" id="monBorder">
             <div className="battle-card-header">
-              <span className="battle-name">Professor Elm</span>
-              <span className="battle-level">Lv.67</span>
+              <span className="battle-name">Molecoole</span>
+              <span className="battle-level">Lv.1</span>
             </div>
 
             <div className="hp-row">
@@ -415,16 +420,22 @@ function TutorialScreen() {
             <div className="hp-value">{enemyHP}/100</div>
           </div>
 
-          <img
-            className="enemy-sprite"
-            src="/enemy.png"
-            alt="Enemy"
-            onError={(e) => {
-              e.target.style.display = "none";
-            }}
-          />
+          <div>
+            <img
+              className="enemy-sprite"
+              src={molecool}
+              alt="Enemy"
+              onError={(e) => {
+                e.target.style.display = "none";
+              }}
+              style={{
+                imageRendering:"pixelated",
+                width:"10rem"
+              }}
+            />
 
-          <div className="enemy-platform"></div>
+            <div className="enemy-platform" style={{justifySelf:"center"}}></div>
+          </div>
         </div>
 
         <div className="player-section">
