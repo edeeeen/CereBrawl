@@ -59,7 +59,8 @@ class TestQuizAPI:
             "quiz": {
                 "name": "Test Quiz",
                 "subject": "Math",
-                "description": "A good description"
+                "description": "A good description",
+                "difficulty": 3
             },
             "questions": [
                 {
