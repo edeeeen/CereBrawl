@@ -16,6 +16,7 @@ class SortBy(str, Enum):
     subject = "subject"
     create_date = "create_date"
     bookmarks = "bookmarks"
+    views = "views"
 
 
 
@@ -114,6 +115,8 @@ def get_all_quizzes(
         statement = statement.order_by(Quizzes.create_date)
     elif sort_by == SortBy.bookmarks:
         statement = statement.order_by(Quizzes.bookmarks.desc())
+    elif sort_by == SortBy.views:
+        statement = statement.order_by(Quizzes.views.desc())
     else:
         statement = statement.order_by(Quizzes.create_date)  # default
     
@@ -171,6 +174,7 @@ def get_quiz_by_id(
         name=quiz.name,
         subject=quiz.subject,
         creator=quiz.creator,
+        difficulty=quiz.difficulty,
         description=quiz.description,
         bookmarks=quiz.bookmarks,
         views=quiz.views,

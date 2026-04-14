@@ -11,8 +11,9 @@ class Quizzes(SQLModel, table=True):
     name: str = Field(max_length=255)
     subject: str = Field(max_length=100, index=True)
     creator: str = Field(max_length=10, foreign_key="users.short_id", index=True)
+    difficulty: int = Field(default=1)
     #user_id: int = Field(foreign_key="user.id")
-    description: str | None = Field(default=None)
+    description: str | None = Field(default=None) # Likely going unused
     bookmarks: int = Field(default=0)
     views: int = Field(default=0)
     create_date: str = Field(default_factory=lambda: __import__('datetime').datetime.utcnow().isoformat())
