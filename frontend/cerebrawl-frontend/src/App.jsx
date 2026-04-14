@@ -3,6 +3,7 @@ import { BrowserRouter, Routes, Route, useNavigate } from "react-router-dom";
 import BattleScreen from "./battle_components/BattleScreen.jsx";
 import HomeContent from "./menu_components/homeContent.jsx";
 import AccountContent from "./menu_components/accountContent.jsx";
+import TutorialScreen from "./tutorial_components/TutorialScreen.jsx";
 
 function PreBattle() {
   const navigate = useNavigate();
@@ -45,8 +46,21 @@ function PreBattle() {
     });
   };
 
+  const handleTut = () => {
+    navigate("/tutorial");
+  }
+
   return (
     <div className="home-container">
+      <div style={{position:"fixed", left:"20px", bottom:"20px", display:"flex"}}>
+        <button
+          className="start-button"
+          onClick={handleTut}
+        >
+          Play Tutorial!
+        </button>
+        
+      </div>
       <h1 className="title">CereBrawl</h1>
       <p className="subtitle">Get ready to enter the battle.</p>
 
@@ -57,6 +71,8 @@ function PreBattle() {
       >
         Start Battle
       </button>
+
+      
 
       <div className="dropdown-group">
         <input
@@ -95,6 +111,7 @@ function App() {
         <Route path="/prebattle" element={<PreBattle />} />
         <Route path="/battlescreen" element={<BattleScreen />} />
         <Route path="/account" element={<AccountContent />} />
+        <Route path="/tutorial" element={<TutorialScreen />} />
       </Routes>
     </BrowserRouter>
   );
