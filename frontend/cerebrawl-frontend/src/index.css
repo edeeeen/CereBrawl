@@ -7,126 +7,64 @@ body,
   min-height: 100%;
 }
 
-.home-container {
-  min-height: 100vh;
+.prebattle-form {
   display: flex;
   flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  background: linear-gradient(to right, #07152f, #0b1f4d);
-  text-align: center;
+  gap: 1rem;
+  max-width: 420px;
+  margin: 2rem 1rem 1rem 1rem;
 }
 
-.title {
-  margin: 0;
-  font-size: 96px;
-  font-weight: 800;
-  color: white;
-  line-height: 1;
+.prebattle-input {
+  width: 100%;
+  padding: 1rem 1.2rem;
+  font-size: 22px;
+  border: 2px inset #11576a;
+  background-color: white;
+  color: black;
+  outline: none;
+  box-sizing: border-box;
 }
 
-.subtitle {
-  margin-top: 22px;
-  margin-bottom: 28px;
-  font-size: 18px;
-  color: white;
+.prebattle-input:focus {
+  outline: 2px solid #2f8f83;
+  outline-offset: 1px;
 }
 
-/* Start Battle Button */
-.start-button {
-  background: #22c55e;
+.battle-button {
+  width: 100%;
+  padding: 1rem 1.2rem;
+  font-size: 22px;
+  font-weight: bold;
+  border: 2px outset #11576a;
+  background-color: #2f8f83;
   color: white;
-  border: none;
-  border-radius: 12px;
-  padding: 18px 48px;
-  min-width: 240px;
-  font-size: 20px;
-  font-weight: 700;
   cursor: pointer;
-  transition: transform 0.15s ease, box-shadow 0.15s ease, opacity 0.15s ease;
-  box-shadow: 0 8px 20px rgba(34, 197, 94, 0.25);
+  text-shadow: -1px 1px black;
+  transition: background-color 0.2s ease;
 }
 
-.start-button:hover:not(:disabled) {
-  transform: translateY(-1px);
-  opacity: 0.97;
+.battle-button:hover:not(:disabled) {
+  background-color: #256f66;
 }
 
-.start-button:disabled {
-  opacity: 0.55;
+.battle-button:disabled {
+  opacity: 0.6;
   cursor: not-allowed;
 }
 
-/* Topic Input Section */
-.dropdown-group {
-  margin-top: 28px;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-}
-
-.topic-dropdown {
-  width: 320px;
-  padding: 14px 18px;
-  border-radius: 12px;
-  border: 1px solid rgba(255, 255, 255, 0.18);
-  background: rgba(255, 255, 255, 0.1);
-  color: white;
-  font-size: 18px;
-  font-weight: 500;
-  outline: none;
-  backdrop-filter: blur(4px);
-  transition: border 0.15s ease, box-shadow 0.15s ease, background 0.15s ease;
-}
-
-.topic-dropdown::placeholder {
-  color: rgba(255, 255, 255, 0.65);
-}
-
-.topic-dropdown:hover {
-  background: rgba(255, 255, 255, 0.14);
-}
-
-.topic-dropdown:focus {
-  border: 1px solid #22c55e;
-  box-shadow: 0 0 0 3px rgba(34, 197, 94, 0.22);
-}
-
-/* Error text under input */
 .topic-error-text {
-  margin-top: 12px;
-  color: #ef4444;
-  font-size: 16px;
-  font-weight: 600;
-  text-align: center;
+  margin-top: 0.25rem;
+  color: #dc2626;
+  font-size: 20px;
+  font-weight: 700;
+  text-align: left;
+  text-shadow: none;
 }
 
-.difficulty-dropdown {
-  width: 320px;
-  margin-top: 16px;
-  padding: 14px 18px;
-  border-radius: 12px;
-  border: 1px solid rgba(255, 255, 255, 0.18);
-  background: rgba(255, 255, 255, 0.1);
-  color: white;
-  font-size: 18px;
-  font-weight: 500;
-  outline: none;
-  cursor: pointer;
-  backdrop-filter: blur(4px);
-  transition: border 0.15s ease, box-shadow 0.15s ease, background 0.15s ease;
-}
-
-.difficulty-dropdown:hover {
-  background: rgba(255, 255, 255, 0.14);
-}
-
-.difficulty-dropdown:focus {
-  border: 1px solid #22c55e;
-  box-shadow: 0 0 0 3px rgba(34, 197, 94, 0.22);
-}
-
-.difficulty-dropdown option {
+.side-text {
+  margin: 0.5rem;
   color: black;
-  background: white;
+  text-shadow: none;
+  font-size: 22px;
 }
