@@ -34,7 +34,9 @@ if connection_string:
         connect_args=connect_args,
         echo=True,
         pool_pre_ping=True,
-        pool_recycle=3600
+        pool_recycle=3600,
+
+        pool_timeout=60,
     )
 
     logger.info("db handler instance created")
