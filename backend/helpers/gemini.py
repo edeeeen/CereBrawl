@@ -75,17 +75,17 @@ def generateQuizQuestion(fullQuiz ,difficulty):
 
 
 #def parseQuestion(response): THIS IS OLD DOESN'T REALLY WORK ANYMORE KEEPING IT IN CASE WE WANT TO REFERENCE IT LATER
-    lines = response.text.split("\n")
-    question = lines[0]
-    options = lines[1:5]
-    correct_answer = lines[5].split(":")[1].strip()
-    return question, options, correct_answer
+    #lines = response.text.split("\n")
+    #question = lines[0]
+    #options = lines[1:5]
+    #correct_answer = lines[5].split(":")[1].strip()
+    #return question, options, correct_answer
 
 
 
 #def quizCreator(numQuestions, topic): THIS IS OLD DOESN'T REALLY WORK ANYMORE KEEPING IT IN CASE WE WANT TO REFERENCE IT LATER
-    quiz = []
-    for _ in range(numQuestions):
+    #quiz = []
+    #for _ in range(numQuestions):
         response = generateQuizQuestion(topic)
         question, options, correct_answer = parseQuestion(response)
         quiz.append({
@@ -93,25 +93,25 @@ def generateQuizQuestion(fullQuiz ,difficulty):
             "options": options,
             "correct_answer": correct_answer
         })
-    return quiz
+    #return quiz
 
 
 #def displayingQuiz(): THIS IS OLD DOESN'T REALLY WORK ANYMORE KEEPING IT IN CASE WE WANT TO REFERENCE IT LATER
-    numQuestions = int(input("Enter the number of quiz questions: "))
-    topic = input("Enter a topic for the quiz questions: ")
-    quiz = quizCreator(numQuestions, topic)
+    #numQuestions = int(input("Enter the number of quiz questions: "))
+    #topic = input("Enter a topic for the quiz questions: ")
+    #quiz = quizCreator(numQuestions, topic)
 
-    for i, q in enumerate(quiz, start=1):
+    #for i, q in enumerate(quiz, start=1):
         print(f"Question {i}: {q['question']}")
         print("Options:")
         for option in q['options']:
             print(option)
         print(f"Correct Answer: {q['correct_answer']}")
         print()
-    for option in option:
+    #for option in option:
         print(option)
         #this doesn't work perfectly, can't test bc of the API key limit
-    print("Parsed Correct Answer:", correct_answer)   
+    #print("Parsed Correct Answer:", correct_answer)   
 
 if __name__ == "__main__":
     #displayingQuiz()
