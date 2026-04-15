@@ -115,7 +115,7 @@ def testCriticalHit():
 
 def testMiniShieldItem():
     # Test that using the Mini Shield item increases player HP by 10 and does not change enemy HP
-    response = client.post("/useItem", json={
+    response = client.post("/battle/useItem", json={
         "itemName": "Mini Shield",
         "playerHP": 50,
         "enemyHP": 80,
@@ -132,7 +132,7 @@ def testMiniShieldItem():
 
 def testBigShieldItem():
     # Test that using the Big Shield item increases player HP by 20 and does not change enemy HP
-    response = client.post("/useItem", json={
+    response = client.post("/battle/useItem", json={
         "itemName": "Big Shield",
         "playerHP": 50,
         "enemyHP": 80,
@@ -148,7 +148,7 @@ def testBigShieldItem():
 
 def testChugJugItem():
     # Test that using the Chug Jug item increases player HP by 50 and does not change enemy HP
-    response = client.post("/useItem", json={
+    response = client.post("/battle/useItem", json={
         "itemName": "Chug Jug",
         "playerHP": 50,
         "enemyHP": 80,
@@ -217,7 +217,7 @@ def testDamageUltraBoostItem():
 
 def testInvalidItem():
     # Test that using an invalid item name returns a 400 error
-    response = client.post("/useItem", json={
+    response = client.post("/battle/useItem", json={
         "itemName": "Invalid Item",
         "playerHP": 50,
         "enemyHP": 80,
