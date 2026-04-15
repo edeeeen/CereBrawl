@@ -52,7 +52,7 @@ YOU MUST RETURN EXACTLY IN THE FORMAT ABOVE, FAILURE TO DO SO WILL RESULT IN AN 
     return response
 
 def generateQuizQuestion(fullQuiz ,difficulty):
-    parsedQuizArray = re.split(r'(?=Question:)', fullQuiz.text)
+    parsedQuizArray = re.split(r'(?=Question:)', fullQuiz)
     parsedQuizArray = [q.strip() for q in parsedQuizArray if q.strip()]
 
     if(difficulty == 1):

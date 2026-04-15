@@ -41,7 +41,7 @@ function PreBattle() {
   };
 
   const handleStartBattle = () => {
-    //const cleanedTopic = topic.trim().toLowerCase();
+    const cleanedTopic = topic.trim().toLowerCase();
 
     if (!cleanedTopic) return;
 

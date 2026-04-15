@@ -19,6 +19,10 @@ async def generate_quiz(request: Request,
         topic: str = Query(..., description="The subject of the quiz", )
 ):
     raw_quiz = helpers.gemini.geminiGeneratesFullQuiz(topic)
+    
+    if not raw_quiz or not raw_quiz.text:
+        raise HTTPException(status_code=500, detail="Failed to generate quiz")
+    
     return {
         "quiz": raw_quiz.text
     }
