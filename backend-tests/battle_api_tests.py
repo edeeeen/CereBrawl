@@ -118,7 +118,9 @@ def testMiniShieldItem():
     response = client.post("/useItem", json={
         "itemName": "Mini Shield",
         "playerHP": 50,
-        "enemyHP": 80
+        "enemyHP": 80,
+        "damageMultiplier": 1.0
+        
     })
 
     assert response.status_code == 200
@@ -133,7 +135,8 @@ def testBigShieldItem():
     response = client.post("/useItem", json={
         "itemName": "Big Shield",
         "playerHP": 50,
-        "enemyHP": 80
+        "enemyHP": 80,
+        "damageMultiplier": 1.0
     })
 
     assert response.status_code == 200
@@ -148,7 +151,8 @@ def testChugJugItem():
     response = client.post("/useItem", json={
         "itemName": "Chug Jug",
         "playerHP": 50,
-        "enemyHP": 80
+        "enemyHP": 80,
+        "damageMultiplier": 1.0
     })
 
     assert response.status_code == 200
@@ -158,12 +162,66 @@ def testChugJugItem():
     assert data["enemyHP"] == 80
     assert data["result"] == "Item used successfully"
 
+def testDamageBoostItem():
+    #tests that using the Damage Boost item increases damage multiplier to 2.0 and does not change player HP or enemy HP
+    response = client.post("/useItem", json={
+        "itemName": "Damage Boost",
+        "playerHP": 50,
+        "enemyHP": 80,
+        "damageMultiplier": 1.0
+    })
+
+    assert response.status_code == 200
+    data = response.json()
+
+    assert data["playerHP"] == 50
+    assert data["enemyHP"] == 80
+    assert data["damageMultiplier"] == 2.0
+    assert data["result"] == "Item used successfully"
+
+
+def testDamageMegaBoostItem():
+    #tests that using the Damage Mega Boost item increases damage multiplier to 3.0 and does not change player HP or enemy HP
+    response = client.post("/useItem", json={
+        "itemName": "Damage Mega Boost",
+        "playerHP": 50,
+        "enemyHP": 80,
+        "damageMultiplier": 1.0
+    })
+
+    assert response.status_code == 200
+    data = response.json()
+
+    assert data["playerHP"] == 50
+    assert data["enemyHP"] == 80
+    assert data["damageMultiplier"] == 3.0
+    assert data["result"] == "Item used successfully"
+
+
+def testDamageUltraBoostItem():
+    #tests that using the Damage Ultra Boost item increases damage multiplier to 4.0 and does not change player HP or enemy HP
+    response = client.post("/useItem", json={
+        "itemName": "Damage Ultra Boost",
+        "playerHP": 50,
+        "enemyHP": 80,
+        "damageMultiplier": 1.0
+    })
+
+    assert response.status_code == 200
+    data = response.json()
+
+    assert data["playerHP"] == 50
+    assert data["enemyHP"] == 80
+    assert data["damageMultiplier"] == 4.0
+    assert data["result"] == "Item used successfully"
+
 def testInvalidItem():
     # Test that using an invalid item name returns a 400 error
     response = client.post("/useItem", json={
         "itemName": "Invalid Item",
         "playerHP": 50,
-        "enemyHP": 80
+        "enemyHP": 80,
+        "damageMultiplier": 1.0
     })
 
     assert response.status_code == 400
