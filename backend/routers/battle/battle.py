@@ -3,9 +3,11 @@ import helpers.gemini
 import models.battle
 import random
 
+
 from fastapi import APIRouter, Depends, HTTPException
 from fastapi import Request
 from fastapi import Query
+from fastapi import Body
 
 import re
 
@@ -43,8 +45,8 @@ Currently uses fake gemini, but once we are ready to show off we can swap it out
 '''
 @router.post("/generateQuestion", response_model=models.battle.get_battle_question_response)
 async def get_battle_question(
-    quiz: str,
-    difficulty: int
+    quiz: str = Body(...), 
+    difficulty: int = Body(...)
 ):
     '''
     Generate a question for a quiz.

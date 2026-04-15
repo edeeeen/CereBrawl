@@ -101,7 +101,7 @@ function BattleScreen() {
       console.log("FETCHING DIFFICULTY:", effectiveDifficulty);
       console.log("FETCHING QUIZ:", rawQuiz);
 
-      const response = await fetch("/generateQuestion", {
+      const response = await fetch("https://api.cerebrawl.me/battle/generateQuestion", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
