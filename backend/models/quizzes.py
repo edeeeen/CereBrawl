@@ -7,8 +7,9 @@ class QuizResponse(BaseModel):
     short_id: str
     name: str
     subject: str
+    difficulty: int # 1-5
     creator: str
-    description: str | None = None
+    description: str | None = None # likely going unused
     bookmarks: int
     views: int
     create_date: str
@@ -27,6 +28,7 @@ class QuizWithQuestionsResponse(BaseModel):
     name: str
     subject: str
     creator: str
+    difficulty: int # 1-5
     description: str | None = None
     bookmarks: int
     views: int
@@ -37,6 +39,7 @@ class QuizInfo(BaseModel):
     name: str
     subject: str
     description: str | None = None
+    difficulty: int # 1-5
 
 class QuestionInput(BaseModel):
     question: str

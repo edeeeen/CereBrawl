@@ -16,6 +16,7 @@ class SortBy(str, Enum):
     subject = "subject"
     create_date = "create_date"
     bookmarks = "bookmarks"
+    views = "views"
 
 
 
@@ -114,6 +115,8 @@ def get_all_quizzes(
         statement = statement.order_by(Quizzes.create_date)
     elif sort_by == SortBy.bookmarks:
         statement = statement.order_by(Quizzes.bookmarks.desc())
+    elif sort_by == SortBy.views:
+        statement = statement.order_by(Quizzes.views.desc())
     else:
         statement = statement.order_by(Quizzes.create_date)  # default
     
@@ -148,6 +151,11 @@ def get_quiz_by_id(
     questions_statement = select(QuizQuestions).where(QuizQuestions.quiz_id == quiz.id).order_by(QuizQuestions.question_number)
     questions = session.exec(questions_statement).scalars().all()
 
+    # Increment the view count
+    quiz.views += 1
+    session.add(quiz)
+    session.commit()
+
     # Convert questions to response model
     questions_response = [
         QuestionResponse(
@@ -166,6 +174,7 @@ def get_quiz_by_id(
         name=quiz.name,
         subject=quiz.subject,
         creator=quiz.creator,
+        difficulty=quiz.difficulty,
         description=quiz.description,
         bookmarks=quiz.bookmarks,
         views=quiz.views,
