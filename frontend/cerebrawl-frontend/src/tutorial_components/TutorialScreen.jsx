@@ -95,7 +95,7 @@ function TutorialScreen() {
       console.log("FETCHING DIFFICULTY:", effectiveDifficulty);
 
       const response = await fetch(
-        `http://127.0.0.1:8000/battle/generateQuestion?difficulty=${effectiveDifficulty}&subject=${encodeURIComponent(subject)}`
+        `https://api.cerebrawl.me/battle/generateQuestion?difficulty=${effectiveDifficulty}&subject=${encodeURIComponent(subject)}`
       );
 
       if (!response.ok) {
@@ -199,7 +199,7 @@ function TutorialScreen() {
     setSelectedAnswer(letter);
 
     try {
-      const response = await fetch("http://127.0.0.1:8000/battle/hpAnswerChange", {
+      const response = await fetch("https://api.cerebrawl.me/battle/hpAnswerChange", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -250,7 +250,7 @@ function TutorialScreen() {
 
   const handleUseItem = async (itemName) => {
     try {
-      const response = await fetch("http://127.0.0.1:8000/battle/useItem", {
+      const response = await fetch("https://api.cerebrawl.me/battle/useItem", {
         method: "POST",
         headers: {
           "Content-Type": "application/json"
