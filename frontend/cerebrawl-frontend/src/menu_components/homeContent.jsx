@@ -1,5 +1,6 @@
 import "../../styleSheets/mainMenu.css";
 import { useNavigate } from "react-router-dom";
+import SideBar from "./sideBar.jsx";
 import Image from "../Images/elgato.png";
 import elgato1 from "../Images/elgato_full_1.png";
 import elgato2 from "../Images/elgato_full_2.png";
@@ -65,75 +66,7 @@ export default function HomeContent() {
 
       <div className="BodyBox">
         {/* Left panel */}
-        <div className="SidePanel" id="picBorder">
-          <div>
-            <p
-              className="normalTB"
-              style={{
-                fontSize: "30px",
-                lineHeight: "1.2",
-                marginBottom: "10px",
-              }}
-            >
-              Site Directory
-            </p>
-
-            <div
-              style={{
-                display: "flex",
-                flexDirection: "column",
-                justifyContent: "space-evenly",
-              }}
-            >
-              <div style={{ margin: "2px" }}>
-                -{" "}
-                <button
-                  onClick={() => navigate("/")}
-                  style={{ width: "fit-content", fontSize: "18px" }}
-                >
-                  Home
-                </button>
-              </div>
-
-              <div style={{ margin: "2px" }}>
-                -{" "}
-                <button
-                  onClick={() => navigate("/prebattle")}
-                  style={{ width: "fit-content", fontSize: "18px" }}
-                >
-                  Play!
-                </button>
-              </div>
-              <div style={{ margin: "2px" }}>
-                -{" "}
-                <button
-                  //onClick={() => 
-                  style={{ width: "fit-content", fontSize: "16px" }}
-                >
-                  Catalog
-                </button>
-              </div>
-              <div style={{ margin: "2px" }}>
-                -{" "}
-                <button
-                  onClick={() => navigate("/tutorial")}
-                  style={{ width: "fit-content", fontSize: "18px" }}
-                >
-                  Tutorial
-                </button>
-              </div>
-              <div style={{ margin: "2px" }}>
-                -{" "}
-                <button
-                  onClick={() => navigate("/account")}
-                  style={{ width: "fit-content", fontSize: "18px" }}
-                >
-                  Account
-                </button>
-              </div>
-            </div>
-          </div>
-        </div>
+        <SideBar />
 
         {/* Middle panel */}
         <div className="MiddlePanel" id="picBorder">

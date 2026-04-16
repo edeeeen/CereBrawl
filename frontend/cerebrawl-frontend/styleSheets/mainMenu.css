@@ -47,6 +47,32 @@
   transform: scale(0.98);
 }
 
+.menu-button {
+  box-sizing: border-box;
+  width: 100%;
+  padding: 0.5rem 0rem;
+  font-size: 22px;
+  font-weight: bold;
+  border: 2px outset #11576a;
+  background-color: #2f8f83;
+  color: white;
+  cursor: pointer;
+  text-shadow: -1px 1px black;
+  transition: background-color 0.2s ease;
+}
+
+.menu-button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.menu-button:hover:not(:disabled) {
+  background-color: #256f66;
+}
+
+.menu-button:active:not(:disabled) {
+  transform: scale(0.98);
+}
 
 
 .normalTB {
@@ -80,7 +106,8 @@
     margin: 0px;
     padding: 1rem;
     min-width: 10rem;
-    min-height:80vh;
+    min-height: 80vh;
+    height: 100%;
 }
 
 .MiddlePanel {
