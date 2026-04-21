@@ -66,6 +66,11 @@ function BattleScreen() {
     Number(sessionStorage.getItem("battleDifficulty")) ||
     1;
 
+  const rawQuiz =
+    location.state?.quiz ||
+    sessionStorage.getItem("battleQuiz") ||
+    "";
+  
   const selectedDifficulty = Number(rawDifficulty);
 
   // Only biology should actually use the selected difficulty.
@@ -94,11 +99,16 @@ function BattleScreen() {
 
       console.log("FETCHING SUBJECT:", subject);
       console.log("FETCHING DIFFICULTY:", effectiveDifficulty);
+      console.log("FETCHING QUIZ:", rawQuiz);
 
-      const response = await fetch(
-        `https://api.cerebrawl.me/battle/generateQuestion?difficulty=${effectiveDifficulty}&subject=${encodeURIComponent(subject)}`
-      );
-
+      const response = await fetch("https://api.cerebrawl.me/battle/generateQuestion", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          quiz: rawQuiz,
+          difficulty: effectiveDifficulty
+        })
+      });
       if (!response.ok) {
         const errorText = await response.text();
         console.error("Backend error:", response.status, errorText);

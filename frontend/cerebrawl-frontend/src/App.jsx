@@ -15,9 +15,10 @@ function PreBattle() {
 
   const [topic, setTopic] = useState("");
   const [difficulty, setDifficulty] = useState("1");
+  const [quiz, setQuiz] = useState("");
   const [topicError, setTopicError] = useState("");
 
-  const validTopics = [
+  /*const validTopics = [
     "biology",
     "history",
     "chemistry",
@@ -25,31 +26,48 @@ function PreBattle() {
     "literature",
     "computer science",
   ];
-
-  const handleStartBattle = () => {
+  */
+  const getQuiz = async (topic) => {
+  try {
     const cleanedTopic = topic.trim().toLowerCase();
+    const response = await fetch(
+      `https://api.cerebrawl.me/battle/generateQuiz?topic=${encodeURIComponent(cleanedTopic)}`
+    );
 
-    if (!cleanedTopic) return;
+    if (!response.ok) throw new Error("Failed to fetch quiz");
 
-    if (!validTopics.includes(cleanedTopic)) {
-      setTopicError("Invalid topic. Please enter a valid study topic.");
-      return;
-    }
+    const data = await response.json();
+    setQuiz(data.quiz);
 
-    setTopicError("");
+    return data.quiz;
+  } catch (err) {
+    console.error(err);
+    return null;
+  }
+};
 
-    sessionStorage.removeItem("playerHP");
-    sessionStorage.removeItem("enemyHP");
-    sessionStorage.setItem("battleTopic", cleanedTopic);
-    sessionStorage.setItem("battleDifficulty", difficulty);
+const handleStartBattle = async () => {
+  const cleanedTopic = topic.trim().toLowerCase();
+  if (!cleanedTopic) return;
 
-    navigate("/battlescreen", {
-      state: {
-        topic: cleanedTopic,
-        difficulty: Number(difficulty),
-      },
-    });
-  };
+  const generatedQuiz = await getQuiz(cleanedTopic);
+
+  if (!generatedQuiz) {
+    setTopicError("Failed to generate quiz");
+    return;
+  }
+
+  sessionStorage.setItem("battleQuiz", generatedQuiz);
+  sessionStorage.setItem("battleTopic", cleanedTopic);
+  sessionStorage.setItem("battleDifficulty", difficulty);
+
+  navigate("/battlescreen", {
+    state: {
+      topic: cleanedTopic,
+      difficulty: Number(difficulty),
+    },
+  });
+};
 
   const handleTut = () => {
     navigate("/tutorial");
