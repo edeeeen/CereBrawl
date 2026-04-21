@@ -109,7 +109,7 @@ export default function CatalogContent() {
                                     key={quiz.id || index} // Use quiz.id if available for better performance
                                     style={{
                                         padding: "1.5rem",
-                                        marginBottom: "1.5rem",
+                                        marginBottom: "0.5rem",
                                         cursor: "pointer",
                                         backgroundColor: "#448f91", 
                                         border: "5px outset #2f8f83", 
