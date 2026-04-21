@@ -4,10 +4,11 @@ import BattleScreen from "./battle_components/BattleScreen.jsx";
 import HomeContent from "./menu_components/homeContent.jsx";
 import AccountContent from "./menu_components/accountContent.jsx";
 import TutorialScreen from "./tutorial_components/TutorialScreen.jsx";
+import CatalogContent from "./menu_components/catalogContent.jsx";
+import SideBar from "./menu_components/sideBar.jsx";
 import Image from "./Images/elgato.png";
 import "../styleSheets/mainMenu.css";
 import "./index.css";
-import SideBar from "./menu_components/sideBar.jsx";
 
 function PreBattle() {
   const navigate = useNavigate();
@@ -241,6 +242,7 @@ function App() {
         <Route path="/prebattle" element={<PreBattle />} />
         <Route path="/battlescreen" element={<BattleScreen />} />
         <Route path="/account" element={<AccountContent />} />
+        <Route path="/catalog" element={<CatalogContent />} />
         <Route path="/tutorial" element={<TutorialScreen />} />
       </Routes>
     </BrowserRouter>

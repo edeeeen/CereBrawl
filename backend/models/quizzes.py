@@ -9,6 +9,7 @@ class QuizResponse(BaseModel):
     subject: str
     difficulty: int # 1-5
     creator: str
+    creator_id: str
     description: str | None = None # likely going unused
     bookmarks: int
     views: int
