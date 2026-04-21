@@ -6,6 +6,7 @@ import elgato1 from "../Images/elgato_full_1.png";
 import elgato2 from "../Images/elgato_full_2.png";
 import elgato3 from "../Images/elgato_full_3.png";
 import elgato4 from "../Images/elgato_full_4.png";
+import elgatoAnimation from "../Images/elgatogif.gif";
 
 export default function HomeContent() {
   const navigate = useNavigate();
@@ -216,7 +217,7 @@ export default function HomeContent() {
               * Big Hint - Reveals two wrong answers <br />
             </p>
             <img
-              src={elgato1}
+              src={elgatoAnimation}
               style={{
                 width: "250px",
                 height: "250px",
