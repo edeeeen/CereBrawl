@@ -131,7 +131,7 @@ export default function CatalogContent() {
                                             {quiz.name}
                                         </h3>
                                         <span style={{ fontSize: "16px", fontWeight: "bold", color: "white", padding: "2px 8px" }}>
-                                            Creator: {quiz.short_id}
+                                            Creator: {quiz.creator}
                                         </span>
                                     </div>
                                     

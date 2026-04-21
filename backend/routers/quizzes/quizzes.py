@@ -91,16 +91,21 @@ Can have limits on the number of quizzes returned.
 @router.get("/getQuizzes")
 def get_all_quizzes(
     session: db.SessionDep,
-    sort_by: SortBy | None = Query(None, description="The field to sort by (name, subject, create_date)"),
-    filter_subject: str | None = Query(None, description="The field to filter by subject (biology, math, etc.).  Note: can be null"),
-    limit: int | None = Query(None, description="The maximum number of quizzes to return. If no limit specificed it returns 50", ge=0, le=100)
+    sort_by: SortBy | None = Query(None, description="The field to sort by"),
+    filter_subject: str | None = Query(None, description="Filter by subject"),
+    limit: int | None = Query(None, ge=0, le=100)
 ) -> list[QuizResponse]:
     '''
     Get all quizzes with optional sorting and filtering.
     '''
     if(limit == None):
         limit = 50
-    statement = select(Quizzes).limit(limit)
+
+    statement = (
+        select(Quizzes, Users)
+        .join(Users, Quizzes.creator == Users.short_id)
+        .limit(limit)
+    )
     
     # Apply filter if provided
     if filter_subject:
@@ -111,19 +116,27 @@ def get_all_quizzes(
         statement = statement.order_by(Quizzes.name)
     elif sort_by == SortBy.subject:
         statement = statement.order_by(Quizzes.subject)
-    elif sort_by == SortBy.create_date:
-        statement = statement.order_by(Quizzes.create_date)
     elif sort_by == SortBy.bookmarks:
         statement = statement.order_by(Quizzes.bookmarks.desc())
     elif sort_by == SortBy.views:
         statement = statement.order_by(Quizzes.views.desc())
     else:
-        statement = statement.order_by(Quizzes.create_date)  # default
-    
-    quizzes = session.exec(statement).scalars().all()
+        statement = statement.order_by(Quizzes.views.desc())
 
-    return [QuizResponse(**quiz.model_dump()) for quiz in quizzes]
+    results = session.exec(statement).all()
 
+    # Map results into the QuizResponse model
+    response_list = []
+    for quiz, user in results:
+        # Create a dictionary from the quiz model
+        quiz_dict = quiz.model_dump()
+        
+        quiz_dict['creator'] = user.username
+        quiz_dict['creator_id'] = user.short_id
+
+        response_list.append(QuizResponse(**quiz_dict))
+
+    return response_list
 '''
 Get a quiz by id.
 Parameters:
