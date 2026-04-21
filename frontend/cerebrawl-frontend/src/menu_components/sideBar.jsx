@@ -18,7 +18,7 @@ export default function SideBar() {
   return (
     <div>
     {/* Left panel */}
-    <div className="SidePanel" id="picBorder">
+    <div className="SidePanel" id="picBorder" style={{ height: "100%" }}>
         <div>
         <p
             className="normalTB"
@@ -63,7 +63,7 @@ export default function SideBar() {
                 <button
                     disabled={isCurrentPage('/catalog')}
                     className="menu-button"
-                    //onClick={() => 
+                    onClick={() => navigate("/catalog")} 
                     style={{ fontSize: "16px" }}
                 >
                     Catalog
