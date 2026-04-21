@@ -1,5 +1,13 @@
 from pydantic import BaseModel
 
+class get_quiz_generation_request(BaseModel):
+    quiz: str
+    
+
+class get_quiz_generation_response(BaseModel):
+    quiz: str
+
+
 class get_battle_question_response(BaseModel):
     question: str
     A: str
