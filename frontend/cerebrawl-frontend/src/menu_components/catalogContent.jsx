@@ -32,6 +32,40 @@ export default function CatalogContent() {
         }
     };
 
+const StartFight = async (quizId) => {
+    try {
+        const response = await fetch(`https://api.cerebrawl.me/quizzes/getQuiz/${quizId}`);
+        const quizData = await response.json();
+
+        // evil hackery to format it the way the AI would because this is easier than changing everything
+        const rawStringForBackend = quizData.questions.map(q => {
+            return `Question: ${q.question}\n` +
+                   `A. ${q.option_a}\n` +
+                   `B. ${q.option_b}\n` +
+                   `C. ${q.option_c}\n` +
+                   `D. ${q.option_d}\n` +
+                   `Correct Answer: ${q.correct_answer.toUpperCase()}`;
+        }).join('\n\n'); 
+
+        console.log("FORMATTED CATALOG QUIZ:", rawStringForBackend);
+
+        sessionStorage.setItem("battleQuiz", rawStringForBackend);
+        sessionStorage.setItem("battleTopic", quizData.name);
+        sessionStorage.setItem("battleDifficulty", quizData.difficulty || 1);
+
+        navigate(`/battlescreen`, { 
+            // this might not be needed
+            state: { 
+                quiz: rawStringForBackend, 
+                topic: quizData.name, 
+                difficulty: 1 
+            } 
+        });
+    } catch (error) {
+        console.error("Failed to format catalog quiz:", error);
+    }
+};
+
     useEffect(() => {
         fetchData();
     }, [sortBy]);
@@ -106,7 +140,7 @@ export default function CatalogContent() {
                             listOfQuizzes.map((quiz, index) => (
                                 <div
                                     className="template"
-                                    key={quiz.id || index} // Use quiz.id if available for better performance
+                                    key={quiz.id || index}
                                     style={{
                                         padding: "1.5rem",
                                         marginBottom: "0.5rem",
@@ -116,7 +150,7 @@ export default function CatalogContent() {
                                         transition: "transform 0.1s",
                                         borderRadius: "4px"
                                     }}
-                                    onClick={() => navigate(`/battlescreen`, { state: { quizId: quiz.id } })}
+                                    onClick={() => StartFight(quiz.short_id)}
                                     onMouseEnter={(e) => {
                                         e.currentTarget.style.transform = "scale(1.01)";
                                         e.currentTarget.style.borderColor = "#46c4b4";
