@@ -2,6 +2,7 @@ import "../../styleSheets/mainMenu.css"
 import { BrowserRouter, Routes, Route, useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
 import Image from "../Images/elgato.png"
+import SideBar from "./sideBar";
 
 export default function AccountContent() {
     const navigate = useNavigate();
@@ -155,23 +156,7 @@ export default function AccountContent() {
                 />
             </div>
             <div className="BodyBox">
-                <div className="SidePanel" id="picBorder">
-                    <div>
-                        <p className="normalTB">Site Directory</p>
-
-                        <div style={{display:"flex", flexDirection:"column", justifyContent:"space-evenly"}}>
-                            <div style={{margin:"2px"}}>
-                                - <button onClick={() => navigate("/")} style={{width:"fit-content"}}>Home</button>
-                            </div>
-                            <div style={{margin:"2px"}}>
-                                - <button onClick={() => navigate("/prebattle")}  style={{width:"fit-content"}}>Play!</button>
-                            </div>
-                            <div style={{margin:"2px"}}>
-                                - <button onClick={() => navigate("/account")}  style={{width:"fit-content"}}>Account</button>
-                            </div>
-                        </div>
-                    </div>
-                </div>
+                <SideBar />
                 <div className="MiddlePanel" id="picBorder" >
                     <div className="MidInfo">
                         {isLoggedIn && user ? (

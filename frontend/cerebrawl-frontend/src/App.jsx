@@ -7,6 +7,7 @@ import TutorialScreen from "./tutorial_components/TutorialScreen.jsx";
 import Image from "./Images/elgato.png";
 import "../styleSheets/mainMenu.css";
 import "./index.css";
+import SideBar from "./menu_components/sideBar.jsx";
 
 function PreBattle() {
   const navigate = useNavigate();
@@ -113,48 +114,7 @@ function PreBattle() {
       {/* Main body */}
       <div className="BodyBox">
         {/* Left panel */}
-        <div className="SidePanel" id="picBorder">
-          <div>
-            <p
-              className="normalTB"
-              style={{
-                fontSize: "30px",
-                lineHeight: "1.2",
-                marginBottom: "10px",
-              }}
-            >
-              Site Directory
-            </p>
-
-            <div
-              style={{
-                display: "flex",
-                flexDirection: "column",
-                justifyContent: "space-evenly",
-              }}
-            >
-              <div style={{ margin: "2px" }}>
-                -{" "}
-                <button
-                  onClick={() => navigate("/")}
-                  style={{ width: "fit-content", fontSize: "18px" }}
-                >
-                  Home
-                </button>
-              </div>
-
-              <div style={{ margin: "2px" }}>
-                -{" "}
-                <button
-                  onClick={handleTut}
-                  style={{ width: "fit-content", fontSize: "18px" }}
-                >
-                  Tutorial
-                </button>
-              </div>
-            </div>
-          </div>
-        </div>
+        <SideBar />
 
         {/* Middle panel */}
         <div className="MiddlePanel" id="picBorder">
