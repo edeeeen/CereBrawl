@@ -24,6 +24,10 @@ function BattleScreen() {
   const [bIsAvailable, setBIsAvailable] = useState(true);
   const [cIsAvailable, setCIsAvailable] = useState(true);
   const [dIsAvailable, setDIsAvailable] = useState(true);
+  const [difficulty, setDifficulty] = useState(1);
+  const [questionsRight, setQuestionsRight] = useState(0);
+  const [questionsWrong, setQuestionsWrong] = useState(0);
+
 
   const [battleQuestions, setBattleQuestions] = useState([]);
   const [savingQuiz, setSavingQuiz] = useState(false);
@@ -80,7 +84,7 @@ function BattleScreen() {
   
   const selectedDifficulty = Number(rawDifficulty);
 
-  const effectiveDifficulty = subject === "biology" ? selectedDifficulty : 1;
+  //const effectiveDifficulty = subject === "biology" ? selectedDifficulty : 1;
 
   const fullQuestion = useMemo(() => {
     return questionData?.question || "";
@@ -103,7 +107,7 @@ function BattleScreen() {
       setDIsAvailable(true);
 
       console.log("FETCHING SUBJECT:", subject);
-      console.log("FETCHING DIFFICULTY:", effectiveDifficulty);
+      console.log("FETCHING DIFFICULTY:", difficulty);
       console.log("FETCHING QUIZ:", rawQuiz);
 
       const response = await fetch("https://api.cerebrawl.me/battle/generateQuestion", {
@@ -111,7 +115,7 @@ function BattleScreen() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           quiz: rawQuiz,
-          difficulty: effectiveDifficulty
+          difficulty: difficulty,
         })
       });
       if (!response.ok) {
@@ -295,6 +299,9 @@ function BattleScreen() {
           playerHP: playerHP,
           enemyHP: enemyHP,
           damageMultiplier: damageMultiplier,
+          difficulty: difficulty,
+          questionsRight: questionsRight,
+          questionsWrong: questionsWrong,
         }),
       });
 
@@ -313,6 +320,9 @@ function BattleScreen() {
       setPlayerHP(Math.max(result.playerHP, 0));
       setEnemyHP(Math.max(result.enemyHP, 0));
       setDamageMultiplier(result.damageMultiplier);
+      setDifficulty(result.difficulty);
+      setQuestionsRight(result.questionsRight);
+      setQuestionsWrong(result.questionsWrong);
 
       if (result.result === "correct") {
         setResultMessage("Correct! Nice hit.");
