@@ -1,9 +1,9 @@
 import { useEffect, useMemo, useState } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import "./BattleScreen.css";
-import mini from "../Images/miniShield.png"
-import big from "../Images/bigShield.png"
-import chug from "../Images/chugJug.png"
+import mini from "../Images/miniShield.png";
+import big from "../Images/bigShield.png";
+import chug from "../Images/chugJug.png";
 
 function BattleScreen() {
   const navigate = useNavigate();
@@ -24,6 +24,13 @@ function BattleScreen() {
   const [bIsAvailable, setBIsAvailable] = useState(true);
   const [cIsAvailable, setCIsAvailable] = useState(true);
   const [dIsAvailable, setDIsAvailable] = useState(true);
+
+  const [battleQuestions, setBattleQuestions] = useState([]);
+  const [savingQuiz, setSavingQuiz] = useState(false);
+  const [saveQuizMessage, setSaveQuizMessage] = useState("");
+  const [quizName, setQuizName] = useState("");
+  const [quizSaved, setQuizSaved] = useState(false);
+
   const [numOfItems, setNumOfItems] = useState({
     "Mini Shield": 2,
     "Big Shield": 1,
@@ -32,7 +39,7 @@ function BattleScreen() {
     "Damage Mega Boost": 1,
     "Damage Ultra Boost": 1,
     "Small Hint": 1,
-    "Big Hint": 1
+    "Big Hint": 1,
   });
 
   const [playerHP, setPlayerHP] = useState(() => {
@@ -73,7 +80,6 @@ function BattleScreen() {
   
   const selectedDifficulty = Number(rawDifficulty);
 
-  // Only biology should actually use the selected difficulty.
   const effectiveDifficulty = subject === "biology" ? selectedDifficulty : 1;
 
   const fullQuestion = useMemo(() => {
@@ -96,7 +102,6 @@ function BattleScreen() {
       setCIsAvailable(true);
       setDIsAvailable(true);
 
-
       console.log("FETCHING SUBJECT:", subject);
       console.log("FETCHING DIFFICULTY:", effectiveDifficulty);
       console.log("FETCHING QUIZ:", rawQuiz);
@@ -117,6 +122,18 @@ function BattleScreen() {
 
       const data = await response.json();
       setQuestionData(data);
+
+      setBattleQuestions((prev) => [
+        ...prev,
+        {
+          question: data.question,
+          a: data.A,
+          b: data.B,
+          c: data.C,
+          d: data.D,
+          correct_answer: data.Answer,
+        },
+      ]);
     } catch (error) {
       console.error("Error fetching question:", error);
       setQuestionError("Could not load question.");
@@ -165,14 +182,16 @@ function BattleScreen() {
       setGameResult("win");
       setShowAttackChoices(false);
       setResultMessage("You defeated the enemy.");
+      setQuizName(`${subject} Battle Quiz`);
     } else if (playerHP <= 0) {
       setPlayerHP(0);
       setGameOver(true);
       setGameResult("loss");
       setShowAttackChoices(false);
       setResultMessage("You were defeated.");
+      setQuizName(`${subject} Battle Quiz`);
     }
-  }, [playerHP, enemyHP]);
+  }, [playerHP, enemyHP, subject]);
 
   const handleAttackClick = () => {
     if (!loadingQuestion && !questionError && questionData && !gameOver) {
@@ -198,6 +217,62 @@ function BattleScreen() {
     navigate("/prebattle");
   };
 
+  const handleSaveQuiz = async () => {
+    const token = localStorage.getItem("token");
+    const trimmedQuizName = quizName.trim();
+
+    if (!token) {
+      setSaveQuizMessage("You need to sign in before saving a quiz.");
+      return;
+    }
+
+    if (!trimmedQuizName) {
+      setSaveQuizMessage("Please enter a quiz name.");
+      return;
+    }
+
+    if (battleQuestions.length === 0) {
+      setSaveQuizMessage("There are no questions to save yet.");
+      return;
+    }
+
+    try {
+      setSavingQuiz(true);
+      setSaveQuizMessage("");
+
+      const response = await fetch("https://api.cerebrawl.me/quizzes/createQuiz", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({
+          quiz: {
+            name: trimmedQuizName,
+            subject: subject,
+            difficulty: selectedDifficulty,
+            description: `Saved after a ${gameResult} battle.`,
+          },
+          questions: battleQuestions,
+        }),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.detail || "Failed to save quiz.");
+      }
+
+      setQuizSaved(true);
+      setSaveQuizMessage("Quiz saved to Catalogue.");
+    } catch (error) {
+      console.error("Save quiz error:", error);
+      setSaveQuizMessage(error.message || "Could not save quiz.");
+    } finally {
+      setSavingQuiz(false);
+    }
+  };
+
   const triggerBattleEffect = (type) => {
     setBattleEffect(type);
     setTimeout(() => setBattleEffect(""), 450);
@@ -219,7 +294,7 @@ function BattleScreen() {
           correctAnswer: questionData.Answer,
           playerHP: playerHP,
           enemyHP: enemyHP,
-          damageMultiplier: damageMultiplier
+          damageMultiplier: damageMultiplier,
         }),
       });
 
@@ -242,7 +317,7 @@ function BattleScreen() {
       if (result.result === "correct") {
         setResultMessage("Correct! Nice hit.");
         triggerBattleEffect("correct-flash");
-        setDamageMultiplier(1.0); 
+        setDamageMultiplier(1.0);
       } else {
         setResultMessage(`Incorrect! The answer was ${questionData.Answer}.`);
         triggerBattleEffect("wrong-flash");
@@ -259,14 +334,14 @@ function BattleScreen() {
       const response = await fetch("https://api.cerebrawl.me/battle/useItem", {
         method: "POST",
         headers: {
-          "Content-Type": "application/json"
+          "Content-Type": "application/json",
         },
         body: JSON.stringify({
           itemName: itemName,
           playerHP: playerHP,
           enemyHP: enemyHP,
-          damageMultiplier: damageMultiplier
-        })
+          damageMultiplier: damageMultiplier,
+        }),
       });
 
       const result = await response.json();
@@ -277,197 +352,195 @@ function BattleScreen() {
       setResultMessage(result.result);
       setDamageMultiplier(result.damageMultiplier);
 
-      if(itemName === "Mini Shield") {
+      if (itemName === "Mini Shield") {
         setResultMessage("You used Mini Shield! You gain 10 HP.");
         triggerBattleEffect("correct-flash");
-        setNumOfItems(prev => ({
+        setNumOfItems((prev) => ({
           ...prev,
-          "Mini Shield": prev["Mini Shield"] - 1
+          "Mini Shield": prev["Mini Shield"] - 1,
         }));
-      } else if(itemName === "Big Shield") {
+      } else if (itemName === "Big Shield") {
         setResultMessage("You used Big Shield! You gain 20 HP.");
         triggerBattleEffect("correct-flash");
-        setNumOfItems(prev => ({
+        setNumOfItems((prev) => ({
           ...prev,
-          "Big Shield": prev["Big Shield"] - 1
+          "Big Shield": prev["Big Shield"] - 1,
         }));
-      } else if(itemName === "Chug Jug") {
+      } else if (itemName === "Chug Jug") {
         setResultMessage("You used Chug Jug! You gain 50 HP.");
         triggerBattleEffect("correct-flash");
-        setNumOfItems(prev => ({
+        setNumOfItems((prev) => ({
           ...prev,
-          "Chug Jug": prev["Chug Jug"] - 1
+          "Chug Jug": prev["Chug Jug"] - 1,
         }));
-      } else if(itemName === "Damage Boost") {
+      } else if (itemName === "Damage Boost") {
         setResultMessage("You used Damage Boost! Your next attack will be stronger.");
         triggerBattleEffect("correct-flash");
-        setNumOfItems(prev => ({
+        setNumOfItems((prev) => ({
           ...prev,
-          "Damage Boost": prev["Damage Boost"] - 1
+          "Damage Boost": prev["Damage Boost"] - 1,
         }));
-      } else if(itemName === "Damage Mega Boost") {
+      } else if (itemName === "Damage Mega Boost") {
         setResultMessage("You used Damage Mega Boost! Your next attack will be even stronger.");
         triggerBattleEffect("correct-flash");
-        setNumOfItems(prev => ({
+        setNumOfItems((prev) => ({
           ...prev,
-          "Damage Mega Boost": prev["Damage Mega Boost"] - 1
+          "Damage Mega Boost": prev["Damage Mega Boost"] - 1,
         }));
-      } else if(itemName === "Damage Ultra Boost") {
+      } else if (itemName === "Damage Ultra Boost") {
         setResultMessage("You used Damage Ultra Boost! Your next attack will be the strongest.");
         triggerBattleEffect("correct-flash");
-        setNumOfItems(prev => ({
+        setNumOfItems((prev) => ({
           ...prev,
-          "Damage Ultra Boost": prev["Damage Ultra Boost"] - 1
+          "Damage Ultra Boost": prev["Damage Ultra Boost"] - 1,
         }));
-      } else if(itemName === "Small Hint") {
-        if(questionData?.Answer === "A"){
+      } else if (itemName === "Small Hint") {
+        if (questionData?.Answer === "A") {
           const randomNumber = Math.floor(Math.random() * 3) + 1;
-          if(randomNumber === 1) {
+          if (randomNumber === 1) {
             setBIsAvailable(false);
-            setResultMessage(`You used Small Hint! B is incorrect.`);
-        triggerBattleEffect("correct-flash");
-          }else if(randomNumber === 2) {
-            setCIsAvailable(false);
-            setResultMessage(`You used Small Hint! C is incorrect.`);
+            setResultMessage("You used Small Hint! B is incorrect.");
             triggerBattleEffect("correct-flash");
-          }else {
+          } else if (randomNumber === 2) {
+            setCIsAvailable(false);
+            setResultMessage("You used Small Hint! C is incorrect.");
+            triggerBattleEffect("correct-flash");
+          } else {
             setDIsAvailable(false);
-            setResultMessage(`You used Small Hint! D is incorrect.`);
+            setResultMessage("You used Small Hint! D is incorrect.");
             triggerBattleEffect("correct-flash");
           }
-        }else if(questionData?.Answer === "B"){
+        } else if (questionData?.Answer === "B") {
           const randomNumber = Math.floor(Math.random() * 3) + 1;
-          if(randomNumber === 1) {
+          if (randomNumber === 1) {
             setAIsAvailable(false);
-            setResultMessage(`You used Small Hint! A is incorrect.`);
+            setResultMessage("You used Small Hint! A is incorrect.");
             triggerBattleEffect("correct-flash");
-          }else if(randomNumber === 2) {
+          } else if (randomNumber === 2) {
             setCIsAvailable(false);
-            setResultMessage(`You used Small Hint! C is incorrect.`);
+            setResultMessage("You used Small Hint! C is incorrect.");
             triggerBattleEffect("correct-flash");
-          }else {
+          } else {
             setDIsAvailable(false);
-            setResultMessage(`You used Small Hint! D is incorrect.`);
+            setResultMessage("You used Small Hint! D is incorrect.");
             triggerBattleEffect("correct-flash");
           }
-        }else if(questionData?.Answer === "C"){
+        } else if (questionData?.Answer === "C") {
           const randomNumber = Math.floor(Math.random() * 3) + 1;
-          if(randomNumber === 1) {
+          if (randomNumber === 1) {
             setAIsAvailable(false);
-            setResultMessage(`You used Small Hint! A is incorrect.`);
+            setResultMessage("You used Small Hint! A is incorrect.");
             triggerBattleEffect("correct-flash");
-          }else if(randomNumber === 2) {
+          } else if (randomNumber === 2) {
             setBIsAvailable(false);
-            setResultMessage(`You used Small Hint! B is incorrect.`);
+            setResultMessage("You used Small Hint! B is incorrect.");
             triggerBattleEffect("correct-flash");
-          }else {
+          } else {
             setDIsAvailable(false);
-            setResultMessage(`You used Small Hint! D is incorrect.`);
+            setResultMessage("You used Small Hint! D is incorrect.");
             triggerBattleEffect("correct-flash");
           }
-        }else if(questionData?.Answer === "D"){
+        } else if (questionData?.Answer === "D") {
           const randomNumber = Math.floor(Math.random() * 3) + 1;
-          if(randomNumber === 1) {
+          if (randomNumber === 1) {
             setAIsAvailable(false);
-            setResultMessage(`You used Small Hint! A is incorrect.`);
+            setResultMessage("You used Small Hint! A is incorrect.");
             triggerBattleEffect("correct-flash");
-          }else if(randomNumber === 2) {
+          } else if (randomNumber === 2) {
             setBIsAvailable(false);
-            setResultMessage(`You used Small Hint! B is incorrect.`);
+            setResultMessage("You used Small Hint! B is incorrect.");
             triggerBattleEffect("correct-flash");
-          }else {
+          } else {
             setCIsAvailable(false);
-            setResultMessage(`You used Small Hint! C is incorrect.`);
+            setResultMessage("You used Small Hint! C is incorrect.");
             triggerBattleEffect("correct-flash");
           }
         }
-        setNumOfItems(prev => ({
-          ...prev,
-          "Small Hint": prev["Small Hint"] - 1
-        }));
-        //setResultMessage(`You used Small Hint!`);
-        //triggerBattleEffect("correct-flash");
-        
-      } else if(itemName === "Big Hint") {
-        if(questionData?.Answer === "A"){
-          const randomNumber = Math.floor(Math.random() * 3) + 1;
-          if(randomNumber === 1) {
-            setBIsAvailable(false);
-            setCIsAvailable(false);
-            setResultMessage(`You used Small Hint! B and C are incorrect.`);
-        triggerBattleEffect("correct-flash");
-          }else if(randomNumber === 2) {
-            setCIsAvailable(false);
-            setDIsAvailable(false);
-            setResultMessage(`You used Small Hint! C and D are incorrect.`);
-            triggerBattleEffect("correct-flash");
-          }else {
-            setDIsAvailable(false);
-            setBIsAvailable(false);
-            setResultMessage(`You used Small Hint! B and D are incorrect.`);
-            triggerBattleEffect("correct-flash");
-          }
-        }else if(questionData?.Answer === "B"){
-          const randomNumber = Math.floor(Math.random() * 3) + 1;
-          if(randomNumber === 1) {
-            setAIsAvailable(false);
-            setCIsAvailable(false);
-            setResultMessage(`You used Small Hint! A and C are incorrect.`);
-            triggerBattleEffect("correct-flash");
-          }else if(randomNumber === 2) {
-            setCIsAvailable(false);
-            setDIsAvailable(false);
-            setResultMessage(`You used Small Hint! C and D are incorrect.`);
-            triggerBattleEffect("correct-flash");
-          }else {
-            setDIsAvailable(false);
-            setAIsAvailable(false)
-            setResultMessage(`You used Small Hint! A and D are incorrect.`);
-            triggerBattleEffect("correct-flash");
-          }
-        }else if(questionData?.Answer === "C"){
-          const randomNumber = Math.floor(Math.random() * 3) + 1;
-          if(randomNumber === 1) {
-            setAIsAvailable(false);
-            setBIsAvailable(false);
-            setResultMessage(`You used Small Hint! A and B are incorrect.`);
-            triggerBattleEffect("correct-flash");
-          }else if(randomNumber === 2) {
-            setBIsAvailable(false);
-            setDIsAvailable(false);
-            setResultMessage(`You used Small Hint! B and D are incorrect.`);
-            triggerBattleEffect("correct-flash");
-          }else {
-            setDIsAvailable(false);
-            setAIsAvailable(false);
-            setResultMessage(`You used Small Hint! A and D are incorrect.`);
-            triggerBattleEffect("correct-flash");
-          }
-        }else if(questionData?.Answer === "D"){
-          const randomNumber = Math.floor(Math.random() * 3) + 1;
-          if(randomNumber === 1) {
-            setAIsAvailable(false);
-            setBIsAvailable(false);
-            setResultMessage(`You used Small Hint! A and B are incorrect.`);
-            triggerBattleEffect("correct-flash");
-          }else if(randomNumber === 2) {
-            setBIsAvailable(false);
-            setCIsAvailable(false)
-            setResultMessage(`You used Small Hint! B and C are incorrect.`);
-            triggerBattleEffect("correct-flash");
-          }else {
-            setCIsAvailable(false);
-            setAIsAvailable(false);
-            setResultMessage(`You used Small Hint! A and C are incorrect.`);
-            triggerBattleEffect("correct-flash");
-          }
-        }
-        setNumOfItems(prev => ({
-            ...prev,
-            "Big Hint": prev["Big Hint"] - 1
-          }));
-      }
 
+        setNumOfItems((prev) => ({
+          ...prev,
+          "Small Hint": prev["Small Hint"] - 1,
+        }));
+      } else if (itemName === "Big Hint") {
+        if (questionData?.Answer === "A") {
+          const randomNumber = Math.floor(Math.random() * 3) + 1;
+          if (randomNumber === 1) {
+            setBIsAvailable(false);
+            setCIsAvailable(false);
+            setResultMessage("You used Big Hint! B and C are incorrect.");
+            triggerBattleEffect("correct-flash");
+          } else if (randomNumber === 2) {
+            setCIsAvailable(false);
+            setDIsAvailable(false);
+            setResultMessage("You used Big Hint! C and D are incorrect.");
+            triggerBattleEffect("correct-flash");
+          } else {
+            setDIsAvailable(false);
+            setBIsAvailable(false);
+            setResultMessage("You used Big Hint! B and D are incorrect.");
+            triggerBattleEffect("correct-flash");
+          }
+        } else if (questionData?.Answer === "B") {
+          const randomNumber = Math.floor(Math.random() * 3) + 1;
+          if (randomNumber === 1) {
+            setAIsAvailable(false);
+            setCIsAvailable(false);
+            setResultMessage("You used Big Hint! A and C are incorrect.");
+            triggerBattleEffect("correct-flash");
+          } else if (randomNumber === 2) {
+            setCIsAvailable(false);
+            setDIsAvailable(false);
+            setResultMessage("You used Big Hint! C and D are incorrect.");
+            triggerBattleEffect("correct-flash");
+          } else {
+            setDIsAvailable(false);
+            setAIsAvailable(false);
+            setResultMessage("You used Big Hint! A and D are incorrect.");
+            triggerBattleEffect("correct-flash");
+          }
+        } else if (questionData?.Answer === "C") {
+          const randomNumber = Math.floor(Math.random() * 3) + 1;
+          if (randomNumber === 1) {
+            setAIsAvailable(false);
+            setBIsAvailable(false);
+            setResultMessage("You used Big Hint! A and B are incorrect.");
+            triggerBattleEffect("correct-flash");
+          } else if (randomNumber === 2) {
+            setBIsAvailable(false);
+            setDIsAvailable(false);
+            setResultMessage("You used Big Hint! B and D are incorrect.");
+            triggerBattleEffect("correct-flash");
+          } else {
+            setDIsAvailable(false);
+            setAIsAvailable(false);
+            setResultMessage("You used Big Hint! A and D are incorrect.");
+            triggerBattleEffect("correct-flash");
+          }
+        } else if (questionData?.Answer === "D") {
+          const randomNumber = Math.floor(Math.random() * 3) + 1;
+          if (randomNumber === 1) {
+            setAIsAvailable(false);
+            setBIsAvailable(false);
+            setResultMessage("You used Big Hint! A and B are incorrect.");
+            triggerBattleEffect("correct-flash");
+          } else if (randomNumber === 2) {
+            setBIsAvailable(false);
+            setCIsAvailable(false);
+            setResultMessage("You used Big Hint! B and C are incorrect.");
+            triggerBattleEffect("correct-flash");
+          } else {
+            setCIsAvailable(false);
+            setAIsAvailable(false);
+            setResultMessage("You used Big Hint! A and C are incorrect.");
+            triggerBattleEffect("correct-flash");
+          }
+        }
+
+        setNumOfItems((prev) => ({
+          ...prev,
+          "Big Hint": prev["Big Hint"] - 1,
+        }));
+      }
 
       setShowItemChoices1(false);
       setShowItemChoices2(false);
@@ -485,7 +558,7 @@ function BattleScreen() {
     aIsAvailable,
     bIsAvailable,
     cIsAvailable,
-    dIsAvailable
+    dIsAvailable,
   });
 
   return (
@@ -563,9 +636,35 @@ function BattleScreen() {
                   ? "Professor Elm has been defeated."
                   : "You ran out of HP."}
               </p>
-              <button className="game-over-button" onClick={handleBackToMenu}>
-                Back to Main Menu
-              </button>
+
+              <div className="save-quiz-input-wrap">
+                <input
+                  type="text"
+                  className="save-quiz-input"
+                  value={quizName}
+                  onChange={(e) => setQuizName(e.target.value)}
+                  placeholder="Enter quiz name"
+                  maxLength={255}
+                />
+              </div>
+
+              <div className="game-over-actions">
+                <button
+                  className="game-over-button"
+                  onClick={handleSaveQuiz}
+                  disabled={savingQuiz || quizSaved}
+                >
+                  {quizSaved ? "Saved" : savingQuiz ? "Saving..." : "Save Quiz"}
+                </button>
+
+                <button className="game-over-button" onClick={handleBackToMenu}>
+                  Back to Main Menu
+                </button>
+              </div>
+
+              {saveQuizMessage && (
+                <p className="save-quiz-message">{saveQuizMessage}</p>
+              )}
             </div>
           </div>
         )}
@@ -573,7 +672,7 @@ function BattleScreen() {
 
       <div className="bottom-panel">
         <div className="question-panel" id="picBorder">
-          {loadingQuestion && <p className="question-text">Loading question...</p>}
+          {loadingQuestion && <p className="question-text">Loading question.</p>}
 
           {!loadingQuestion && questionError && (
             <p className="question-text error-text">{questionError}</p>
@@ -599,119 +698,112 @@ function BattleScreen() {
           )}
         </div>
 
-        <div className="action-panel" id="picBorder">
+        <div className="action-panel">
           {!showAttackChoices && !showItemChoices1 && !showItemChoices2 ? (
-            <>
-              <div className="top-actions" >
-                <button
-                  className="action-button primary"
-                  onClick={handleAttackClick}
-                  disabled={gameOver || loadingQuestion || !!questionError}
-                >
-                  Attack
-                </button>
-
-                <button 
-                  className="action-button primary" 
-                  onClick={handleItemClick}
-                  disabled={gameOver || loadingQuestion || !!questionError}
-                >
-                  Item
-                </button>
-              </div>
-            </>
+            <div className="top-actions">
+              <button
+                className="action-button primary"
+                onClick={handleAttackClick}
+                disabled={loadingQuestion || !!questionError || gameOver}
+              >
+                Attack
+              </button>
+              <button
+                className="action-button primary"
+                onClick={handleItemClick}
+                disabled={loadingQuestion || !!questionError || gameOver}
+              >
+                Item
+              </button>
+            </div>
           ) : showAttackChoices ? (
             <>
               <div className="answer-actions">
                 <button
                   className={`action-button ${selectedAnswer === "A" ? "selected" : ""} ${!aIsAvailable ? "itemHintDisabled" : ""}`}
                   onClick={() => handleAnswerClick("A")}
-                  disabled={!!selectedAnswer || gameOver || !aIsAvailable}
+                  disabled={!!selectedAnswer || !aIsAvailable || gameOver}
                 >
                   A. {questionData?.A}
                 </button>
-
                 <button
                   className={`action-button ${selectedAnswer === "B" ? "selected" : ""} ${!bIsAvailable ? "itemHintDisabled" : ""}`}
                   onClick={() => handleAnswerClick("B")}
-                  disabled={!!selectedAnswer || gameOver || !bIsAvailable}
+                  disabled={!!selectedAnswer || !bIsAvailable || gameOver}
                 >
                   B. {questionData?.B}
                 </button>
-
                 <button
                   className={`action-button ${selectedAnswer === "C" ? "selected" : ""} ${!cIsAvailable ? "itemHintDisabled" : ""}`}
                   onClick={() => handleAnswerClick("C")}
-                  disabled={!!selectedAnswer || gameOver || !cIsAvailable}
+                  disabled={!!selectedAnswer || !cIsAvailable || gameOver}
                 >
                   C. {questionData?.C}
                 </button>
-
                 <button
                   className={`action-button ${selectedAnswer === "D" ? "selected" : ""} ${!dIsAvailable ? "itemHintDisabled" : ""}`}
                   onClick={() => handleAnswerClick("D")}
-                  disabled={!!selectedAnswer || gameOver || !dIsAvailable}
+                  disabled={!!selectedAnswer || !dIsAvailable || gameOver}
                 >
                   D. {questionData?.D}
                 </button>
               </div>
 
               <button
-                className="action-button secondary-button back-button"
+                className="action-button next-button"
                 onClick={fetchQuestion}
-                disabled={gameOver || !selectedAnswer}
+                disabled={!selectedAnswer || gameOver}
               >
                 Next Question
               </button>
             </>
-          ):showItemChoices1 ? (
+          ) : showItemChoices1 ? (
             <>
               <div className="item-actions">
-                
                 <button
-                  className={`action-button ${numOfItems['Mini Shield'] <= 0 ? 'itemHintDisabled' : ''}`}
+                  className={`action-button ${numOfItems["Mini Shield"] <= 0 ? "itemHintDisabled" : ""}`}
                   onClick={() => handleUseItem("Mini Shield")}
                   disabled={gameOver || numOfItems["Mini Shield"] <= 0}
                 >
-                <img
-                  src={mini}
-                  style={{width:"30px", height:"30px", marginRight:"8px"}}
-                />
+                  <img
+                    src={mini}
+                    style={{ width: "30px", height: "30px", marginRight: "8px" }}
+                  />
                   Mini Shield ({numOfItems["Mini Shield"]})
                 </button>
+
                 <button
-                  className={`action-button ${numOfItems['Big Shield'] <= 0 ? 'itemHintDisabled' : ''}`}
+                  className={`action-button ${numOfItems["Big Shield"] <= 0 ? "itemHintDisabled" : ""}`}
                   onClick={() => handleUseItem("Big Shield")}
                   disabled={gameOver || numOfItems["Big Shield"] <= 0}
                 >
                   <img
-                  src={big}
-                  style={{width:"30px", height:"30px", marginRight:"8px"}}
-                />
+                    src={big}
+                    style={{ width: "30px", height: "30px", marginRight: "8px" }}
+                  />
                   Big Shield ({numOfItems["Big Shield"]})
                 </button>
+
                 <button
-                  className={`action-button ${numOfItems['Chug Jug'] <= 0 ? 'itemHintDisabled' : ''}`}
+                  className={`action-button ${numOfItems["Chug Jug"] <= 0 ? "itemHintDisabled" : ""}`}
                   onClick={() => handleUseItem("Chug Jug")}
                   disabled={gameOver || numOfItems["Chug Jug"] <= 0}
                 >
                   <img
-                  src={chug}
-                  style={{width:"30px", height:"30px", marginRight:"8px"}}
-                />
+                    src={chug}
+                    style={{ width: "30px", height: "30px", marginRight: "8px" }}
+                  />
                   Chug Jug ({numOfItems["Chug Jug"]})
                 </button>
+
                 <button
-                  className={`action-button ${numOfItems['Damage Boost'] <= 0 ? 'itemHintDisabled' : ''}`}
+                  className={`action-button ${numOfItems["Damage Boost"] <= 0 ? "itemHintDisabled" : ""}`}
                   onClick={() => handleUseItem("Damage Boost")}
                   disabled={gameOver || numOfItems["Damage Boost"] <= 0}
                 >
-                  <img
-                  src={chug}
-                  style={{width:"30px", height:"30px", marginRight:"8px"}}
-                />
                   Damage Boost ({numOfItems["Damage Boost"]})
                 </button>
+
                 <button
                   className="action-button"
                   onClick={() => {
@@ -722,6 +814,7 @@ function BattleScreen() {
                 >
                   Back
                 </button>
+
                 <button
                   className="action-button"
                   onClick={() => {
@@ -733,74 +826,57 @@ function BattleScreen() {
                 >
                   Next
                 </button>
-
               </div>
             </>
-           ) : showItemChoices2 ? (
+          ) : showItemChoices2 ? (
             <>
               <div className="item-actions">
-                
                 <button
-                  className={`action-button ${numOfItems['Damage Mega Boost'] <= 0 ? 'itemHintDisabled' : ''}`}
+                  className={`action-button ${numOfItems["Damage Mega Boost"] <= 0 ? "itemHintDisabled" : ""}`}
                   onClick={() => handleUseItem("Damage Mega Boost")}
                   disabled={gameOver || numOfItems["Damage Mega Boost"] <= 0}
                 >
-                <img
-                  src={mini}
-                  style={{width:"30px", height:"30px", marginRight:"8px"}}
-                />
                   Damage Mega Boost ({numOfItems["Damage Mega Boost"]})
                 </button>
+
                 <button
-                  className={`action-button ${numOfItems['Damage Ultra Boost'] <= 0 ? 'itemHintDisabled' : ''}`}
+                  className={`action-button ${numOfItems["Damage Ultra Boost"] <= 0 ? "itemHintDisabled" : ""}`}
                   onClick={() => handleUseItem("Damage Ultra Boost")}
                   disabled={gameOver || numOfItems["Damage Ultra Boost"] <= 0}
                 >
-                  <img
-                  src={big}
-                  style={{width:"30px", height:"30px", marginRight:"8px"}}
-                />
                   Damage Ultra Boost ({numOfItems["Damage Ultra Boost"]})
                 </button>
+
                 <button
-                  className={`action-button ${numOfItems['Small Hint'] <= 0 ? 'itemHintDisabled' : ''}`}
+                  className={`action-button ${numOfItems["Small Hint"] <= 0 ? "itemHintDisabled" : ""}`}
                   onClick={() => handleUseItem("Small Hint")}
                   disabled={gameOver || numOfItems["Small Hint"] <= 0}
                 >
-                  <img
-                  src={chug}
-                  style={{width:"30px", height:"30px", marginRight:"8px"}}
-                />
                   Small Hint ({numOfItems["Small Hint"]})
                 </button>
+
                 <button
-                  className={`action-button ${numOfItems['Big Hint'] <= 0 ? 'itemHintDisabled' : ''}`}
+                  className={`action-button ${numOfItems["Big Hint"] <= 0 ? "itemHintDisabled" : ""}`}
                   onClick={() => handleUseItem("Big Hint")}
                   disabled={gameOver || numOfItems["Big Hint"] <= 0}
                 >
-                  <img
-                  src={chug}
-                  style={{width:"30px", height:"30px", marginRight:"8px"}}
-                />
                   Big Hint ({numOfItems["Big Hint"]})
                 </button>
+
                 <button
                   className="action-button"
                   onClick={() => {
                     setShowItemChoices2(false);
-                    setShowItemChoices1(true)
+                    setShowItemChoices1(true);
                     setResultMessage("");
                   }}
                   disabled={gameOver}
                 >
                   Back
                 </button>
-
               </div>
             </>
-           ) : null
-            } 
-          
+          ) : null}
         </div>
       </div>
     </div>
