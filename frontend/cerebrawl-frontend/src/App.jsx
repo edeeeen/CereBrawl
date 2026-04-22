@@ -17,6 +17,7 @@ function PreBattle() {
   const [difficulty, setDifficulty] = useState("1");
   const [quiz, setQuiz] = useState("");
   const [topicError, setTopicError] = useState("");
+  const [loading, setLoading] = useState(false);
 
   /*const validTopics = [
     "biology",
@@ -47,6 +48,7 @@ function PreBattle() {
 };
 
 const handleStartBattle = async () => {
+  setLoading(true)
   const cleanedTopic = topic.trim().toLowerCase();
   if (!cleanedTopic) return;
 
@@ -54,6 +56,7 @@ const handleStartBattle = async () => {
 
   if (!generatedQuiz) {
     setTopicError("Failed to generate quiz");
+    setLoading(false);
     return;
   }
 
@@ -69,8 +72,9 @@ const handleStartBattle = async () => {
   });
 };
 
-  const handleTut = () => {
-    navigate("/tutorial");
+  const handleCatalogButton = async () => {
+    console.log("clicking catalog button");
+    navigate("/catalog");
   };
 
   return (
@@ -173,7 +177,7 @@ const handleStartBattle = async () => {
                 fontSize: "22px",
               }}
             >
-              Pick a valid study topic and difficulty, then start your battle.
+              Pick a valid study topic and difficulty to generate a quiz, then start your battle.
             </p>
 
             <div className="prebattle-form">
@@ -199,19 +203,72 @@ const handleStartBattle = async () => {
                 <option value="4">Difficulty 4</option>
               </select>
 
-              <button
-                className="battle-button"
-                onClick={handleStartBattle}
-                disabled={!topic.trim()}
-              >
-                Start Battle
-              </button>
+              {!loading && (
+                <button
+                  className="battle-button"
+                  onClick={handleStartBattle}
+                  disabled={!topic.trim() || loading}
+                >
+                  Start Battle
+                </button>
+              )}
+
+              {loading && (
+                <div class="loader"></div>
+              )}
+              
 
               {topicError && (
                 <p className="topic-error-text">
                   {topicError}
                 </p>
               )}
+            </div>
+          </div>
+          <div className="MidInfo">
+            <div
+              style={{
+                display: "flex",
+                flexDirection: "row",
+                alignItems: "center",
+              }}
+            >
+              <h2
+                className="normalTB"
+                style={{ fontSize: "40px" }}
+              >
+                Also check out our 
+              </h2>
+
+              <h1
+                style={{
+                  margin: "0",
+                  fontSize: "44px",
+                }}
+                id="rainbow"
+              >
+                Quiz Catalog
+              </h1>
+
+              <h2
+                className="normalTB"
+                style={{fontSize:"40px"}}
+              >
+                -------{'>'}
+              </h2>
+              <div
+                style={{flexGrow:"1"}}
+              >
+                <button
+                className="battle-button"
+                onClick={handleCatalogButton}
+                >
+                  Catalog
+                </button>
+
+              </div>
+
+              
             </div>
           </div>
         </div>
