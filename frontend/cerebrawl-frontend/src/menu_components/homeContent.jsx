@@ -198,7 +198,7 @@ export default function HomeContent() {
             className="normalTB"
             style={{ fontSize: "20px" }}
             >
-              Elgato's Tips and <br /> Tricks on Items!
+              Purrwin's Tips and <br /> Tricks on Items!
           </h2>
           <p
               style={{
