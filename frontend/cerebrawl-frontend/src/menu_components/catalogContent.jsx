@@ -4,6 +4,7 @@ import SideBar from "./sideBar";
 import Image from "../Images/elgato.png";
 import elgato1 from "../Images/elgato_full_1.png";
 import { useState, useEffect } from "react";
+import elgatoAnimation from "../Images/elgatogif.gif";
 
 export default function CatalogContent() {
     const navigate = useNavigate();
@@ -263,11 +264,18 @@ const bookmarkQuiz = async (quizId) => {
 
                 {/* Right panel */}
                 <div className="SidePanel" id="picBorder">
-                    <h2 className="normalTB" style={{ fontSize: "20px" }}>Elgato's Catalog Tips</h2>
+                    <h2 className="normalTB" style={{ fontSize: "20px" }}>Purrwins's Catalog Tips</h2>
                     <p style={{ margin: "12px", color: "black", fontSize: "22px", lineHeight: "1.5" }}>
                         Search for a subject or topic you want to study, and click on a quiz to jump into battle mode! You can also sort quizzes by name, popularity, or bookmarks to find the perfect quiz for you.
+                        As a reminder, in order to bookmark quizzes, you must be logged in to do so. So why aren't you logged in already?
                     </p>
-                    <img src={elgato1} alt="Mascot" style={{ width: "250px", height: "250px" }} />
+                    <img
+                        src={elgatoAnimation}
+                        style={{
+                            width: "250px",
+                            height: "250px",
+                        }}
+                    />
                 </div>
             </div>
         </div>

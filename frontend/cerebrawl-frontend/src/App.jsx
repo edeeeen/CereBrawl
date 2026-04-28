@@ -10,6 +10,7 @@ import Bookmarks from "./menu_components/bookmarks.jsx";
 import Image from "./Images/elgato.png";
 import "../styleSheets/mainMenu.css";
 import "./index.css";
+import elgatoAnimation from "./Images/elgatogif.gif";
 
 function PreBattle() {
   const navigate = useNavigate();
@@ -276,17 +277,19 @@ const handleStartBattle = async () => {
 
         {/* Right panel */}
         <div className="SidePanel" id="picBorder">
-          <p
-            style={{
-              margin: "12px",
-              color: "black",
-              fontSize: "24px",
-              lineHeight: "1.5",
-            }}
-          >
-            Enter any topic of your desire
-          </p>
-        </div>
+                    <h2 className="normalTB" style={{ fontSize: "20px" }}>Purrwin's Battle Tips</h2>
+                        <p style={{ margin: "12px", color: "black", fontSize: "22px", lineHeight: "1.5" }}>
+                            I, Purrwin, cannot tell you if your <br />chosen topic is valid or not, <br /> but I can tell you that the more specific <br />your topic is, the better! For example, 
+                            instead <br /> of just "history", try "US history" or "history of Philadelphia". Also, don't forget to check out <br />the Catalog for pre-made quizzes on a variety of subjects!
+                        </p>
+                            <img
+                                src={elgatoAnimation}
+                                style={{
+                                    width: "250px",
+                                    height: "250px",
+                                }}
+                            />
+                                </div>
       </div>
     </div>
   );

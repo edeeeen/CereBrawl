@@ -3,6 +3,7 @@ import { BrowserRouter, Routes, Route, useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
 import Image from "../Images/elgato.png"
 import SideBar from "./sideBar";
+import elgatoAnimation from "../Images/elgatogif.gif";
 
 export default function AccountContent() {
     const navigate = useNavigate();
@@ -144,17 +145,17 @@ export default function AccountContent() {
     return (
         <div>
             {/* Page Header. Should be same on most pages except for probably the battle screen. */}
-            <div className="pageHead" id="picBorder" style={{display:"flex", justifyContent:"space-between"}}>
-                <div style={{width:"fit_content", height:"fit_content", display:"flex", justifyContent:"center", flexDirection:"column"}}>
-                    <h1 className="normalTB" style={{margin_bottom:"0px", padding:"0px", width:"fit_content", height:"fit_content"}}>Welcome to CereBrawl!</h1>
-                    <h4 style={{paddingLeft:"20px", paddingRight:"20px", paddingBottom:"20px", paddingTop:"0px", margin:"0px"}}>The Battle Style Study Guide</h4>
-                    
-                </div>
-                <img
-                    src={Image}
-                    style={{margin:"1rem", border:"5px inset #11576a", background:"grey"}}
-                />
-            </div>
+            <div className="pageHead" id="picBorder" style={{ display: "flex", justifyContent: "space-between" }}>
+                            <div style={{ display: "flex", justifyContent: "center", flexDirection: "column" }}>
+                                <h1 className="normalTB" style={{ fontSize: "48px", marginBottom: "0px", padding: "0px" }}>
+                                    Your Account
+                                </h1>
+                                <h4 style={{ paddingLeft: "20px", fontSize: "22px", margin: "0px", color: "black" }}>
+                                    Manage Account Information
+                                </h4>
+                            </div>
+                            <img src={Image} alt="Mascot" style={{ margin: "1rem", border: "5px inset #11576a", background: "grey" }} />
+                        </div>
             <div className="BodyBox">
                 <SideBar />
                 <div className="MiddlePanel" id="picBorder" >
@@ -194,8 +195,19 @@ export default function AccountContent() {
                     </div>
                 </div>
                 <div className="SidePanel" id="picBorder">
-                    poop
-                </div>
+                    <h2 className="normalTB" style={{ fontSize: "20px" }}>Purrwin's Account Tips</h2>
+                        <p style={{ margin: "12px", color: "black", fontSize: "22px", lineHeight: "1.5" }}>
+                            This is the account screen! You can create an account or log into an existing account. You must be logged in to access many of Cerebrawl's 
+                            essential features, such as bookmarking quizzes and tracking your quiz history, so what are you waiting for? Create an account and start brawling!
+                        </p>
+                            <img
+                                src={elgatoAnimation}
+                                style={{
+                                    width: "250px",
+                                    height: "250px",
+                                }}
+                            />
+                                </div>
             </div>
         </div>
     );
