@@ -16,13 +16,23 @@ export default function CatalogContent() {
     const fetchData = async () => {
         try {
             setLoading(true); 
+            const token = localStorage.getItem("token");
             // Use URLSearchParams for cleaner URL construction
             const params = new URLSearchParams();
             if (currentSearch) params.append("filter_subject", currentSearch);
             if (sortBy) params.append("sort_by", sortBy);
 
             const queryString = params.toString() ? `?${params.toString()}` : "";
-            const response = await fetch(`https://api.cerebrawl.me/quizzes/getQuizzes${queryString}`);
+            const response = await fetch(
+            `https://api.cerebrawl.me/quizzes/getUserLikedQuizzes${queryString}`,
+            {
+                method: "GET",
+                headers: {
+                    "Authorization": `Bearer ${token}`,
+                },
+            }
+        );
+
             const data = await response.json();
             setListOfQuizzes(data);
         } catch (error) {
@@ -121,10 +131,10 @@ const bookmarkQuiz = async (quizId) => {
             <div className="pageHead" id="picBorder" style={{ display: "flex", justifyContent: "space-between" }}>
                 <div style={{ display: "flex", justifyContent: "center", flexDirection: "column" }}>
                     <h1 className="normalTB" style={{ fontSize: "48px", marginBottom: "0px", padding: "0px" }}>
-                        Quiz Catalog
+                        Your Bookmarks
                     </h1>
                     <h4 style={{ paddingLeft: "20px", fontSize: "22px", margin: "0px", color: "black" }}>
-                        Select Your Study Battle
+                        Select Your Study Battle from your saved quizzes!
                     </h4>
                 </div>
                 <img src={Image} alt="Mascot" style={{ margin: "1rem", border: "5px inset #11576a", background: "grey" }} />
@@ -175,7 +185,7 @@ const bookmarkQuiz = async (quizId) => {
                     <div className="MidInfo" style={{ marginTop: "0", border: "1px solid cadetblue", minHeight: "200px"}}>
                         {loading ? (
                             <p style={{ textAlign: "center", fontSize: "22px", color: "black", paddingTop: "2rem" }}>
-                                Loading Quiz Data...
+                                Loading Bookmark Data...
                             </p>
                         ) : listOfQuizzes.length > 0 ? (
                             listOfQuizzes.map((quiz, index) => (
@@ -255,7 +265,7 @@ const bookmarkQuiz = async (quizId) => {
                             ))
                         ) : (
                             <p style={{ textAlign: "center", fontSize: "22px", color: "black", paddingTop: "2rem" }}>
-                                No quizzes found. Try a different search!
+                                No bookmarks found. Try adding some!
                             </p>
                         )}
                     </div>

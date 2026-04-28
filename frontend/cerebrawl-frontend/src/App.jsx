@@ -6,6 +6,7 @@ import AccountContent from "./menu_components/accountContent.jsx";
 import TutorialScreen from "./tutorial_components/TutorialScreen.jsx";
 import CatalogContent from "./menu_components/catalogContent.jsx";
 import SideBar from "./menu_components/sideBar.jsx";
+import Bookmarks from "./menu_components/bookmarks.jsx";
 import Image from "./Images/elgato.png";
 import "../styleSheets/mainMenu.css";
 import "./index.css";
@@ -301,6 +302,7 @@ function App() {
         <Route path="/account" element={<AccountContent />} />
         <Route path="/catalog" element={<CatalogContent />} />
         <Route path="/tutorial" element={<TutorialScreen />} />
+        <Route path="/bookmarks" element={<Bookmarks />} />
       </Routes>
     </BrowserRouter>
   );
