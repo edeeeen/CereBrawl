@@ -11,6 +11,73 @@ import elgato3 from "../Images/elgato_full_3.png"
 import elgato4 from "../Images/elgato_full_4.png"
 import molecool from "../Images/molecool.png"
 
+const tutorialQuestions = [
+  {
+    question: "What instrument typically has six strings and is played by strumming or plucking?",
+    A: "Guitar",
+    B: "Piano",
+    C: "Trumpet",
+    D: "Drum",
+    Answer: "A",
+  },
+  {
+    question: "Who is widely known as the 'King of Pop'?",
+    A: "Elvis Presley",
+    B: "Michael Jackson",
+    C: "Bob Dylan",
+    D: "Prince",
+    Answer: "B",
+  },
+  {
+    question: "Which of these is a percussion instrument?",
+    A: "Flute",
+    B: "Violin",
+    C: "Snare Drum",
+    D: "Clarinet",
+    Answer: "C",
+  },
+  {
+    question: "What is a person who performs music by singing called?",
+    A: "Conductor",
+    B: "Musician",
+    C: "Dancer",
+    D: "Vocalist",
+    Answer: "D",
+  },
+  {
+    question: "Which primary color is often associated with the music genre 'the blues'?",
+    A: "Red",
+    B: "Green",
+    C: "Blue",
+    D: "Yellow",
+    Answer: "C",
+  },
+  {
+    question: "What does the musical term 'allegro' typically mean?",
+    A: "Slow",
+    B: "Very Slow",
+    C: "Fast",
+    D: "Moderate",
+    Answer: "C",
+  },
+  {
+    question: "Which famous city is considered the birthplace of jazz music?",
+    A: "Chicago",
+    B: "New York City",
+    C: "New Orleans",
+    D: "Los Angeles",
+    Answer: "C",
+  },
+  {
+    question: "Which iconic band released the album 'The Dark Side of the Moon'?",
+    A: "Led Zeppelin",
+    B: "The Rolling Stones",
+    C: "Pink Floyd",
+    D: "Queen",
+    Answer: "C",
+  },
+];
+
 
 function TutorialScreen() {
   const navigate = useNavigate();
@@ -49,6 +116,7 @@ function TutorialScreen() {
     return saved !== null ? Number(saved) : 100;
   });
 
+  const [tutorialQuestionIndex, setTutorialQuestionIndex] = useState(0);
   const [gameOver, setGameOver] = useState(false);
   const [gameResult, setGameResult] = useState("");
 
@@ -91,23 +159,15 @@ function TutorialScreen() {
       setTypedQuestion("");
       setBattleEffect("");
 
-      console.log("FETCHING SUBJECT:", subject);
-      console.log("FETCHING DIFFICULTY:", effectiveDifficulty);
-
-      const response = await fetch(
-        `https://api.cerebrawl.me/battle/generateQuestion?difficulty=${effectiveDifficulty}&subject=${encodeURIComponent(subject)}`
-      );
-
-      if (!response.ok) {
-        const errorText = await response.text();
-        console.error("Backend error:", response.status, errorText);
-        throw new Error(`Failed to fetch question: ${response.status}`);
+      const nextQuestion = tutorialQuestions[tutorialQuestionIndex];
+      if (!nextQuestion) {
+        setQuestionError("No tutorial questions available.");
+        return;
       }
 
-      const data = await response.json();
-      setQuestionData(data);
+      setQuestionData(nextQuestion);
     } catch (error) {
-      console.error("Error fetching question:", error);
+      console.error("Error loading tutorial question:", error);
       setQuestionError("Could not load question.");
     } finally {
       setLoadingQuestion(false);
@@ -116,7 +176,7 @@ function TutorialScreen() {
 
   useEffect(() => {
     fetchQuestion();
-  }, []);
+  }, [tutorialQuestionIndex]);
 
   useEffect(() => {
     sessionStorage.setItem("playerHP", String(playerHP));
@@ -585,7 +645,7 @@ function TutorialScreen() {
                 className="action-button secondary-button back-button"
                 onClick={() => {
                   setTutorialState(6);
-                  fetchQuestion();
+                  setTutorialQuestionIndex((prev) => Math.min(prev + 1, tutorialQuestions.length - 1));
                 }}
                 disabled={gameOver || !selectedAnswer}
               >
