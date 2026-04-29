@@ -5,6 +5,65 @@ import mini from "../Images/miniShield.png";
 import big from "../Images/bigShield.png";
 import chug from "../Images/chugJug.png";
 
+const parseAIFormattedQuiz = (rawQuizText) => {
+  if (!rawQuizText || !rawQuizText.trim()) {
+    return { questions: [] };
+  }
+
+  const blocks = rawQuizText
+    .split(/\n\s*\n+/)
+    .map((block) => block.trim())
+    .filter(Boolean);
+
+  return {
+    questions: blocks.map((block, index) => {
+      const question = {
+        question: "",
+        a: "",
+        b: "",
+        c: "",
+        d: "",
+        correct_answer: "",
+      };
+
+      block.split(/\r?\n/).forEach((line) => {
+        const trimmed = line.trim();
+        if (trimmed.toLowerCase().startsWith("question:")) {
+          question.question = trimmed.slice(trimmed.indexOf(":") + 1).trim();
+        } else if (trimmed.startsWith("A.")) {
+          question.a = trimmed.slice(2).trim();
+        } else if (trimmed.startsWith("B.")) {
+          question.b = trimmed.slice(2).trim();
+        } else if (trimmed.startsWith("C.")) {
+          question.c = trimmed.slice(2).trim();
+        } else if (trimmed.startsWith("D.")) {
+          question.d = trimmed.slice(2).trim();
+        } else if (trimmed.toLowerCase().startsWith("correct answer:")) {
+          question.correct_answer = trimmed
+            .slice(trimmed.indexOf(":") + 1)
+            .trim()
+            .toUpperCase();
+        }
+      });
+
+      const missingFields = [
+        "question",
+        "a",
+        "b",
+        "c",
+        "d",
+        "correct_answer",
+      ].filter((key) => !question[key]);
+
+      if (missingFields.length > 0) {
+        throw new Error(`Invalid quiz block ${index + 1}: missing ${missingFields.join(", ")}`);
+      }
+
+      return question;
+    }),
+  };
+};
+
 function BattleScreen() {
   const navigate = useNavigate();
   const location = useLocation();
@@ -224,7 +283,10 @@ function BattleScreen() {
 
   const handleSaveQuiz = async () => {
     const token = localStorage.getItem("token");
+    const quiz = sessionStorage.getItem("battleQuiz") || "";
     const trimmedQuizName = quizName.trim();
+
+    console.log(quiz);
 
     if (!token) {
       setSaveQuizMessage("You need to sign in before saving a quiz.");
@@ -238,6 +300,19 @@ function BattleScreen() {
 
     if (battleQuestions.length === 0) {
       setSaveQuizMessage("There are no questions to save yet.");
+      return;
+    }
+
+    let formattedQuiz;
+    try {
+      formattedQuiz = parseAIFormattedQuiz(quiz);
+    } catch (err) {
+      setSaveQuizMessage("Could not parse quiz text into questions.");
+      return;
+    }
+
+    if (!formattedQuiz.questions.length) {
+      setSaveQuizMessage("No questions found in the provided quiz text.");
       return;
     }
 
@@ -258,7 +333,7 @@ function BattleScreen() {
             difficulty: selectedDifficulty,
             description: quizDescription.trim(),
           },
-          questions: battleQuestions,
+          questions: formattedQuiz.questions,
         }),
       });
 
