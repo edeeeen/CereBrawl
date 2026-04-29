@@ -71,6 +71,16 @@ export default function SideBar() {
             </div>
             <div style={{ margin: "2px" }}>
                 <button
+                    disabled={isCurrentPage('/bookmarks')}
+                    className="menu-button"
+                    onClick={() => navigate("/bookmarks")}
+                    style={{ fontSize: "18px" }}
+                >
+                    Bookmarks
+                </button>
+            </div>
+            <div style={{ margin: "2px" }}>
+                <button
                     disabled={isCurrentPage('/tutorial')}
                     className="menu-button"
                     onClick={() => navigate("/tutorial")}

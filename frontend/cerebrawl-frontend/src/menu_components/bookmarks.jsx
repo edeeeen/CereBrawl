@@ -17,13 +17,23 @@ export default function CatalogContent() {
     const fetchData = async () => {
         try {
             setLoading(true); 
+            const token = localStorage.getItem("token");
             // Use URLSearchParams for cleaner URL construction
             const params = new URLSearchParams();
             if (currentSearch) params.append("filter_subject", currentSearch);
             if (sortBy) params.append("sort_by", sortBy);
 
             const queryString = params.toString() ? `?${params.toString()}` : "";
-            const response = await fetch(`https://api.cerebrawl.me/quizzes/getQuizzes${queryString}`);
+            const response = await fetch(
+            `https://api.cerebrawl.me/quizzes/getUserLikedQuizzes${queryString}`,
+            {
+                method: "GET",
+                headers: {
+                    "Authorization": `Bearer ${token}`,
+                },
+            }
+        );
+
             const data = await response.json();
             setListOfQuizzes(data);
         } catch (error) {
@@ -122,10 +132,10 @@ const bookmarkQuiz = async (quizId) => {
             <div className="pageHead" id="picBorder" style={{ display: "flex", justifyContent: "space-between" }}>
                 <div style={{ display: "flex", justifyContent: "center", flexDirection: "column" }}>
                     <h1 className="normalTB" style={{ fontSize: "48px", marginBottom: "0px", padding: "0px" }}>
-                        Quiz Catalog
+                        Your Bookmarks
                     </h1>
                     <h4 style={{ paddingLeft: "20px", fontSize: "22px", margin: "0px", color: "black" }}>
-                        Select Your Study Battle
+                        Select Your Study Battle from your saved quizzes!
                     </h4>
                 </div>
                 <img src={Image} alt="Mascot" style={{ margin: "1rem", border: "5px inset #11576a", background: "grey" }} />
@@ -176,7 +186,7 @@ const bookmarkQuiz = async (quizId) => {
                     <div className="MidInfo" style={{ marginTop: "0", border: "1px solid cadetblue", minHeight: "200px"}}>
                         {loading ? (
                             <p style={{ textAlign: "center", fontSize: "22px", color: "black", paddingTop: "2rem" }}>
-                                Loading Quiz Data...
+                                Loading Bookmark Data...
                             </p>
                         ) : listOfQuizzes.length > 0 ? (
                             listOfQuizzes.map((quiz, index) => (
@@ -256,7 +266,7 @@ const bookmarkQuiz = async (quizId) => {
                             ))
                         ) : (
                             <p style={{ textAlign: "center", fontSize: "22px", color: "black", paddingTop: "2rem" }}>
-                                No quizzes found. Try a different search!
+                                No bookmarks found. Try adding some!
                             </p>
                         )}
                     </div>
@@ -264,10 +274,9 @@ const bookmarkQuiz = async (quizId) => {
 
                 {/* Right panel */}
                 <div className="SidePanel" id="picBorder">
-                    <h2 className="normalTB" style={{ fontSize: "20px" }}>Purrwins's Catalog Tips</h2>
+                    <h2 className="normalTB" style={{ fontSize: "20px" }}>Purrwin's Bookmark Tips</h2>
                     <p style={{ margin: "12px", color: "black", fontSize: "22px", lineHeight: "1.5" }}>
-                        Search for a subject or topic you want to study, and click on a quiz to jump into battle mode! You can also sort quizzes by name, popularity, or bookmarks to find the perfect quiz for you.
-                        As a reminder, in order to bookmark quizzes, you must be logged in to do so. So why aren't you logged in already?
+                        These are your bookmarked quizzes! You can only access the bookmarks on your screen if you are logged in, so go do that already!
                     </p>
                     <img
                         src={elgatoAnimation}

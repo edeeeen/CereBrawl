@@ -33,6 +33,7 @@ function BattleScreen() {
   const [savingQuiz, setSavingQuiz] = useState(false);
   const [saveQuizMessage, setSaveQuizMessage] = useState("");
   const [quizName, setQuizName] = useState("");
+  const [quizDescription, setQuizDescription] = useState("");
   const [quizSaved, setQuizSaved] = useState(false);
 
   const [numOfItems, setNumOfItems] = useState({
@@ -68,7 +69,7 @@ function BattleScreen() {
   const rawSubject =
     location.state?.topic ||
     sessionStorage.getItem("battleTopic") ||
-    "biology";
+    "";
 
   const subject = rawSubject.trim().toLowerCase();
 
@@ -255,7 +256,7 @@ function BattleScreen() {
             name: trimmedQuizName,
             subject: subject,
             difficulty: selectedDifficulty,
-            description: `Saved after a ${gameResult} battle.`,
+            description: quizDescription.trim(),
           },
           questions: battleQuestions,
         }),
@@ -654,6 +655,17 @@ function BattleScreen() {
                   value={quizName}
                   onChange={(e) => setQuizName(e.target.value)}
                   placeholder="Enter quiz name"
+                  maxLength={255}
+                />
+              </div>
+
+              <div className="save-quiz-input-wrap">
+                <input
+                  type="text"
+                  className="save-quiz-input"
+                  value={quizDescription}
+                  onChange={(e) => setQuizDescription(e.target.value)}
+                  placeholder="Enter quiz description"
                   maxLength={255}
                 />
               </div>
