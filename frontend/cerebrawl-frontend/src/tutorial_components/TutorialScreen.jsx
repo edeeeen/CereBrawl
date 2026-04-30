@@ -9,7 +9,12 @@ import elgato1 from "../Images/elgato_full_1.png"
 import elgato2 from "../Images/elgato_full_2.png"
 import elgato3 from "../Images/elgato_full_3.png"
 import elgato4 from "../Images/elgato_full_4.png"
-import molecool from "../Images/molecool.png"
+
+import plub from "../Images/maybe neutral plub.png";
+import molecoole from "../Images/molecool.png";
+import mathWiz from "../Images/math wiz.png";
+import erlenmeyer from "../Images/erlenmeyer.png";
+import qMarkGuy from "../Images/q mark.png";
 
 const tutorialQuestions = [
   {
@@ -85,6 +90,8 @@ function TutorialScreen() {
 
   
 
+  
+
   const [questionData, setQuestionData] = useState(null);
   const [loadingQuestion, setLoadingQuestion] = useState(true);
   const [questionError, setQuestionError] = useState("");
@@ -96,6 +103,10 @@ function TutorialScreen() {
   const [showItemChoices1, setShowItemChoices1] = useState(false);
   const [showItemChoices2, setShowItemChoices2] = useState(false);
   const [damageMultiplier, setDamageMultiplier] = useState(1.0);
+
+  const [enemyLvl, setEnemyLvl] = useState(0);
+  const [enemySprite, setEnemySprite] = useState(null);
+  const [enemyName, setEnemyName] = useState("");
 
 
   const[tutorialState, setTutorialState] = useState(0);
@@ -148,6 +159,36 @@ function TutorialScreen() {
   }, [questionData]);
 
   const fetchQuestion = async () => {
+    
+    if(enemyName == "") {
+      setEnemyLvl(Math.floor(Math.random() * (100) + 1));
+      switch ( Math.floor(Math.random() * 5 + 1) ) {
+        case 1:
+          setEnemyName("Molecoole");
+          setEnemySprite(molecoole);
+          break;
+        case 2:
+          setEnemyName("Plub");
+          setEnemySprite(plub);
+          break;
+        case 3:
+          setEnemyName("Math Wiz");
+          setEnemySprite(mathWiz);
+          break;
+        case 4:
+          setEnemyName("The Mixture");
+          setEnemySprite(erlenmeyer);
+          break;
+        case 5:
+          setEnemyName("?");
+          setEnemySprite(qMarkGuy);
+          break;
+        default:
+          break;
+      }
+    }
+      
+
     if (gameOver) return;
 
     try {
@@ -367,6 +408,52 @@ function TutorialScreen() {
     showItemChoices2
   });
 
+    const enemySprite1 = () => {
+      switch ( enemyNum ) {
+        case 1:
+          return plub;
+          break;
+        case 2:
+          return mathWiz;
+          break;
+        case 3:
+          return molecoole;
+          break;
+        case 4:
+          return erlenmeyer;
+          break;
+        case 5:
+          return qMarkGuy;
+          break;
+        default:
+          return null;
+          break;
+      }
+    }
+  
+    const enemyName1 = () => {
+      switch ( enemyNum ) {
+        case 1:
+          return "Plub";
+          break;
+        case 2:
+          return "Math Wiz";
+          break;
+        case 3:
+          return "Molecoole";
+          break;
+        case 4:
+          return "The Mixture";
+          break;
+        case 5:
+          return "?";
+          break;
+        default:
+          return null;
+          break;
+      }
+    }
+
 
 
 
@@ -464,8 +551,8 @@ function TutorialScreen() {
         <div className="enemy-section" style={{display:"flex", flexDirection:"row"}}>
           <div className="enemy-card" id="monBorder">
             <div className="battle-card-header">
-              <span className="battle-name">Molecoole</span>
-              <span className="battle-level">Lv.1</span>
+              <span className="battle-name">{enemyName}</span>
+              <span className="battle-level">Lv.{enemyLvl}</span>
             </div>
 
             <div className="hp-row">
@@ -483,7 +570,7 @@ function TutorialScreen() {
           <div>
             <img
               className="enemy-sprite"
-              src={molecool}
+              src={enemySprite}
               alt="Enemy"
               onError={(e) => {
                 e.target.style.display = "none";
