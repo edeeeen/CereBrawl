@@ -1,3 +1,6 @@
+#This is an old testing class which was before we had the API calls and the frontend. 
+#Before the frontend connection, this allowed us to test the battle system in the terminal
+#NO LONGER IN USE IN FULL PROJECT, BUT KEEPING IN CASE WE WANT TO REFERENCE IT LATER
 from mon import Mon
 from character import Character
 import fakeGemini
