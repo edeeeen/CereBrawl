@@ -6,6 +6,8 @@ import big from "../Images/bigShield.png";
 import chug from "../Images/chugJug.png";
 import dmg1 from "../Images/dmg1.png";
 import dmg2 from "../Images/dmg2.png";
+import dmg3 from "../Images/dmg3.png";
+import meat1 from "../Images/RedSteak.png";
 import meat2 from "../Images/PurpSteak.png";
 import meat3 from "../Images/BluSteak.png";
 import qHelp1 from "../Images/qMarkPowerup.png";
@@ -17,6 +19,9 @@ import molecoole from "../Images/molecool.png";
 import mathWiz from "../Images/math wiz.png";
 import erlenmeyer from "../Images/erlenmeyer.png";
 import qMarkGuy from "../Images/q mark.png";
+
+import player from "../Images/player.png";
+import splayer from "../Images/splayer.png";
 
 
 const parseAIFormattedQuiz = (rawQuizText) => {
@@ -105,6 +110,9 @@ function BattleScreen() {
   const [enemySprite, setEnemySprite] = useState(null);
   const [enemyName, setEnemyName] = useState("");
 
+  const [playerLvl, setPlayerLvl] = useState(0);
+  const [playerSprite, setPlayerSprite] = useState(player);
+
 
   const [battleQuestions, setBattleQuestions] = useState([]);
   const [savingQuiz, setSavingQuiz] = useState(false);
@@ -171,6 +179,9 @@ function BattleScreen() {
   const fetchQuestion = async () => {
 
     if(enemyName == "") {
+      var numbah = Math.floor(Math.random() * (100) + 1);
+      setPlayerLvl(numbah);
+      if(numbah == 69) setPlayerSprite(splayer);
       setEnemyLvl(Math.floor(Math.random() * (100) + 1));
       switch ( Math.floor(Math.random() * 5 + 1) ) {
         case 1:
@@ -733,7 +744,7 @@ function BattleScreen() {
         <div className="player-section">
           <img
             className="player-sprite"
-            src="/player.png"
+            src={playerSprite}
             alt="Player"
             onError={(e) => {
               e.target.style.display = "none";
@@ -745,7 +756,7 @@ function BattleScreen() {
           <div className="player-card" id="monBorder">
             <div className="battle-card-header">
               <span className="battle-name">Student</span>
-              <span className="battle-level">Lv.42</span>
+              <span className="battle-level">Lv.{playerLvl}</span>
             </div>
 
             <div className="hp-row">
@@ -760,6 +771,14 @@ function BattleScreen() {
 
             <div className="hp-value">{playerHP}/100</div>
           </div>
+          <img
+            className="player-sprite"
+            src={player}
+            alt="Player"
+            onError={(e) => {
+              e.target.style.display = "none";
+            }}
+          />
         </div>
 
         {gameOver && (
@@ -912,10 +931,10 @@ function BattleScreen() {
                   disabled={gameOver || numOfItems["Mini Shield"] <= 0}
                 >
                   <img
-                    src={mini}
+                    src={meat1}
                     style={{ width: "30px", height: "30px", marginRight: "8px" }}
                   />
-                  Mini Shield ({numOfItems["Mini Shield"]})
+                  Meat ({numOfItems["Mini Shield"]})
                 </button>
 
                 <button
@@ -924,10 +943,10 @@ function BattleScreen() {
                   disabled={gameOver || numOfItems["Big Shield"] <= 0}
                 >
                   <img
-                    src={big}
+                    src={meat2}
                     style={{ width: "30px", height: "30px", marginRight: "8px" }}
                   />
-                  Big Shield ({numOfItems["Big Shield"]})
+                  Super Meat ({numOfItems["Big Shield"]})
                 </button>
 
                 <button
@@ -936,10 +955,10 @@ function BattleScreen() {
                   disabled={gameOver || numOfItems["Chug Jug"] <= 0}
                 >
                   <img
-                    src={chug}
+                    src={meat3}
                     style={{ width: "30px", height: "30px", marginRight: "8px" }}
                   />
-                  Chug Jug ({numOfItems["Chug Jug"]})
+                  Mega Meat ({numOfItems["Chug Jug"]})
                 </button>
 
                 <button
@@ -947,6 +966,10 @@ function BattleScreen() {
                   onClick={() => handleUseItem("Damage Boost")}
                   disabled={gameOver || numOfItems["Damage Boost"] <= 0}
                 >
+                  <img
+                    src={dmg3}
+                    style={{ width: "30px", height: "30px", marginRight: "8px" }}
+                  />
                   Damage Boost ({numOfItems["Damage Boost"]})
                 </button>
 
@@ -982,6 +1005,10 @@ function BattleScreen() {
                   onClick={() => handleUseItem("Damage Mega Boost")}
                   disabled={gameOver || numOfItems["Damage Mega Boost"] <= 0}
                 >
+                  <img
+                    src={dmg2}
+                    style={{ width: "30px", height: "30px", marginRight: "8px" }}
+                  />
                   Damage Mega Boost ({numOfItems["Damage Mega Boost"]})
                 </button>
 
@@ -990,6 +1017,10 @@ function BattleScreen() {
                   onClick={() => handleUseItem("Damage Ultra Boost")}
                   disabled={gameOver || numOfItems["Damage Ultra Boost"] <= 0}
                 >
+                  <img
+                    src={dmg1}
+                    style={{ width: "30px", height: "30px", marginRight: "8px" }}
+                  />
                   Damage Ultra Boost ({numOfItems["Damage Ultra Boost"]})
                 </button>
 
@@ -998,6 +1029,10 @@ function BattleScreen() {
                   onClick={() => handleUseItem("Small Hint")}
                   disabled={gameOver || numOfItems["Small Hint"] <= 0}
                 >
+                  <img
+                    src={qHelp1}
+                    style={{ width: "30px", height: "30px", marginRight: "8px" }}
+                  />
                   Small Hint ({numOfItems["Small Hint"]})
                 </button>
 
@@ -1006,6 +1041,10 @@ function BattleScreen() {
                   onClick={() => handleUseItem("Big Hint")}
                   disabled={gameOver || numOfItems["Big Hint"] <= 0}
                 >
+                  <img
+                    src={qHelp2}
+                    style={{ width: "30px", height: "30px", marginRight: "8px" }}
+                  />
                   Big Hint ({numOfItems["Big Hint"]})
                 </button>
 

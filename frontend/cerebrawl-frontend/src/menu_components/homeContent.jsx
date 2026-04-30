@@ -208,9 +208,9 @@ export default function HomeContent() {
                 fontSize: "22px",
               }}
             >
-              * Elixer - Heals 10 hp <br />
-              * Super Elixer - Heals 20 hp <br />
-              * Mega Elixer - Heals 30 hp <br />
+              * Meat - Heals 10 hp <br />
+              * Super Meat - Heals 20 hp <br />
+              * Mega Meat - Heals 30 hp <br />
               * Damage Boost - If successful, your next <br />attack deals 2x damage <br /> 
               * Damage Mega Boost - If successful, your <br /> next attack deals 3x damage <br /> 
               * Small Hint - Reveals one wrong answer <br />
