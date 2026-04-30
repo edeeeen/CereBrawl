@@ -4,6 +4,20 @@ import "./BattleScreen.css";
 import mini from "../Images/miniShield.png";
 import big from "../Images/bigShield.png";
 import chug from "../Images/chugJug.png";
+import dmg1 from "../Images/dmg1.png";
+import dmg2 from "../Images/dmg2.png";
+import meat2 from "../Images/PurpSteak.png";
+import meat3 from "../Images/BluSteak.png";
+import qHelp1 from "../Images/qMarkPowerup.png";
+import qHelp2 from "../Images/qMarkPowerup_Orange.png";
+import qSkip from "../Images/qSkipPowerup.png";
+
+import plub from "../Images/maybe neutral plub.png";
+import molecoole from "../Images/molecool.png";
+import mathWiz from "../Images/math wiz.png";
+import erlenmeyer from "../Images/erlenmeyer.png";
+import qMarkGuy from "../Images/q mark.png";
+
 
 const parseAIFormattedQuiz = (rawQuizText) => {
   if (!rawQuizText || !rawQuizText.trim()) {
@@ -87,6 +101,10 @@ function BattleScreen() {
   const [questionsRight, setQuestionsRight] = useState(0);
   const [questionsWrong, setQuestionsWrong] = useState(0);
 
+  const [enemyLvl, setEnemyLvl] = useState(0);
+  const [enemySprite, setEnemySprite] = useState(null);
+  const [enemyName, setEnemyName] = useState("");
+
 
   const [battleQuestions, setBattleQuestions] = useState([]);
   const [savingQuiz, setSavingQuiz] = useState(false);
@@ -151,6 +169,37 @@ function BattleScreen() {
   }, [questionData]);
 
   const fetchQuestion = async () => {
+
+    if(enemyName == "") {
+      setEnemyLvl(Math.floor(Math.random() * (100) + 1));
+      switch ( Math.floor(Math.random() * 5 + 1) ) {
+        case 1:
+          setEnemyName("Molecoole");
+          setEnemySprite(molecoole);
+          break;
+        case 2:
+          setEnemyName("Plub");
+          setEnemySprite(plub);
+          break;
+        case 3:
+          setEnemyName("Math Wiz");
+          setEnemySprite(mathWiz);
+          break;
+        case 4:
+          setEnemyName("The Mixture");
+          setEnemySprite(erlenmeyer);
+          break;
+        case 5:
+          setEnemyName("?");
+          setEnemySprite(qMarkGuy);
+          break;
+        default:
+          break;
+      }
+    }
+
+
+
     if (gameOver) return;
 
     try {
@@ -653,8 +702,8 @@ function BattleScreen() {
         <div className="enemy-section">
           <div className="enemy-card" id="monBorder">
             <div className="battle-card-header">
-              <span className="battle-name">Professor Elm</span>
-              <span className="battle-level">Lv.67</span>
+              <span className="battle-name">{enemyName}</span>
+              <span className="battle-level">Lv.{enemyLvl}</span>
             </div>
 
             <div className="hp-row">
@@ -671,7 +720,7 @@ function BattleScreen() {
 
           <img
             className="enemy-sprite"
-            src="/enemy.png"
+            src={enemySprite}
             alt="Enemy"
             onError={(e) => {
               e.target.style.display = "none";
