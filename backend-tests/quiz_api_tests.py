@@ -170,6 +170,11 @@ class TestQuizAPI:
         assert response.json()["detail"] == "Quiz not found"
 
     def test_get_quizzes_sort_and_filter(self, client_with_db, session):
+        # Create a user first since quizzes have foreign key to users
+        user = DBUser(short_id="creator1", username="creator1user", password_hash="hash1")
+        session.add(user)
+        session.commit()
+
         quiz1 = Quizzes(short_id="q1", name="A Quiz", subject="string", creator="creator1", create_date="2026-04-07T10:00:00")
         quiz2 = Quizzes(short_id="q2", name="B Quiz", subject="string", creator="creator1", create_date="2026-04-07T11:00:00")
         quiz3 = Quizzes(short_id="q3", name="C Quiz", subject="other", creator="creator1", create_date="2026-04-07T12:00:00")
@@ -185,6 +190,11 @@ class TestQuizAPI:
         assert all(quiz["subject"] == "string" for quiz in data)
 
     def test_get_quizzes_limit(self, client_with_db, session):
+        # Create a user first since quizzes have foreign key to users
+        user = DBUser(short_id="creator1", username="creator1user", password_hash="hash1")
+        session.add(user)
+        session.commit()
+
         quizzes = [
             Quizzes(short_id=f"limit{i}", name=f"Quiz {i}", subject="test", creator="creator1")
             for i in range(3)
@@ -218,6 +228,12 @@ class TestQuizAPI:
 
     # Test getting user quizzes
     def test_get_user_quizzes(self, client_with_db, session):
+        # Create test users
+        user1 = DBUser(short_id="user1", username="user1name", password_hash="hash1")
+        user2 = DBUser(short_id="user2", username="user2name", password_hash="hash2")
+        session.add_all([user1, user2])
+        session.commit()
+
         # Create test quizzes for different users
         quiz1 = Quizzes(short_id="quiz1", name="Quiz 1", subject="Math", creator="user1")
         quiz2 = Quizzes(short_id="quiz2", name="Quiz 2", subject="Science", creator="user1")
@@ -231,13 +247,13 @@ class TestQuizAPI:
         assert response.status_code == 200
         data = response.json()
         assert len(data) == 2
-        assert all(quiz["creator"] == "user1" for quiz in data)
+        assert all(quiz["creator"] == "user1name" for quiz in data)
 
         response = client_with_db.get("/quizzes/getUserQuizzes/user2")
         assert response.status_code == 200
         data = response.json()
         assert len(data) == 1
-        assert data[0]["creator"] == "user2"
+        assert data[0]["creator"] == "user2name"
 
     # Test getting user quizzes when user has no quizzes
     def test_get_user_quizzes_empty(self, client_with_db):
@@ -247,7 +263,11 @@ class TestQuizAPI:
         assert data == []
 
     def test_get_liked_quizzes(self, authenticated_client, session):
-        quiz = Quizzes(short_id="likedquiz1", name="Liked Quiz", subject="Test", creator="testuser")
+        # Get the current user's short_id from the authenticated_client
+        # First create a quiz with the testuser creator
+        user = session.exec(select(DBUser).where(DBUser.username == "testuser")).first()
+        
+        quiz = Quizzes(short_id="likedquiz1", name="Liked Quiz", subject="Test", creator=user.short_id)
         session.add(quiz)
         session.commit()
 

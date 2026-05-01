@@ -206,10 +206,21 @@ def get_user_quizzes (
     '''
     Gets all quizzes created by a user.
     '''
-    statement = select(Quizzes).where(Quizzes.creator == user_id)
-    quizzes = session.exec(statement).scalars().all()
+    statement = (
+        select(Quizzes, Users)
+        .join(Users, Quizzes.creator == Users.short_id)
+        .where(Quizzes.creator == user_id)
+    )
+    results = session.exec(statement).all()
 
-    return [QuizResponse(**quiz.model_dump()) for quiz in quizzes]
+    response_list = []
+    for quiz, user in results:
+        quiz_dict = quiz.model_dump()
+        quiz_dict['creator'] = user.username
+        quiz_dict['creator_id'] = user.short_id
+        response_list.append(QuizResponse(**quiz_dict))
+
+    return response_list
 
 
 @router.post("/likeQuiz/{quiz_id}")
