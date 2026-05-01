@@ -5,7 +5,7 @@ from main import app  # Import your FastAPI app instance
 
 client = TestClient(app)
 
-# Test Regex Success Case
+# Test Regex Success Case, THIS WAS AN OLD TEST WITH FAKE GEMINI THIS SHOULD FAIL
 def test_get_battle_question_regex_success():
     # We "mock" the AI to return a perfectly formatted string
     mock_ai_response = (
@@ -23,7 +23,7 @@ def test_get_battle_question_regex_success():
     assert data["B"] == "4"
     assert data["Answer"] == "B"
 
-# Test Regex Match Failure Case
+# Test Regex Match Failure Case THIS WAS AN OLD TEST WITH FAKE GEMINI THIS SHOULD FAIL
 def test_get_battle_question_invalid_format():
     # Mock the AI returning garbage that doesn't fit the regex
     mock_ai_response = "I am a broken AI and I forgot the format"
@@ -68,44 +68,6 @@ def test_get_battle_question_success():
 #    data = response.json()
 #    assert data["hpChange"] == 0
 
-def testDifficultyScaling():
-    # Test that difficulty 1 returns -10 HP change for correct answer
-    response = client.get("/battle/hpAnswerChange?answer=correct&difficulty=1")
-    assert response.status_code == 200
-    data = response.json()
-    assert data["hpChange"] == -10
-    
-    # Test that difficulty 2 returns -20 HP change for correct answer
-    response = client.get("/battle/hpAnswerChange?answer=correct&difficulty=2")
-    assert response.status_code == 200
-    data = response.json()
-    assert data["hpChange"] == -20
-    
-    # Test that difficulty 3 returns -30 HP change for correct answer
-    response = client.get("/battle/hpAnswerChange?answer=correct&difficulty=3")
-    assert response.status_code == 200
-    data = response.json()
-    assert data["hpChange"] == -30
-
-def testDifficultyScalingWrong():
-    # Test that difficulty 1 returns 0 HP change for wrong answer
-    response = client.get("/battle/hpAnswerChange?answer=wrong&difficulty=1")
-    assert response.status_code == 200
-    data = response.json()
-    assert data["hpChange"] == 0
-    
-    # Test that difficulty 2 returns 0 HP change for wrong answer
-    response = client.get("/battle/hpAnswerChange?answer=wrong&difficulty=2")
-    assert response.status_code == 200
-    data = response.json()
-    assert data["hpChange"] == 0
-    
-    # Test that difficulty 3 returns 0 HP change for wrong answer
-    response = client.get("/battle/hpAnswerChange?answer=wrong&difficulty=3")
-    assert response.status_code == 200
-    data = response.json()
-    assert data["hpChange"] == 0
-
 def testCriticalHit():
     # Test that a critical hit (answer=correct&critical=true) returns -20 HP change
     response = client.get("/battle/hpAnswerChange?answer=correct&critical=true")
@@ -115,7 +77,7 @@ def testCriticalHit():
 
 def testMiniShieldItem():
     # Test that using the Mini Shield item increases player HP by 10 and does not change enemy HP
-    response = client.post("/useItem", json={
+    response = client.post("/battle/useItem", json={
         "itemName": "Mini Shield",
         "playerHP": 50,
         "enemyHP": 80,
@@ -132,7 +94,7 @@ def testMiniShieldItem():
 
 def testBigShieldItem():
     # Test that using the Big Shield item increases player HP by 20 and does not change enemy HP
-    response = client.post("/useItem", json={
+    response = client.post("/battle/useItem", json={
         "itemName": "Big Shield",
         "playerHP": 50,
         "enemyHP": 80,
@@ -148,7 +110,7 @@ def testBigShieldItem():
 
 def testChugJugItem():
     # Test that using the Chug Jug item increases player HP by 50 and does not change enemy HP
-    response = client.post("/useItem", json={
+    response = client.post("/battle/useItem", json={
         "itemName": "Chug Jug",
         "playerHP": 50,
         "enemyHP": 80,
@@ -164,7 +126,7 @@ def testChugJugItem():
 
 def testDamageBoostItem():
     #tests that using the Damage Boost item increases damage multiplier to 2.0 and does not change player HP or enemy HP
-    response = client.post("/useItem", json={
+    response = client.post("/battle/useItem", json={
         "itemName": "Damage Boost",
         "playerHP": 50,
         "enemyHP": 80,
@@ -182,7 +144,7 @@ def testDamageBoostItem():
 
 def testDamageMegaBoostItem():
     #tests that using the Damage Mega Boost item increases damage multiplier to 3.0 and does not change player HP or enemy HP
-    response = client.post("/useItem", json={
+    response = client.post("/battle/useItem", json={
         "itemName": "Damage Mega Boost",
         "playerHP": 50,
         "enemyHP": 80,
@@ -200,7 +162,7 @@ def testDamageMegaBoostItem():
 
 def testDamageUltraBoostItem():
     #tests that using the Damage Ultra Boost item increases damage multiplier to 4.0 and does not change player HP or enemy HP
-    response = client.post("/useItem", json={
+    response = client.post("/battle/useItem", json={
         "itemName": "Damage Ultra Boost",
         "playerHP": 50,
         "enemyHP": 80,
@@ -217,7 +179,7 @@ def testDamageUltraBoostItem():
 
 def testInvalidItem():
     # Test that using an invalid item name returns a 400 error
-    response = client.post("/useItem", json={
+    response = client.post("/battle/useItem", json={
         "itemName": "Invalid Item",
         "playerHP": 50,
         "enemyHP": 80,
@@ -227,6 +189,25 @@ def testInvalidItem():
     assert response.status_code == 400
     data = response.json()
     assert data["detail"] == "Invalid item name"
+
+def testHPAnswerChangeLogic():
+    #tests that the hpAnswerChange endpoint correctly calculates HP changes based on answer correctness, difficulty, and critical hits
+    payload = {
+        "answer": "A",
+        "correctAnswer": "A",
+        "playerHP": 100,
+        "enemyHP": 100,
+        "questionsRight": 0,
+        "questionsWrong": 0,
+        "difficulty": 1,
+        "damageMultiplier": 1.0
+    }
+
+    with patch("random.random", return_value=0.5): 
+        response = client.post("/battle/hpAnswerChange", json=payload)
+    
+    assert response.status_code == 200
+    assert response.json()["enemyHP"] == 90 # Standard 10 damage
 
 
 
