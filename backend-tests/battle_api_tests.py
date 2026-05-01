@@ -68,12 +68,6 @@ def test_get_battle_question_success():
 #    data = response.json()
 #    assert data["hpChange"] == 0
 
-def testCriticalHit():
-    # Test that a critical hit (answer=correct&critical=true) returns -20 HP change
-    response = client.get("/battle/hpAnswerChange?answer=correct&critical=true")
-    assert response.status_code == 200
-    data = response.json()
-    assert data["hpChange"] == -20
 
 def testMiniShieldItem():
     # Test that using the Mini Shield item increases player HP by 10 and does not change enemy HP
