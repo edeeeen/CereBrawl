@@ -3,7 +3,14 @@ from urllib import response
 
 #from matplotlib import lines
 from requests import options
-
+'''
+Generates a quiz question based on the topic provided acting like a "fake gemini"
+Parameters:
+- topic: str (the subject of the quiz, e.g., "biology", "history", "math")
+- difficulty: int (the difficulty level of the question, from 1 to 5)
+Returns:
+- question: str (a single quiz question in the format specified in the prompt)
+'''
 def generateQuizQuestion(topic, difficulty):
     if(topic == "biology"):
         if(difficulty == 1):
@@ -287,7 +294,15 @@ def generateQuizQuestion(topic, difficulty):
         ]
         return computerScienceQuestionBank[random.randint(0, 19)]
     
-
+'''
+Parses a quiz question response in the format specified in the prompt to extract the question, options, and correct answer.
+Parameters:
+- response: str (the raw quiz question text in the format specified in the prompt)
+Returns:
+- question: str (the quiz question text)
+- options: list of str (the multiple-choice options)
+- correct_answer: str (the correct answer, e.g., "A", "B", "C", or "D")
+'''
 def parseQuestion(response):
     lines = response.split("\n")
     question = lines[0]
@@ -296,7 +311,14 @@ def parseQuestion(response):
     return question, options, correct_answer
 
 
-
+'''
+Creates a quiz by generating a full quiz using the fake Gemini function and then parsing it to create a list of quiz questions with their options and correct answers.
+Parameters:
+- numQuestions: int (the number of quiz questions to generate)
+- topic: str (the subject of the quiz, e.g., "biology", "history", "math")
+Returns:
+- quiz: list of dict (a list of quiz questions, where each question is represented as a dictionary with keys "question", "options", and "correct_answer")
+'''
 def quizCreator(numQuestions, topic):
     quiz = []
     for _ in range(numQuestions):
@@ -309,7 +331,10 @@ def quizCreator(numQuestions, topic):
         })
     return quiz
 
-
+'''
+Displays the quiz in the terminal. 
+Old testing function to display the quiz questions in the terminal before we had the frontend connection.
+'''
 def displayingQuiz():
     numQuestions = int(input("Enter the number of quiz questions: "))
     topic = input("Enter a topic for the quiz questions: ")

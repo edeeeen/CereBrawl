@@ -1,3 +1,4 @@
+#Original base for item class, later turned into API function. Kept here in case we want to reference it later.
 class Item:
     def __init__(self, name: str, isHealing: bool, isDamaging: bool, isQuestion: bool, strength: int):
         self.name = name
