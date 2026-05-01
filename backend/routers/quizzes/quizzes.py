@@ -278,14 +278,25 @@ def get_user_liked_quizzes(
     '''
     Get all quizzes liked by the current user.
     '''
-    statement = select(Quizzes).where(
-        Quizzes.id.in_(
-            select(LikedQuizzes.quiz_id).where(
-                LikedQuizzes.user_id == session.exec(select(Users.id).where(Users.short_id == current_user.short_id)).scalar()
+    statement = (
+        select(Quizzes, Users)
+        .join(Users, Quizzes.creator == Users.short_id)
+        .where(
+            Quizzes.id.in_(
+                select(LikedQuizzes.quiz_id).where(
+                    LikedQuizzes.user_id == session.exec(select(Users.id).where(Users.short_id == current_user.short_id)).scalar()
+                )
             )
         )
     )
 
-    quizzes = session.exec(statement).scalars().all()
+    results = session.exec(statement).all()
 
-    return [QuizResponse(**quiz.model_dump()) for quiz in quizzes]
+    response_list = []
+    for quiz, user in results:
+        quiz_dict = quiz.model_dump()
+        quiz_dict['creator'] = user.username
+        quiz_dict['creator_id'] = user.short_id
+        response_list.append(QuizResponse(**quiz_dict))
+
+    return response_list
