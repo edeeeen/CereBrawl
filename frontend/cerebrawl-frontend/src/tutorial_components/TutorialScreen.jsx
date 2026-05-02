@@ -4,12 +4,29 @@ import "./BattleScreen.css";
 import mini from "../Images/miniShield.png"
 import big from "../Images/bigShield.png"
 import chug from "../Images/chugJug.png"
+import dmg1 from "../Images/dmg1.png";
+import dmg2 from "../Images/dmg2.png";
+import dmg3 from "../Images/dmg3.png";
+import meat1 from "../Images/RedSteak.png";
+import meat2 from "../Images/PurpSteak.png";
+import meat3 from "../Images/BluSteak.png";
+import qHelp1 from "../Images/qMarkPowerup.png";
+import qHelp2 from "../Images/qMarkPowerup_Orange.png";
+import qSkip from "../Images/qSkipPowerup.png";
 
 import elgato1 from "../Images/elgato_full_1.png"
 import elgato2 from "../Images/elgato_full_2.png"
 import elgato3 from "../Images/elgato_full_3.png"
 import elgato4 from "../Images/elgato_full_4.png"
-import molecool from "../Images/molecool.png"
+
+import plub from "../Images/maybe neutral plub.png";
+import molecoole from "../Images/molecool.png";
+import mathWiz from "../Images/math wiz.png";
+import erlenmeyer from "../Images/erlenmeyer.png";
+import qMarkGuy from "../Images/q mark.png";
+
+import player from "../Images/player.png";
+import splayer from "../Images/splayer.png";
 
 const tutorialQuestions = [
   {
@@ -85,6 +102,8 @@ function TutorialScreen() {
 
   
 
+  
+
   const [questionData, setQuestionData] = useState(null);
   const [loadingQuestion, setLoadingQuestion] = useState(true);
   const [questionError, setQuestionError] = useState("");
@@ -96,6 +115,13 @@ function TutorialScreen() {
   const [showItemChoices1, setShowItemChoices1] = useState(false);
   const [showItemChoices2, setShowItemChoices2] = useState(false);
   const [damageMultiplier, setDamageMultiplier] = useState(1.0);
+
+  const [enemyLvl, setEnemyLvl] = useState(0);
+  const [enemySprite, setEnemySprite] = useState(null);
+  const [enemyName, setEnemyName] = useState("");
+
+  const [playerLvl, setPlayerLvl] = useState(0);
+  const [playerSprite, setPlayerSprite] = useState(player);
 
 
   const[tutorialState, setTutorialState] = useState(0);
@@ -148,6 +174,39 @@ function TutorialScreen() {
   }, [questionData]);
 
   const fetchQuestion = async () => {
+    
+    if(enemyName == "") {
+      var numbah = Math.floor(Math.random() * (100) + 1);
+      setPlayerLvl(numbah);
+      if(numbah == 69) setPlayerSprite(splayer);
+      setEnemyLvl(Math.floor(Math.random() * (100) + 1));
+      switch ( Math.floor(Math.random() * 5 + 1) ) {
+        case 1:
+          setEnemyName("Molecoole");
+          setEnemySprite(molecoole);
+          break;
+        case 2:
+          setEnemyName("Plub");
+          setEnemySprite(plub);
+          break;
+        case 3:
+          setEnemyName("Math Wiz");
+          setEnemySprite(mathWiz);
+          break;
+        case 4:
+          setEnemyName("The Mixture");
+          setEnemySprite(erlenmeyer);
+          break;
+        case 5:
+          setEnemyName("?");
+          setEnemySprite(qMarkGuy);
+          break;
+        default:
+          break;
+      }
+    }
+      
+
     if (gameOver) return;
 
     try {
@@ -367,6 +426,52 @@ function TutorialScreen() {
     showItemChoices2
   });
 
+    const enemySprite1 = () => {
+      switch ( enemyNum ) {
+        case 1:
+          return plub;
+          break;
+        case 2:
+          return mathWiz;
+          break;
+        case 3:
+          return molecoole;
+          break;
+        case 4:
+          return erlenmeyer;
+          break;
+        case 5:
+          return qMarkGuy;
+          break;
+        default:
+          return null;
+          break;
+      }
+    }
+  
+    const enemyName1 = () => {
+      switch ( enemyNum ) {
+        case 1:
+          return "Plub";
+          break;
+        case 2:
+          return "Math Wiz";
+          break;
+        case 3:
+          return "Molecoole";
+          break;
+        case 4:
+          return "The Mixture";
+          break;
+        case 5:
+          return "?";
+          break;
+        default:
+          return null;
+          break;
+      }
+    }
+
 
 
 
@@ -464,8 +569,8 @@ function TutorialScreen() {
         <div className="enemy-section" style={{display:"flex", flexDirection:"row"}}>
           <div className="enemy-card" id="monBorder">
             <div className="battle-card-header">
-              <span className="battle-name">Molecoole</span>
-              <span className="battle-level">Lv.1</span>
+              <span className="battle-name">{enemyName}</span>
+              <span className="battle-level">Lv.{enemyLvl}</span>
             </div>
 
             <div className="hp-row">
@@ -483,7 +588,7 @@ function TutorialScreen() {
           <div>
             <img
               className="enemy-sprite"
-              src={molecool}
+              src={enemySprite}
               alt="Enemy"
               onError={(e) => {
                 e.target.style.display = "none";
@@ -501,7 +606,7 @@ function TutorialScreen() {
         <div className="player-section">
           <img
             className="player-sprite"
-            src="/player.png"
+            src={playerSprite}
             alt="Player"
             onError={(e) => {
               e.target.style.display = "none";
@@ -513,7 +618,7 @@ function TutorialScreen() {
           <div className="player-card" id="monBorder">
             <div className="battle-card-header">
               <span className="battle-name">Student</span>
-              <span className="battle-level">Lv.42</span>
+              <span className="battle-level">Lv.{playerLvl}</span>
             </div>
 
             <div className="hp-row">
@@ -662,10 +767,10 @@ function TutorialScreen() {
                   disabled={gameOver}
                 >
                 <img
-                  src={mini}
+                  src={meat1}
                   style={{width:"30px", height:"30px", marginRight:"8px"}}
                 />
-                  Mini Shield
+                  Meat
                 </button>
                 <button
                   className="action-button"
@@ -673,10 +778,10 @@ function TutorialScreen() {
                   disabled={gameOver}
                 >
                   <img
-                  src={big}
+                  src={meat2}
                   style={{width:"30px", height:"30px", marginRight:"8px"}}
                 />
-                  Big Shield
+                  Super Meat
                 </button>
                 <button
                   className="action-button"
@@ -684,10 +789,10 @@ function TutorialScreen() {
                   disabled={gameOver}
                 >
                   <img
-                  src={chug}
+                  src={meat3}
                   style={{width:"30px", height:"30px", marginRight:"8px"}}
                 />
-                  Chug Jug
+                  Mega Meat
                 </button>
                 <button
                   className="action-button"
@@ -695,7 +800,7 @@ function TutorialScreen() {
                   disabled={gameOver}
                 >
                   <img
-                  src={chug}
+                  src={dmg3}
                   style={{width:"30px", height:"30px", marginRight:"8px"}}
                 />
                   Damage Boost
@@ -734,7 +839,7 @@ function TutorialScreen() {
                   disabled={gameOver}
                 >
                 <img
-                  src={mini}
+                  src={dmg2}
                   style={{width:"30px", height:"30px", marginRight:"8px"}}
                 />
                   Damage Mega Boost
@@ -745,7 +850,7 @@ function TutorialScreen() {
                   disabled={gameOver}
                 >
                   <img
-                  src={big}
+                  src={dmg1}
                   style={{width:"30px", height:"30px", marginRight:"8px"}}
                 />
                   Damage Ultra Boost
@@ -756,7 +861,7 @@ function TutorialScreen() {
                   disabled={gameOver}
                 >
                   <img
-                  src={chug}
+                  src={qHelp1}
                   style={{width:"30px", height:"30px", marginRight:"8px"}}
                 />
                   Chug Jug 2
@@ -767,7 +872,7 @@ function TutorialScreen() {
                   disabled={gameOver}
                 >
                   <img
-                  src={chug}
+                  src={qSkip}
                   style={{width:"30px", height:"30px", marginRight:"8px"}}
                 />
                   Chug Jug 2

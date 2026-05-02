@@ -1,3 +1,4 @@
+#Original base for character class, later turned into API function. Kept here in case we want to reference it later.
 import mon
 
 class Character:

@@ -213,7 +213,7 @@ const bookmarkQuiz = async (quizId) => {
                                     
                                     <div style={{ marginBottom: "8px" }}>
                                         <span style={{ fontSize: "20px", fontWeight: "bold", color: "white" }}>Subject: </span>
-                                        <span style={{ fontSize: "20px", color: "#2f8f83" }}>{quiz.subject || "General"}</span>
+                                        <span style={{ fontSize: "20px", color: "#cccccc" }}>{quiz.subject.charAt(0).toUpperCase() + quiz.subject.slice(1) || "General"}</span>
                                     </div>
 
                                     <div style={{ marginBottom: "15px" }}>

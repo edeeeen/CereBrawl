@@ -15,5 +15,28 @@ CereBrawl created by Jackson McElhaugh, Logan Small, Kaiden Fees, and Liam Ander
 Go to https://cerebrawl.me to begin
 ## Docs
 https://api.cerebrawl.me/docs#/
+## Setting Up Front End Testing On Your Machine
+FIRST run these commands in terminal:
+
+`npm install vite (this command should already be done if yall have been localhost testing)` <br>
+`npm install vitest`<br>
+`npm install react-router-dom`<br>
+`npm install @testing-library/react`<br>
+`npm install @testing-library/jest-dom`<br>
+`npm install jsdom`<br>
+
+
+SECOND in vite.config.js, after the line that says "plugins: [react()]" add:
+
+```
+  test: { <br>
+      environment: "jsdom", <br>
+      globals: true,<br>
+    },
+```
+
+To run your tests run this command:
+
+`npm run test`
 
 

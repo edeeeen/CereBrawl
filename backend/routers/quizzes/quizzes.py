@@ -222,7 +222,11 @@ def get_user_quizzes (
 
     return response_list
 
-
+'''
+Like a quiz. If they already liked it, unlike it.
+Parameters:
+- quiz_id: str (the id of the quiz to like)
+'''
 @router.post("/likeQuiz/{quiz_id}")
 def like_quiz(
     session: db.SessionDep,
@@ -269,7 +273,8 @@ def like_quiz(
     session.commit()
 
     return {"liked": liked}
-
+'''Get all quizzes liked by the current user. Returns a list of quizzes that the current user has liked, including quiz details and creator information.
+'''
 @router.get("/getUserLikedQuizzes")
 def get_user_liked_quizzes(
     session: db.SessionDep,
